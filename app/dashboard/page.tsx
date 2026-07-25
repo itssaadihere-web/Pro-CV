@@ -14,6 +14,8 @@ import {
   Loader2,
   AlertCircle,
   Settings,
+  Gift,
+  Copy,
 } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
@@ -143,6 +145,71 @@ export default function DashboardPage() {
               <PlusCircle className="h-4 w-4 text-gold" />
               <span>{credits > 0 ? 'Create CV' : 'Buy Slots'}</span>
             </Link>
+          </div>
+        </div>
+
+        {/* Refer a Friend & 100 PKR Wallet Reward Card */}
+        <div className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 p-6 text-white shadow-lg mb-8 grid gap-6 md:grid-cols-12 items-center">
+          <div className="md:col-span-7 space-y-2">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 px-3 py-1 text-xs font-bold text-emerald-300">
+              <Gift className="h-3.5 w-3.5 text-emerald-400" />
+              <span>Earn 100 PKR per Referral</span>
+            </div>
+            <h2 className="text-xl font-extrabold text-white">
+              Refer a Friend & Earn 100 PKR Wallet Credit!
+            </h2>
+            <p className="text-xs text-slate-300 leading-relaxed max-w-xl">
+              Share your link or promo code with friends. When they sign up and complete their first purchase on Sophi, <strong>100 PKR is credited to your wallet balance</strong> and automatically adjusted on your next CV purchase.
+            </p>
+          </div>
+
+          <div className="md:col-span-5 bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/15 space-y-3">
+            <div className="flex justify-between items-center border-b border-white/10 pb-2.5">
+              <span className="text-xs text-slate-300 font-semibold">Your Wallet Balance:</span>
+              <span className="text-lg font-black text-amber-400">Rs. {profile?.wallet_balance_pkr || 0} PKR</span>
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-[11px] font-bold text-slate-300">Your Referral Link & Promo Code ({profile?.referral_code || (profile?.email ? profile.email.substring(0, 4).toUpperCase() + '100' : 'SOPH100')})</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={typeof window !== 'undefined' ? `${window.location.origin}/login?ref=${profile?.referral_code || (profile?.email ? profile.email.substring(0, 4).toUpperCase() + '100' : 'SOPH100')}` : `https://joinsophi.com/login?ref=${profile?.referral_code || 'SOPH100'}`}
+                  className="flex-1 bg-black/30 border border-white/20 rounded-lg px-3 py-1.5 text-xs text-white select-all font-mono"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const refLink = `${window.location.origin}/login?ref=${profile?.referral_code || 'SOPH100'}`
+                    navigator.clipboard.writeText(refLink)
+                    toast.success('Referral link copied to clipboard!')
+                  }}
+                  className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-colors shrink-0"
+                >
+                  Copy Link
+                </button>
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-1">
+              <a
+                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Create an ATS-optimized CV with Sophi AI! Sign up using my referral link: ${typeof window !== 'undefined' ? window.location.origin : 'https://joinsophi.com'}/login?ref=${profile?.referral_code || 'SOPH100'}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 text-center py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-colors"
+              >
+                WhatsApp Share
+              </a>
+              <a
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`${typeof window !== 'undefined' ? window.location.origin : 'https://joinsophi.com'}/login?ref=${profile?.referral_code || 'SOPH100'}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 text-center py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors"
+              >
+                LinkedIn Share
+              </a>
+            </div>
           </div>
         </div>
 
