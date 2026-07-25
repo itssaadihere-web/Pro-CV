@@ -402,7 +402,7 @@ export default function UploadPage() {
                   <div className="flex items-start gap-2.5 rounded-xl border border-blue-100 bg-blue-50/40 p-4 text-xs text-blue-900">
                     <AlertCircle className="h-4.5 w-4.5 text-blue-500 shrink-0 mt-0.5" />
                     <p className="leading-relaxed">
-                      Transforming your CV consumes <strong>1 credit</strong>. Make sure your uploaded file contains your correct work experience.
+                      You get <strong>5 free watermarked template previews</strong>. Upgrade to full version anytime to unlock unwatermarked downloads.
                     </p>
                   </div>
                 </div>

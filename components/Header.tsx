@@ -124,7 +124,7 @@ export default function Header() {
                   className="flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white transition-all hover:bg-primary-800 hover:shadow-md hover:shadow-primary-100"
                 >
                   <PlusCircle className="h-4 w-4 text-gold" />
-                  <span className="hidden sm:inline">New Transform</span>
+                  <span className="hidden sm:inline">Transform CV</span>
                 </Link>
 
                 <button

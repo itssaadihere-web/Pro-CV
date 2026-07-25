@@ -28,11 +28,7 @@ export default function ChoicePage() {
         .eq('id', session.user.id)
         .single()
 
-      if (!profile || profile.cv_credits === 0) {
-        router.push('/payment')
-        return
-      }
-
+      // Upfront payment is no longer required for starting transformation / free previews
       setLoading(false)
     }
 
@@ -71,12 +67,12 @@ export default function ChoicePage() {
             How would you like to start?
           </h1>
           <p className="mt-4 text-lg text-slate-500 max-w-2xl mx-auto">
-            Choose whether to revamp your existing CV or create a completely new one from scratch through an interactive interview.
+            Choose whether to transform your existing CV or create a completely new one from scratch.
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
-          {/* Revamp Option */}
+          {/* Revamp / Transform Option */}
           <button
             onClick={() => router.push('/upload')}
             className="relative flex flex-col items-center justify-center p-8 text-center rounded-2xl border-2 border-slate-200 bg-white transition-all hover:border-primary hover:shadow-xl hover:shadow-primary-100 group"
@@ -84,7 +80,7 @@ export default function ChoicePage() {
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 text-slate-400 group-hover:bg-primary-50 group-hover:text-primary transition-colors mb-6">
               <FileUp className="h-8 w-8" />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">Revamp Current CV</h3>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Transform Current CV</h3>
             <p className="text-sm text-slate-500 leading-relaxed">
               Upload your existing CV (PDF or DOCX). Our AI will analyze, rewrite, and optimize it for ATS systems automatically.
             </p>

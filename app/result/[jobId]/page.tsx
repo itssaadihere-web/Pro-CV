@@ -15,6 +15,7 @@ import {
   ArrowLeft,
   Copy,
   Check,
+  Lock,
 } from 'lucide-react'
 import { isBetaActive } from '@/lib/beta'
 
@@ -56,6 +57,11 @@ export default function ResultPage() {
   const [sendingEmail, setSendingEmail] = useState(false)
   const [copiedText, setCopiedText] = useState<Record<string, boolean>>({})
 
+  // Payment and preview states
+  const [hasPaid, setHasPaid] = useState<boolean>(false)
+  const [previewCount, setPreviewCount] = useState<number>(1)
+  const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false)
+
   // Template and Color Selection states
   const [selectedTemplate, setSelectedTemplate] = useState<string>('min-14-white-blue-minimalist-corporate-ats')
   const [selectedColor, setSelectedColor] = useState<string>('classic')
@@ -94,6 +100,17 @@ export default function ResultPage() {
           toast.error('Session expired. Please sign in.')
           router.push('/login')
           return
+        }
+
+        // Fetch user payment status
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('has_paid, cv_credits')
+          .eq('id', session.user.id)
+          .single()
+
+        if (session.user.email === 'syedsaad.mob@gmail.com' || (profile && (profile.has_paid || profile.cv_credits > 0)) || isBetaActive()) {
+          setHasPaid(true)
         }
 
         // Fetch CV transformation details
@@ -172,6 +189,12 @@ export default function ResultPage() {
   }
 
   const handleRegenerateWithDifferentTemplate = async () => {
+    if (!hasPaid && previewCount >= 5) {
+      setShowPaymentModal(true)
+      toast.error('You have reached 5 free template previews! Upgrade to full version for further templates.')
+      return
+    }
+
     setRotatingTemplate(true)
     try {
       const res = await fetch('/api/rotate-template', {
@@ -196,7 +219,8 @@ export default function ResultPage() {
       }))
       
       setSelectedTemplate(data.templateId)
-      toast.success('Successfully switched template layout!')
+      setPreviewCount((prev) => prev + 1)
+      toast.success(`Switched template layout! (Preview ${previewCount + 1}/5)`)
     } catch (err: any) {
       console.error(err)
       toast.error(err.message || 'Error rotating template.')
@@ -440,6 +464,7 @@ export default function ResultPage() {
                 setSelectedColor={setSelectedColor}
                 displayCVText={displayCVText}
                 formatting={formatting}
+                isWatermarked={!hasPaid}
               />
             </div>
           )}
@@ -793,6 +818,48 @@ export default function ResultPage() {
             </button>
           </div>
         </div>
+
+        {/* Payment Required Modal for 6th Preview */}
+        {showPaymentModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
+            <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center space-y-6 shadow-2xl border border-slate-100">
+              <div className="h-16 w-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                <Lock className="h-8 w-8" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-extrabold text-slate-900">Full Version Required</h3>
+                <p className="text-sm text-slate-600 mt-2 leading-relaxed">
+                  You have reached your <strong>5 free template previews</strong>. Upgrade to the full version now to unlock unlimited template switching and download unwatermarked high-resolution PDFs!
+                </p>
+              </div>
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-left space-y-2 text-xs">
+                <div className="flex justify-between font-bold text-slate-800">
+                  <span>Free Previews Used:</span>
+                  <span className="text-amber-600">5 / 5 Previews</span>
+                </div>
+                <div className="flex justify-between font-bold text-slate-800">
+                  <span>Full Unwatermarked Access:</span>
+                  <span className="text-blue-600 font-extrabold">1,500 PKR</span>
+                </div>
+              </div>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => router.push('/payment')}
+                  className="w-full py-3.5 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2 text-sm"
+                >
+                  <span>Pay & Unlock Full Version</span>
+                  <ArrowLeft className="h-4 w-4 rotate-180" />
+                </button>
+                <button
+                  onClick={() => setShowPaymentModal(false)}
+                  className="w-full py-2 text-xs font-semibold text-slate-500 hover:text-slate-800"
+                >
+                  Keep active layout preview
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   )

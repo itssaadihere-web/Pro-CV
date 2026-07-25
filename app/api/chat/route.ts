@@ -17,37 +17,62 @@ export async function POST(req: NextRequest) {
 
     const ai = new GoogleGenAI({ apiKey })
 
-    // System prompt setting the behavior of the interview bot
-    const systemPrompt = `You are an expert AI CV builder assistant named Sophi.
-Your job is to conduct an interactive interview with the user to gather all necessary information to create a professional CV.
-Ask one or two questions at a time. Keep it conversational and encouraging.
-Gather:
-1. Contact info (if missing)
-2. Professional summary / objective
-3. Work experience (titles, companies, dates, key achievements)
-4. Education
-5. Skills
-If the user provides a LinkedIn URL, acknowledge it and say you will use it.
-If the user sends a voice note, it will be transcribed in their message. 
+    const systemPrompt = `You are Sophi, an AI CV builder assistant.
+The user is filling out a structured CV form on screen while chatting or sending voice notes to you.
+Your job is to:
+1. Understand the user's text message or voice note recording.
+2. Extract any relevant CV information mentioned (full name, job title, contact email, phone, location, professional summary, work experience items with company, position, dates, description, education items with institution, degree, field of study, year, skills, certifications, languages, extra contacts).
+3. Provide a helpful, encouraging text reply telling the user what details you extracted and auto-filled into their form, and asking what else they want to add.
+4. Output your response strictly as a JSON object matching this schema:
 
-When you believe you have gathered enough information to generate a solid baseline CV (at least 1 recent job, education, skills, and summary), you MUST append this EXACT string to the end of your response:
-"[COMPLETE_CV]"
-Followed by a markdown block containing the structured CV text you've compiled based on their answers.`
+{
+  "reply": "Friendly response string explaining what was extracted and auto-filled into the form...",
+  "extractedFields": {
+    "fullName": "extracted full name or empty string if not mentioned",
+    "jobTitle": "extracted job title or empty string if not mentioned",
+    "email": "extracted email or empty string",
+    "phone": "extracted phone or empty string",
+    "location": "extracted location or empty string",
+    "summary": "extracted professional summary or empty string",
+    "contacts": [
+      { "label": "e.g. LinkedIn / Portfolio", "value": "url or handle" }
+    ],
+    "experiences": [
+      {
+        "company": "Company Name",
+        "position": "Job Title",
+        "startDate": "Start Date e.g. 2021",
+        "endDate": "End Date e.g. Present",
+        "location": "City/Country",
+        "description": "Responsibilities and bullet points"
+      }
+    ],
+    "educations": [
+      {
+        "institution": "University / School Name",
+        "degree": "Degree e.g. BS Computer Science",
+        "fieldOfStudy": "Field e.g. Software Engineering",
+        "graduationYear": "e.g. 2022"
+      }
+    ],
+    "skills": ["Skill 1", "Skill 2"],
+    "certifications": ["Cert 1"],
+    "languages": ["English", "Urdu"]
+  }
+}
 
-    // Construct the contents array for Gemini
+Return ONLY valid JSON. Do not wrap in backticks or markdown fences if possible.`
+
     const contents: any[] = []
 
-    // Add history (we map 'assistant' to 'model')
     for (const msg of history) {
       if (msg.role === 'assistant') {
         contents.push({ role: 'model', parts: [{ text: msg.content }] })
       } else {
-        // User history
         contents.push({ role: 'user', parts: [{ text: msg.content }] })
       }
     }
 
-    // Prepare current message parts
     const currentParts: any[] = []
 
     if (text) {
@@ -63,7 +88,7 @@ Followed by a markdown block containing the structured CV text you've compiled b
           mimeType: audioBlob.type || 'audio/webm'
         }
       })
-      currentParts.push({ text: "Please transcribe this audio and respond to it." })
+      currentParts.push({ text: "Please listen to this voice note, transcribe it, extract any CV details, and respond in the required JSON format." })
     }
 
     if (currentParts.length > 0) {
@@ -75,28 +100,27 @@ Followed by a markdown block containing the structured CV text you've compiled b
       contents: contents,
       config: {
         systemInstruction: systemPrompt,
-        temperature: 0.7,
+        temperature: 0.3,
+        responseMimeType: 'application/json',
       }
     })
 
-    const reply = response.text || ''
-    
-    // Check if the AI decided it has enough info
-    let isComplete = false
-    let cvData = ''
-    let cleanReply = reply
-
-    if (reply.includes('[COMPLETE_CV]')) {
-      isComplete = true
-      const parts = reply.split('[COMPLETE_CV]')
-      cleanReply = parts[0].trim()
-      cvData = parts[1].trim()
+    const rawText = response.text || '{}'
+    let parsed: any = {}
+    try {
+      // Clean JSON fences if any
+      const cleanJson = rawText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+      parsed = JSON.parse(cleanJson)
+    } catch (e) {
+      parsed = {
+        reply: rawText || "I've noted that! You can check the form on the left to verify your details.",
+        extractedFields: {}
+      }
     }
 
     return NextResponse.json({
-      reply: cleanReply,
-      isComplete,
-      cvData
+      reply: parsed.reply || "I've updated your form details!",
+      extractedFields: parsed.extractedFields || {}
     })
 
   } catch (error: any) {

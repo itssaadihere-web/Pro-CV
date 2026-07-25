@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import { parseCVText } from '@/lib/pdf-export'
 import { getTemplate } from '@/components/cv-templates'
 import { parseKimiCV } from '@/lib/cvParser'
+import Logo from './Logo'
 
 interface CVPreviewProps {
   originalText: string
@@ -16,6 +17,7 @@ interface CVPreviewProps {
   setSelectedColor: (color: string) => void
   displayCVText: string
   formatting: boolean
+  isWatermarked?: boolean
 }
 
 const colorOptions: Record<string, { id: string; name: string; hex: string }[]> = {
@@ -44,7 +46,8 @@ export default function CVPreview({
   selectedColor,
   setSelectedColor,
   displayCVText,
-  formatting
+  formatting,
+  isWatermarked = true
 }: CVPreviewProps) {
   const [activeTab, setActiveTab] = useState<'after' | 'before'>('after')
   const [layoutMode, setLayoutMode] = useState<'split' | 'single'>('split')
@@ -264,7 +267,7 @@ export default function CVPreview({
                     <span className="text-[11px] font-bold text-slate-500">AI is structuring layout...</span>
                   </div>
                 )}
-                <VisualCV cvText={displayCVText} template={selectedTemplate} colorTheme={selectedColor} />
+                <VisualCV cvText={displayCVText} template={selectedTemplate} colorTheme={selectedColor} isWatermarked={isWatermarked} />
               </div>
             ) : (
               <pre className="flex-1 overflow-auto max-h-[600px] p-6 text-left font-mono text-[11.5px] leading-relaxed text-slate-800 bg-white whitespace-pre-wrap select-all font-jetbrains">
@@ -292,7 +295,7 @@ export default function CVPreview({
                   <span className="text-[11px] font-bold text-slate-500">AI is structuring layout...</span>
                 </div>
               )}
-              <VisualCV cvText={displayCVText} template={selectedTemplate} colorTheme={selectedColor} />
+              <VisualCV cvText={displayCVText} template={selectedTemplate} colorTheme={selectedColor} isWatermarked={isWatermarked} />
             </div>
           ) : (
             <pre className={`overflow-auto max-h-[650px] p-6 text-left font-mono text-[11.5px] leading-relaxed whitespace-pre-wrap font-jetbrains ${
@@ -310,17 +313,31 @@ export default function CVPreview({
 function VisualCV({ 
   cvText, 
   template, 
-  colorTheme 
+  colorTheme,
+  isWatermarked = true
 }: { 
   cvText: string; 
   template: string; 
-  colorTheme: string 
+  colorTheme: string;
+  isWatermarked?: boolean;
 }) {
   const cvData = parseKimiCV(cvText)
   const TemplateComponent = getTemplate(template)
   
   return (
-    <div className="w-full overflow-y-auto max-h-[600px] flex justify-center bg-slate-100 p-4 border border-slate-200 rounded-b-2xl">
+    <div className="relative w-full overflow-y-auto max-h-[600px] flex justify-center bg-slate-100 p-4 border border-slate-200 rounded-b-2xl">
+      {isWatermarked && (
+        <div className="absolute inset-0 pointer-events-none z-20 flex flex-col justify-around items-center overflow-hidden opacity-20 select-none py-12">
+          <div className="transform -rotate-12 flex flex-col items-center justify-center gap-1 bg-white/40 p-4 rounded-3xl shadow-sm border border-slate-300">
+            <Logo width={120} height={120} showTagline={false} />
+            <span className="text-3xl font-black tracking-widest text-slate-900 uppercase">SOPHI PREVIEW</span>
+          </div>
+          <div className="transform -rotate-12 flex flex-col items-center justify-center gap-1 bg-white/40 p-4 rounded-3xl shadow-sm border border-slate-300">
+            <Logo width={120} height={120} showTagline={false} />
+            <span className="text-3xl font-black tracking-widest text-slate-900 uppercase">SOPHI PREVIEW</span>
+          </div>
+        </div>
+      )}
       <div style={{ transform: 'scale(0.6)', transformOrigin: 'top center', height: '674px', overflow: 'hidden' }}>
         <TemplateComponent data={cvData} scale={0.6} colorTheme={colorTheme} />
       </div>
