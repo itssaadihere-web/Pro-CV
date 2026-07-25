@@ -282,34 +282,37 @@ export default function ChatPage() {
     return null
   }
 
-  const handleFetchLinkedin = async (urlToFetch?: string) => {
-    const targetUrl = urlToFetch?.trim() || findLinkedinUrlInState()
+  const [linkedinPasteText, setLinkedinPasteText] = useState('')
 
-    if (!targetUrl) {
+  const handleFetchLinkedin = async (urlToFetch?: string, rawTextToFetch?: string) => {
+    const targetUrl = urlToFetch?.trim() || findLinkedinUrlInState()
+    const targetText = rawTextToFetch?.trim() || ''
+
+    if (!targetUrl && !targetText) {
       setShowLinkedinModal(true)
       return
     }
 
-    // Clean location field if user accidentally pasted URL in location
-    if (form.location && form.location.includes('linkedin.com')) {
-      setForm(prev => ({
-        ...prev,
-        location: '',
-        contacts: prev.contacts.some(c => c.value === targetUrl)
-          ? prev.contacts
-          : [...prev.contacts, { id: Date.now().toString(), label: 'LinkedIn', value: targetUrl }]
-      }))
-    } else {
-      // Ensure LinkedIn contact item has the URL
-      setForm(prev => {
-        if (!prev.contacts.some(c => c.value.includes('linkedin.com'))) {
-          return {
-            ...prev,
-            contacts: prev.contacts.map(c => (c.label.toLowerCase().includes('linkedin') && !c.value) ? { ...c, value: targetUrl } : c)
+    if (targetUrl) {
+      if (form.location && form.location.includes('linkedin.com')) {
+        setForm(prev => ({
+          ...prev,
+          location: '',
+          contacts: prev.contacts.some(c => c.value === targetUrl)
+            ? prev.contacts
+            : [...prev.contacts, { id: Date.now().toString(), label: 'LinkedIn', value: targetUrl }]
+        }))
+      } else {
+        setForm(prev => {
+          if (!prev.contacts.some(c => c.value.includes('linkedin.com'))) {
+            return {
+              ...prev,
+              contacts: prev.contacts.map(c => (c.label.toLowerCase().includes('linkedin') && !c.value) ? { ...c, value: targetUrl } : c)
+            }
           }
-        }
-        return prev
-      })
+          return prev
+        })
+      }
     }
 
     setFetchingLinkedin(true)
@@ -317,7 +320,10 @@ export default function ChatPage() {
       const res = await fetch('/api/linkedin/fetch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: targetUrl })
+        body: JSON.stringify({
+          url: targetUrl || undefined,
+          rawText: targetText || undefined
+        })
       })
       const data = await res.json()
       if (!res.ok || !data.success) {
@@ -1295,33 +1301,67 @@ export default function ChatPage() {
 
         </div>
 
-        {/* LinkedIn Profile URL Modal Prompt */}
+        {/* LinkedIn / Bio Import Modal Prompt */}
         {showLinkedinModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
-            <div className="bg-white rounded-3xl p-6 max-w-md w-full text-left space-y-4 shadow-2xl border border-slate-100">
+            <div className="bg-white rounded-3xl p-6 max-w-lg w-full text-left space-y-4 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center border-b border-slate-150 pb-3">
                 <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
                   <Globe className="h-5 w-5 text-emerald-600" />
-                  <span>Fetch LinkedIn Profile</span>
+                  <span>Import LinkedIn / CV Details</span>
                 </h3>
                 <button onClick={() => setShowLinkedinModal(false)} className="text-slate-400 hover:text-slate-600 font-bold text-sm">✕</button>
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Paste your LinkedIn profile URL below to automatically extract your Name, Job Title, Summary, Work Experience, Education, and Skills directly into your form:
-              </p>
-              <input
-                type="url"
-                placeholder="https://www.linkedin.com/in/username/"
-                value={linkedinModalInput}
-                onChange={e => setLinkedinModalInput(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' && linkedinModalInput.trim()) {
-                    handleFetchLinkedin(linkedinModalInput)
-                  }
-                }}
-                className="w-full rounded-xl border border-slate-300 bg-white p-3 text-xs text-slate-800 focus:border-emerald-600 focus:outline-none"
-              />
-              <div className="flex justify-end gap-2 pt-2">
+
+              {/* Option A: URL */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-800">
+                  Option A: Fetch via LinkedIn Profile URL
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    placeholder="https://www.linkedin.com/in/username/"
+                    value={linkedinModalInput}
+                    onChange={e => setLinkedinModalInput(e.target.value)}
+                    className="flex-1 rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-800 focus:border-emerald-600 focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    disabled={!linkedinModalInput.trim() || fetchingLinkedin}
+                    onClick={() => handleFetchLinkedin(linkedinModalInput)}
+                    className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl disabled:opacity-50"
+                  >
+                    {fetchingLinkedin ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Globe className="h-3.5 w-3.5" />}
+                    <span>Fetch URL</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="relative flex py-1 items-center">
+                <div className="flex-grow border-t border-slate-200"></div>
+                <span className="flex-shrink mx-3 text-[11px] font-extrabold text-slate-400 uppercase">OR (Instant Full Auto-Fill)</span>
+                <div className="flex-grow border-t border-slate-200"></div>
+              </div>
+
+              {/* Option B: Paste Profile Text / Bio */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-800">
+                  Option B: Paste LinkedIn Profile Text or CV Bio
+                </label>
+                <p className="text-[11px] text-slate-500">
+                  Copy text from your LinkedIn profile (About, Experience, Education) or resume and paste it below. Our AI will automatically parse all companies, job titles, dates, education, and skills into your form!
+                </p>
+                <textarea
+                  rows={5}
+                  placeholder="Paste your LinkedIn Experience, Bio, or CV text here..."
+                  value={linkedinPasteText}
+                  onChange={e => setLinkedinPasteText(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 bg-white p-3 text-xs text-slate-800 focus:border-emerald-600 focus:outline-none leading-relaxed"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setShowLinkedinModal(false)}
@@ -1331,12 +1371,12 @@ export default function ChatPage() {
                 </button>
                 <button
                   type="button"
-                  disabled={!linkedinModalInput.trim() || fetchingLinkedin}
-                  onClick={() => handleFetchLinkedin(linkedinModalInput)}
-                  className="flex items-center gap-1.5 px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md disabled:opacity-50"
+                  disabled={!linkedinPasteText.trim() || fetchingLinkedin}
+                  onClick={() => handleFetchLinkedin(undefined, linkedinPasteText)}
+                  className="flex items-center gap-1.5 px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md disabled:opacity-50"
                 >
-                  {fetchingLinkedin ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Globe className="h-3.5 w-3.5" />}
-                  <span>Fetch Profile Details</span>
+                  {fetchingLinkedin ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                  <span>Auto-Fill Form From Text</span>
                 </button>
               </div>
             </div>

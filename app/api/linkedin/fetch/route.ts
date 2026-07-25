@@ -32,41 +32,43 @@ async function fetchLinkedinMeta(url: string): Promise<string> {
 
 export async function POST(req: NextRequest) {
   try {
-    const { url } = await req.json()
+    const { url, rawText: userPastedText } = await req.json()
 
-    if (!url || typeof url !== 'string' || !url.includes('linkedin.com')) {
-      return NextResponse.json({ error: 'Please provide a valid LinkedIn profile URL.' }, { status: 400 })
+    if (!url && !userPastedText) {
+      return NextResponse.json({ error: 'Please provide a valid LinkedIn URL or paste your profile text.' }, { status: 400 })
     }
 
-    // Extract handle from URL (e.g., https://www.linkedin.com/in/itsaadihere/ -> itsaadihere)
-    const handleMatch = url.match(/linkedin\.com\/in\/([^\/\?#]+)/i)
-    const rawHandle = handleMatch ? handleMatch[1] : ''
-    const formattedHandleName = rawHandle
-      ? rawHandle.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
-      : ''
+    let payloadText = userPastedText || ''
+    let formattedHandleName = ''
 
-    const proxycurlKey = process.env.PROXYCURL_API_KEY
-    let currentProfileText = ''
+    if (url) {
+      const handleMatch = url.match(/linkedin\.com\/in\/([^\/\?#]+)/i)
+      const rawHandle = handleMatch ? handleMatch[1] : ''
+      formattedHandleName = rawHandle
+        ? rawHandle.replace(/[-_]/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())
+        : ''
 
-    if (proxycurlKey) {
-      try {
-        const response = await fetch(`https://nubela.co/proxycurl/api/v2/linkedin?url=${encodeURIComponent(url)}`, {
-          headers: { 'Authorization': `Bearer ${proxycurlKey}` }
-        })
-        if (response.ok) {
-          const data = await response.json()
-          currentProfileText = JSON.stringify(data)
-        } else {
-          console.warn('Proxycurl fetch failed:', await response.text())
+      const proxycurlKey = process.env.PROXYCURL_API_KEY
+
+      if (proxycurlKey) {
+        try {
+          const response = await fetch(`https://nubela.co/proxycurl/api/v2/linkedin?url=${encodeURIComponent(url)}`, {
+            headers: { 'Authorization': `Bearer ${proxycurlKey}` }
+          })
+          if (response.ok) {
+            const data = await response.json()
+            payloadText = JSON.stringify(data)
+          } else {
+            console.warn('Proxycurl fetch failed:', await response.text())
+          }
+        } catch (err) {
+          console.warn('Proxycurl error:', err)
         }
-      } catch (err) {
-        console.warn('Proxycurl error:', err)
       }
-    }
 
-    // Attempt public HTML meta scraping if Proxycurl text is empty
-    if (!currentProfileText) {
-      currentProfileText = await fetchLinkedinMeta(url)
+      if (!payloadText) {
+        payloadText = await fetchLinkedinMeta(url)
+      }
     }
 
     const geminiKey = process.env.GEMINI_API_KEY
@@ -78,13 +80,13 @@ export async function POST(req: NextRequest) {
 
     const systemPrompt = `You are a strict LinkedIn Profile Data Extractor.
 CRITICAL RULES:
-1. Do NOT invent fake random people, fake names (like Aarti Sharma or John Doe), fake companies, or fake universities (like UC Berkeley or IIT Delhi).
-2. If real name is present in the scraped title or text, extract it. If not, use the URL handle derived name: "${formattedHandleName}".
-3. If specific experiences or educations are not explicitly provided in the payload text, leave "experiences" and "educations" as EMPTY ARRAYS []. Do NOT generate dummy placeholder experiences.
+1. Do NOT invent fake random people, fake names (like Aarti Sharma or John Doe), fake companies, or fake universities.
+2. Extract all real work experience entries, education entries, skills, full name, job title, and bio summary from the provided payload text.
+3. If specific experiences or educations are not explicitly provided in the payload text, leave "experiences" and "educations" as EMPTY ARRAYS [].
 4. Output strictly valid JSON matching this schema:
 
 {
-  "fullName": "Real name from text or ${formattedHandleName}",
+  "fullName": "Real name from text",
   "jobTitle": "Extracted headline / job title or empty string if unknown",
   "summary": "Extracted summary / description or empty string if unknown",
   "experiences": [
@@ -108,9 +110,9 @@ CRITICAL RULES:
   "skills": ["Real Skill 1", "Real Skill 2"]
 }`
 
-    const userPrompt = currentProfileText
-      ? `Extract profile details from this fetched payload:\n${currentProfileText}`
-      : `Extract real profile details for LinkedIn profile URL handle "${formattedHandleName}" (${url}). Do not invent fake names or placeholder experiences.`
+    const userPrompt = payloadText
+      ? `Extract full CV details from this profile payload:\n${payloadText}`
+      : `Extract real profile details for handle "${formattedHandleName}" (${url}). Do not invent fake names or dummy placeholder experiences.`
 
     const result = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
@@ -131,9 +133,8 @@ CRITICAL RULES:
       profileData = {}
     }
 
-    // Enforce name fix if empty or hallucinated
     if (!profileData.fullName || profileData.fullName.includes('Aarti') || profileData.fullName.includes('John Doe')) {
-      profileData.fullName = formattedHandleName || 'LinkedIn User'
+      if (formattedHandleName) profileData.fullName = formattedHandleName
     }
 
     return NextResponse.json({
