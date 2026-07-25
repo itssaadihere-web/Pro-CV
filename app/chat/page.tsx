@@ -257,6 +257,72 @@ export default function ChatPage() {
     setForm(prev => ({ ...prev, languages: prev.languages.filter(l => l !== lang) }))
   }
 
+  // --- LinkedIn Auto-Fetch Handler ---
+  const [fetchingLinkedin, setFetchingLinkedin] = useState(false)
+
+  const handleFetchLinkedin = async (urlToFetch?: string) => {
+    const targetUrl = urlToFetch || form.contacts.find(c => c.label.toLowerCase().includes('linkedin') || c.value.includes('linkedin.com'))?.value
+    if (!targetUrl || !targetUrl.trim()) {
+      toast.error('Please enter a LinkedIn profile URL in your links section or chat first.')
+      return
+    }
+
+    setFetchingLinkedin(true)
+    try {
+      const res = await fetch('/api/linkedin/fetch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: targetUrl.trim() })
+      })
+      const data = await res.json()
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to fetch LinkedIn data')
+      }
+
+      const p = data.profileData || {}
+      let count = 0
+      setForm(prev => {
+        const updated = { ...prev }
+        if (p.fullName) { updated.fullName = p.fullName; count++ }
+        if (p.jobTitle) { updated.jobTitle = p.jobTitle; count++ }
+        if (p.summary) { updated.summary = p.summary; count++ }
+        if (Array.isArray(p.experiences) && p.experiences.length > 0) {
+          updated.experiences = p.experiences.map((exp: any, i: number) => ({
+            id: Date.now().toString() + i,
+            company: exp.company || '',
+            position: exp.position || '',
+            startDate: exp.startDate || '',
+            endDate: exp.endDate || '',
+            location: exp.location || '',
+            description: exp.description || ''
+          }))
+          count += p.experiences.length
+        }
+        if (Array.isArray(p.educations) && p.educations.length > 0) {
+          updated.educations = p.educations.map((ed: any, i: number) => ({
+            id: Date.now().toString() + i,
+            institution: ed.institution || '',
+            degree: ed.degree || '',
+            fieldOfStudy: ed.fieldOfStudy || '',
+            graduationYear: ed.graduationYear || ''
+          }))
+          count += p.educations.length
+        }
+        if (Array.isArray(p.skills) && p.skills.length > 0) {
+          updated.skills = Array.from(new Set([...updated.skills, ...p.skills]))
+          count += p.skills.length
+        }
+        return updated
+      })
+
+      toast.success(`Successfully fetched & populated ${count} fields from LinkedIn!`)
+    } catch (err: any) {
+      toast.error(err.message || 'Could not fetch LinkedIn details.')
+    } finally {
+      setFetchingLinkedin(false)
+    }
+  }
+
   // --- Voice & Chat Auto-population Handlers ---
 
   const startRecording = async () => {
@@ -508,42 +574,13 @@ export default function ChatPage() {
         compiledCV += `\n## Languages\n${form.languages.join(', ')}\n`
       }
 
-      // Create cv_job entry in database
-      const { data: job, error: jobError } = await supabase
-        .from('cv_jobs')
-        .insert({
-          user_id: session.user.id,
-          target_industry: form.jobTitle || 'General',
-          output_language: 'EN',
-          original_file_path: 'from_scratch_form',
-          status: 'processing'
-        })
-        .select('id')
-        .single()
+      // Save compiled CV text & metadata to sessionStorage for the Transform Configuration screen
+      sessionStorage.setItem('scratch_cv_text', compiledCV)
+      sessionStorage.setItem('scratch_full_name', form.fullName)
+      sessionStorage.setItem('scratch_job_title', form.jobTitle)
 
-      if (jobError || !job) {
-        throw new Error('Failed to initialize CV creation in database.')
-      }
-
-      // Call generate endpoint
-      const generateRes = await fetch('/api/generate-cv', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          cvText: compiledCV,
-          industry: form.jobTitle || 'General',
-          language: 'EN',
-          jobId: job.id
-        })
-      })
-
-      const generateData = await generateRes.json()
-      if (!generateRes.ok || !generateData.success) {
-        throw new Error(generateData.error || 'CV generation failed.')
-      }
-
-      toast.success('CV successfully built from your submitted form!')
-      router.push(`/result/${job.id}`)
+      toast.success('Details saved! Now configure your target job preferences.')
+      router.push('/upload?source=scratch')
 
     } catch (err: any) {
       console.error(err)
@@ -691,14 +728,26 @@ export default function ChatPage() {
                   <div className="pt-2 space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-slate-600">Additional Links & Contacts</span>
-                      <button
-                        type="button"
-                        onClick={handleAddContact}
-                        className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-800"
-                      >
-                        <Plus className="h-3.5 w-3.5" />
-                        <span>Add Line</span>
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleFetchLinkedin()}
+                          disabled={fetchingLinkedin}
+                          className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg hover:bg-emerald-100 transition-colors disabled:opacity-50"
+                          title="Auto-fill form using profile details from LinkedIn URL"
+                        >
+                          {fetchingLinkedin ? <Loader2 className="h-3 w-3 animate-spin" /> : <Globe className="h-3 w-3" />}
+                          <span>Fetch LinkedIn Details</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleAddContact}
+                          className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-800"
+                        >
+                          <Plus className="h-3.5 w-3.5" />
+                          <span>Add Line</span>
+                        </button>
+                      </div>
                     </div>
 
                     {form.contacts.map((contact, index) => (

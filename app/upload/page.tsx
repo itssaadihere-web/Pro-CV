@@ -50,6 +50,11 @@ export default function UploadPage() {
   const [credits, setCredits] = useState<number | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
 
+  // Scratch CV Draft states
+  const [scratchCvText, setScratchCvText] = useState<string | null>(null)
+  const [scratchName, setScratchName] = useState<string>('')
+  const [scratchTitle, setScratchTitle] = useState<string>('')
+
   // Form states
   const [file, setFile] = useState<File | null>(null)
   const [industry, setIndustry] = useState('Tech')
@@ -61,6 +66,25 @@ export default function UploadPage() {
   const [processing, setProcessing] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [progressPercent, setProgressPercent] = useState(0)
+
+  useEffect(() => {
+    // Check if coming from Create from Scratch form submission
+    const storedText = sessionStorage.getItem('scratch_cv_text')
+    const storedName = sessionStorage.getItem('scratch_full_name')
+    const storedTitle = sessionStorage.getItem('scratch_job_title')
+
+    if (storedText) {
+      setScratchCvText(storedText)
+      if (storedName) setScratchName(storedName)
+      if (storedTitle) {
+        setScratchTitle(storedTitle)
+        // Auto set industry if matched
+        if (storedTitle.toLowerCase().includes('tech') || storedTitle.toLowerCase().includes('engineer') || storedTitle.toLowerCase().includes('developer')) {
+          setIndustry('Tech')
+        }
+      }
+    }
+  }, [])
 
   useEffect(() => {
     async function loadProfile() {
@@ -95,8 +119,8 @@ export default function UploadPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!file) {
-      toast.error('Please upload your CV file (PDF or DOCX)')
+    if (!scratchCvText && !file) {
+      toast.error('Please upload your CV file (PDF or DOCX) or create one from scratch.')
       return
     }
 
@@ -105,19 +129,25 @@ export default function UploadPage() {
     setProgressPercent(10)
 
     try {
-      // Step 1: Upload file to Supabase Storage
-      const timestamp = Date.now()
-      const extension = file.name.split('.').pop()
-      const filePath = `cv-uploads/${userId}/${timestamp}.${extension}`
+      let filePath = 'from_scratch_form'
+      let cvText = ''
 
-      // Attempt client-side upload to standard bucket 'cv-uploads'
-      // Note: We upload raw buffer. If the bucket doesn't exist, we will catch and log.
-      const { error: uploadError } = await supabase.storage
-        .from('cv-uploads')
-        .upload(filePath, file, { cacheControl: '3600', upsert: true })
+      if (scratchCvText) {
+        cvText = scratchCvText
+        filePath = 'from_scratch_form'
+      } else if (file) {
+        // Step 1: Upload file to Supabase Storage
+        const timestamp = Date.now()
+        const extension = file.name.split('.').pop()
+        filePath = `cv-uploads/${userId}/${timestamp}.${extension}`
 
-      if (uploadError) {
-        console.warn('Supabase storage upload failed or bucket does not exist. Proceeding directly with parsing stream.')
+        const { error: uploadError } = await supabase.storage
+          .from('cv-uploads')
+          .upload(filePath, file, { cacheControl: '3600', upsert: true })
+
+        if (uploadError) {
+          console.warn('Supabase storage upload failed or bucket does not exist. Proceeding directly with parsing stream.')
+        }
       }
 
       // Step 2: Create cv_job entry in DB
@@ -141,23 +171,26 @@ export default function UploadPage() {
 
       const jobId = job.id
 
-      // Step 3: Parse CV
+      // Step 3: Parse CV if file, otherwise use scratchCvText
       setCurrentStep(2)
       setProgressPercent(40)
-      const formData = new FormData()
-      formData.append('file', file)
 
-      const parseRes = await fetch('/api/parse-cv', {
-        method: 'POST',
-        body: formData,
-      })
+      if (!scratchCvText && file) {
+        const formData = new FormData()
+        formData.append('file', file)
 
-      const parseData = await parseRes.json()
-      if (!parseRes.ok || !parseData.text) {
-        throw new Error(parseData.error || 'Failed to extract text from your CV document.')
+        const parseRes = await fetch('/api/parse-cv', {
+          method: 'POST',
+          body: formData,
+        })
+
+        const parseData = await parseRes.json()
+        if (!parseRes.ok || !parseData.text) {
+          throw new Error(parseData.error || 'Failed to extract text from your CV document.')
+        }
+
+        cvText = parseData.text
       }
-
-      const cvText = parseData.text
 
       // Step 4: Generate CV using AI
       setCurrentStep(3)
@@ -182,6 +215,11 @@ export default function UploadPage() {
       if (!generateRes.ok || !generateData.success) {
         throw new Error(generateData.error || 'AI optimization failed.')
       }
+
+      // Clear scratch state from sessionStorage upon successful submission
+      sessionStorage.removeItem('scratch_cv_text')
+      sessionStorage.removeItem('scratch_full_name')
+      sessionStorage.removeItem('scratch_job_title')
 
       // Step 5: Generating PDF template
       setCurrentStep(4)
@@ -217,7 +255,7 @@ export default function UploadPage() {
       })
 
       setProgressPercent(100)
-      toast.success('Your CV revamp is complete! Redirecting to results dashboard...')
+      toast.success('Your CV optimization is complete! Redirecting to results dashboard...')
       
       // Delay redirection briefly for UX completion feel
       setTimeout(() => {
@@ -314,8 +352,43 @@ export default function UploadPage() {
                 {/* File Dropzone - Left */}
                 <div className="md:col-span-2 space-y-6">
                   <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h3 className="text-base font-bold text-slate-800 mb-4">Original CV Document</h3>
-                    <UploadZone onFileSelected={setFile} selectedFile={file} />
+                    {scratchCvText ? (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                          <div>
+                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-700 uppercase">
+                              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                              <span>Details Collected from Form / Chat</span>
+                            </span>
+                            <h3 className="text-lg font-extrabold text-slate-900 mt-2">
+                              {scratchName ? `${scratchName}'s CV Details` : 'CV Details Collected from Scratch'}
+                            </h3>
+                            {scratchTitle && (
+                              <p className="text-xs text-slate-500 mt-0.5">Target Role: <strong className="text-slate-800">{scratchTitle}</strong></p>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setScratchCvText(null)
+                              sessionStorage.removeItem('scratch_cv_text')
+                              toast.success('Switched to PDF / Document Upload')
+                            }}
+                            className="text-xs font-bold text-blue-600 hover:underline"
+                          >
+                            Upload File Instead
+                          </button>
+                        </div>
+                        <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-200 text-xs font-mono text-slate-600 max-h-36 overflow-y-auto leading-relaxed whitespace-pre-wrap">
+                          {scratchCvText.substring(0, 350)}...
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <h3 className="text-base font-bold text-slate-800 mb-4">Original CV Document</h3>
+                        <UploadZone onFileSelected={setFile} selectedFile={file} />
+                      </>
+                    )}
                   </div>
 
                   {/* Tailor Config - Left Bottom */}
