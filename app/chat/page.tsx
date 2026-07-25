@@ -283,7 +283,7 @@ export default function ChatPage() {
   }
 
   const handleFetchLinkedin = async (urlToFetch?: string) => {
-    let targetUrl = urlToFetch?.trim() || findLinkedinUrlInState()
+    const targetUrl = urlToFetch?.trim() || findLinkedinUrlInState()
 
     if (!targetUrl) {
       setShowLinkedinModal(true)
