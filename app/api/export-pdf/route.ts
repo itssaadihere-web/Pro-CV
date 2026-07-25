@@ -72,7 +72,7 @@ export async function GET(req: NextRequest) {
     const appUrl = `${protocol}://${host}`
 
     const renderUrl = `${appUrl}/cv-render/${jobId}?template=${templateId}${color ? `&color=${color}` : ''}`
-    await page.goto(renderUrl, { waitUntil: 'networkidle0' })
+    await page.goto(renderUrl, { waitUntil: 'domcontentloaded', timeout: 20000 })
 
     const pdfBuffer = await page.pdf({
       format: 'A4',

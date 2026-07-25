@@ -221,38 +221,47 @@ export default function UploadPage() {
       sessionStorage.removeItem('scratch_full_name')
       sessionStorage.removeItem('scratch_job_title')
 
-      // Step 5: Generating PDF template
+      // Step 5: Generating PDF template (Non-blocking background export)
       setCurrentStep(4)
       setProgressPercent(75)
 
-      const exportRes = await fetch('/api/export-pdf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          jobId,
-          templateId: generateData.templateId
-        }),
-      })
+      try {
+        const exportRes = await fetch('/api/export-pdf', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            jobId,
+            templateId: generateData.templateId
+          }),
+        })
 
-      if (!exportRes.ok) {
-        throw new Error('Failed to generate PDF template.')
+        if (!exportRes.ok) {
+          const exportErrData = await exportRes.json().catch(() => null)
+          console.warn('PDF template pre-rendering warning:', exportErrData?.error || exportRes.statusText)
+        }
+      } catch (pdfErr) {
+        console.warn('PDF export non-fatal warning:', pdfErr)
       }
 
       // Step 6: Email the generated CV PDF to the user
       setCurrentStep(5)
       setProgressPercent(90)
 
-      await fetch('/api/send-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          jobId,
-        }),
-      })
+      try {
+        await fetch('/api/send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            jobId,
+          }),
+        })
+      } catch (emailErr) {
+        console.warn('Email dispatch non-fatal warning:', emailErr)
+      }
 
       setProgressPercent(100)
       toast.success('Your CV optimization is complete! Redirecting to results dashboard...')

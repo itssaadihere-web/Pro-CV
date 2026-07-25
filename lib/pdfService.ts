@@ -34,7 +34,7 @@ export async function generateAndUploadPdf(jobId: string, templateId: string, co
   const renderUrl = `${appUrl}/cv-render/${jobId}?template=${templateId}${color ? `&color=${color}` : ''}`
   console.log('Puppeteer navigating to render URL:', renderUrl)
   
-  await page.goto(renderUrl, { waitUntil: 'networkidle0' })
+  await page.goto(renderUrl, { waitUntil: 'domcontentloaded', timeout: 20000 })
 
   // Export A4 PDF
   const pdfBuffer = await page.pdf({
