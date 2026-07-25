@@ -22,6 +22,7 @@ import {
   FileText,
   Globe,
   Award,
+  Upload,
   Languages as LanguagesIcon
 } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -375,6 +376,85 @@ export default function ChatPage() {
     }
   }
 
+  const handleFileImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0]
+    if (!selectedFile) return
+
+    setFetchingLinkedin(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', selectedFile)
+
+      const res = await fetch('/api/linkedin/fetch', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const data = await res.json()
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to extract details from profile document')
+      }
+
+      const p = data.profileData || {}
+      let count = 0
+      setForm(prev => {
+        const updated = { ...prev }
+        if (p.fullName && p.fullName.trim()) { updated.fullName = p.fullName; count++ }
+        if (p.jobTitle && p.jobTitle.trim()) { updated.jobTitle = p.jobTitle; count++ }
+        if (p.email && p.email.trim()) { updated.email = p.email; count++ }
+        if (p.phone && p.phone.trim()) { updated.phone = p.phone; count++ }
+        if (p.location && p.location.trim()) { updated.location = p.location; count++ }
+        if (p.summary && p.summary.trim()) { updated.summary = p.summary; count++ }
+
+        if (Array.isArray(p.experiences) && p.experiences.length > 0) {
+          updated.experiences = p.experiences.map((exp: any, i: number) => ({
+            id: Date.now().toString() + i,
+            company: exp.company || '',
+            position: exp.position || '',
+            startDate: exp.startDate || '',
+            endDate: exp.endDate || '',
+            location: exp.location || '',
+            description: exp.description || ''
+          }))
+          count += p.experiences.length
+        }
+        if (Array.isArray(p.educations) && p.educations.length > 0) {
+          updated.educations = p.educations.map((ed: any, i: number) => ({
+            id: Date.now().toString() + i,
+            institution: ed.institution || '',
+            degree: ed.degree || '',
+            fieldOfStudy: ed.fieldOfStudy || '',
+            graduationYear: ed.graduationYear || ''
+          }))
+          count += p.educations.length
+        }
+        if (Array.isArray(p.skills) && p.skills.length > 0) {
+          updated.skills = Array.from(new Set([...updated.skills, ...p.skills]))
+          count += p.skills.length
+        }
+        if (Array.isArray(p.certifications) && p.certifications.length > 0) {
+          updated.certifications = Array.from(new Set([...updated.certifications, ...p.certifications]))
+          count += p.certifications.length
+        }
+        if (Array.isArray(p.contacts) && p.contacts.length > 0) {
+          updated.contacts = p.contacts.map((c: any, i: number) => ({
+            id: Date.now().toString() + i,
+            label: c.label || 'Contact',
+            value: c.value || ''
+          }))
+        }
+        return updated
+      })
+
+      toast.success(`Successfully extracted & auto-filled ${count} items from your profile PDF!`)
+    } catch (err: any) {
+      toast.error(err.message || 'Could not parse profile file.')
+    } finally {
+      setFetchingLinkedin(false)
+      e.target.value = ''
+    }
+  }
+
   // --- Voice & Chat Auto-population Handlers ---
 
   const startRecording = async () => {
@@ -658,9 +738,9 @@ export default function ChatPage() {
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <Header />
 
-      <main className="flex-1 mx-auto max-w-7xl w-full px-4 py-6 sm:px-6 lg:px-8">
+      <main className="flex-1 mx-auto max-w-7xl w-full px-4 pt-7 pb-6 sm:px-6 lg:px-8">
         {/* Navigation Breadcrumb */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 pt-1 flex items-center justify-between">
           <Link
             href="/choice"
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 transition-colors hover:text-slate-800"
@@ -780,26 +860,14 @@ export default function ChatPage() {
                   <div className="pt-2 space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-slate-600">Additional Links & Contacts</span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleFetchLinkedin()}
-                          disabled={fetchingLinkedin}
-                          className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg hover:bg-emerald-100 transition-colors disabled:opacity-50"
-                          title="Auto-fill form using profile details from LinkedIn URL"
-                        >
-                          {fetchingLinkedin ? <Loader2 className="h-3 w-3 animate-spin" /> : <Globe className="h-3 w-3" />}
-                          <span>Fetch LinkedIn Details</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleAddContact}
-                          className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-800"
-                        >
-                          <Plus className="h-3.5 w-3.5" />
-                          <span>Add Line</span>
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={handleAddContact}
+                        className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-800"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                        <span>Add Line</span>
+                      </button>
                     </div>
 
                     {form.contacts.map((contact, index) => (
@@ -1181,7 +1249,49 @@ export default function ChatPage() {
 
           {/* RIGHT PANEL: Sophi AI Chat & Voice Note Helper (5 Cols) */}
           <div className="lg:col-span-5 space-y-4 lg:sticky lg:top-20">
-            <div className="rounded-2xl border border-blue-200 bg-white shadow-sm flex flex-col h-[680px]">
+
+            {/* Concise LinkedIn PDF & URL Import Card */}
+            <div className="rounded-2xl border border-blue-200 bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-950 p-4 text-white shadow-md space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 font-bold text-xs text-amber-400">
+                  <FileText className="h-4 w-4" />
+                  <span>Import LinkedIn Profile / PDF</span>
+                </div>
+                <span className="text-[10px] font-bold bg-white/10 px-2 py-0.5 rounded-full text-slate-200 border border-white/10">
+                  Instant Auto-Fill
+                </span>
+              </div>
+
+              <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                1. On LinkedIn, click <strong>More (...)</strong> &rarr; <strong>Save to PDF</strong> on your profile.<br />
+                2. Upload that PDF file or paste your profile URL below to auto-fill your form.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
+                <label className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl cursor-pointer transition-colors shadow-sm text-center">
+                  {fetchingLinkedin ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+                  <span>Upload LinkedIn PDF</span>
+                  <input
+                    type="file"
+                    accept=".pdf,.docx"
+                    className="hidden"
+                    disabled={fetchingLinkedin}
+                    onChange={handleFileImport}
+                  />
+                </label>
+
+                <button
+                  type="button"
+                  onClick={() => setShowLinkedinModal(true)}
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl transition-colors text-center"
+                >
+                  <Globe className="h-3.5 w-3.5 text-blue-300" />
+                  <span>Paste URL / Text</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-blue-200 bg-white shadow-sm flex flex-col h-[540px]">
               
               {/* Chat Header */}
               <div className="p-4 border-b border-slate-150 bg-gradient-to-r from-blue-50/80 to-white flex items-center justify-between rounded-t-2xl">

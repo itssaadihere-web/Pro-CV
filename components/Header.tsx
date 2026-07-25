@@ -76,9 +76,9 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-slate-205 bg-white/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <div className="flex items-center relative h-16 w-[104px]">
-          <Link href="/" className="absolute -top-1 left-0 z-20 hover:scale-105 transition-all bg-white rounded-full p-1.5 shadow-lg border border-slate-100/50">
-            <Logo width={92} height={92} showTagline={true} />
+        <div className="flex items-center relative h-16 w-[88px]">
+          <Link href="/" className="absolute top-0.5 left-0 z-20 hover:scale-105 transition-all bg-white rounded-full p-1 shadow-md border border-slate-100/60">
+            <Logo width={80} height={80} showTagline={true} />
           </Link>
         </div>
 
