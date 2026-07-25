@@ -148,35 +148,152 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Refer a Friend & 100 PKR Wallet Reward Card */}
-        <div className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 p-6 text-white shadow-lg mb-8 grid gap-6 md:grid-cols-12 items-center">
-          <div className="md:col-span-7 space-y-2">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 px-3 py-1 text-xs font-bold text-emerald-300">
-              <Gift className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Earn 100 PKR per Referral</span>
+        {/* Main Grid: CV History (Left 8 cols) + Referral & Wallet Card (Right 4 cols) */}
+        <div className="grid gap-8 lg:grid-cols-12 items-start">
+          
+          {/* CV Jobs History (Left side) */}
+          <div className="lg:col-span-8 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div className="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-base font-bold text-slate-900">Your CV Revamp History</h2>
+              <span className="text-xs text-slate-400 font-semibold">{jobs.length} total requests</span>
             </div>
-            <h2 className="text-xl font-extrabold text-white">
-              Refer a Friend & Earn 100 PKR Wallet Credit!
-            </h2>
-            <p className="text-xs text-slate-300 leading-relaxed max-w-xl">
-              Share your link or promo code with friends. When they sign up and complete their first purchase on Sophi, <strong>100 PKR is credited to your wallet balance</strong> and automatically adjusted on your next CV purchase.
-            </p>
+
+            {jobs.length === 0 ? (
+              /* Empty state placeholder */
+              <div className="text-center py-20 px-4 space-y-5">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+                  <FileText className="h-6 w-6" />
+                </div>
+                <div className="max-w-sm mx-auto space-y-2">
+                  <h3 className="text-sm font-semibold text-slate-800">No revamp jobs found</h3>
+                  <p className="text-xs leading-relaxed text-slate-500">
+                    You haven&apos;t optimized any CVs yet. Purchase credits or upload your file to start transforming your career materials.
+                  </p>
+                </div>
+                <div>
+                  <Link
+                    href={credits > 0 ? '/choice' : '/payment'}
+                    className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-bold text-white transition-all hover:bg-primary-850 shadow-sm hover:shadow-primary-100"
+                  >
+                    <span>Create My First CV</span>
+                    <PlusCircle className="h-4 w-4 text-gold" />
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              /* Jobs history table */
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                      <th className="py-4 px-6">Created</th>
+                      <th className="py-4 px-6">Industry</th>
+                      <th className="py-4 px-6">ATS Score</th>
+                      <th className="py-4 px-6">Status</th>
+                      <th className="py-4 px-6 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-xs font-medium text-slate-700">
+                    {jobs.map((job) => {
+                      const jobDate = new Date(job.created_at).toLocaleDateString(undefined, {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })
+                      const atsScore = job.ats_score?.overall || 'N/A'
+
+                      return (
+                        <tr key={job.id} className="hover:bg-slate-50/50 transition-colors">
+                          <td className="py-4.5 px-6 flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-slate-400" />
+                            <span>{jobDate}</span>
+                          </td>
+                          <td className="py-4.5 px-6">{job.target_industry}</td>
+                          <td className="py-4.5 px-6 font-bold text-slate-800">
+                            {job.status === 'completed' ? (
+                              <div className="flex items-center gap-1">
+                                <TrendingUp className="h-3.5 w-3.5 text-gold" />
+                                <span>{atsScore}/100</span>
+                              </div>
+                            ) : (
+                              <span className="text-slate-400">—</span>
+                            )}
+                          </td>
+                          <td className="py-4.5 px-6">
+                            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                              job.status === 'completed'
+                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                : job.status === 'processing'
+                                ? 'bg-primary-50 text-primary border border-primary-100'
+                                : 'bg-red-50 text-red-700 border border-red-100'
+                            }`}>
+                              {job.status}
+                            </span>
+                          </td>
+                          <td className="py-4.5 px-6 text-right">
+                            <Link
+                              href={job.status === 'completed' ? `/result/${job.id}` : '#'}
+                              className={`inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 ${
+                                job.status !== 'completed' ? 'pointer-events-none opacity-50' : ''
+                              }`}
+                            >
+                              <Eye className="h-3.5 w-3.5" />
+                              <span>View Report</span>
+                            </Link>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
-          <div className="md:col-span-5 bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/15 space-y-3">
-            <div className="flex justify-between items-center border-b border-white/10 pb-2.5">
-              <span className="text-xs text-slate-300 font-semibold">Your Wallet Balance:</span>
-              <span className="text-lg font-black text-amber-400">Rs. {profile?.wallet_balance_pkr || 0} PKR</span>
+          {/* Refer a Friend & 100 PKR Wallet Reward Card (Right side - Sophi Website Theme) */}
+          <div className="lg:col-span-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 text-amber-700 border border-amber-200/60">
+                <Gift className="h-5 w-5" />
+              </div>
+              <div>
+                <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/60 mb-0.5">
+                  Referral Reward
+                </span>
+                <h3 className="text-base font-bold text-slate-900 leading-snug">
+                  Earn 100 PKR per Friend
+                </h3>
+              </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="block text-[11px] font-bold text-slate-300">Your Referral Link & Promo Code ({profile?.referral_code || (profile?.email ? profile.email.substring(0, 4).toUpperCase() + '100' : 'SOPH100')})</label>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Share your link or promo code. When a friend signs up and completes a CV purchase, <strong>100 PKR is credited to your wallet</strong> and auto-adjusted on your next CV purchase.
+            </p>
+
+            {/* Wallet Balance Display */}
+            <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-4 flex items-center justify-between">
+              <div>
+                <span className="block text-[11px] font-bold uppercase text-slate-500">Your Wallet Balance</span>
+                <span className="block text-2xl font-black text-slate-900 mt-0.5">
+                  Rs. {profile?.wallet_balance_pkr || 0} <span className="text-xs font-bold text-slate-500">PKR</span>
+                </span>
+              </div>
+              <div className="h-10 w-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">
+                Rs.
+              </div>
+            </div>
+
+            {/* Referral Link & Promo Code */}
+            <div className="space-y-2">
+              <label className="block text-xs font-bold text-slate-700">
+                Referral Link ({profile?.referral_code || (profile?.email ? profile.email.substring(0, 4).toUpperCase() + '100' : 'SOPH100')})
+              </label>
               <div className="flex items-center gap-2">
                 <input
                   type="text"
                   readOnly
                   value={typeof window !== 'undefined' ? `${window.location.origin}/login?ref=${profile?.referral_code || (profile?.email ? profile.email.substring(0, 4).toUpperCase() + '100' : 'SOPH100')}` : `https://joinsophi.com/login?ref=${profile?.referral_code || 'SOPH100'}`}
-                  className="flex-1 bg-black/30 border border-white/20 rounded-lg px-3 py-1.5 text-xs text-white select-all font-mono"
+                  className="flex-1 rounded-xl border border-slate-300 bg-slate-50 py-2 px-3 text-xs text-slate-800 font-mono focus:outline-none"
                 />
                 <button
                   type="button"
@@ -185,131 +302,33 @@ export default function DashboardPage() {
                     navigator.clipboard.writeText(refLink)
                     toast.success('Referral link copied to clipboard!')
                   }}
-                  className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-colors shrink-0"
+                  className="px-3.5 py-2 bg-primary hover:bg-primary-850 text-white rounded-xl text-xs font-bold transition-all shadow-sm shrink-0"
                 >
-                  Copy Link
+                  Copy
                 </button>
               </div>
             </div>
 
-            <div className="flex gap-2 pt-1">
+            {/* Social Share Buttons */}
+            <div className="grid grid-cols-2 gap-2 pt-1">
               <a
                 href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Create an ATS-optimized CV with Sophi AI! Sign up using my referral link: ${typeof window !== 'undefined' ? window.location.origin : 'https://joinsophi.com'}/login?ref=${profile?.referral_code || 'SOPH100'}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 text-center py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-colors"
+                className="flex items-center justify-center gap-1.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-sm text-center"
               >
-                WhatsApp Share
+                <span>WhatsApp Share</span>
               </a>
               <a
                 href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`${typeof window !== 'undefined' ? window.location.origin : 'https://joinsophi.com'}/login?ref=${profile?.referral_code || 'SOPH100'}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 text-center py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors"
+                className="flex items-center justify-center gap-1.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors shadow-sm text-center"
               >
-                LinkedIn Share
+                <span>LinkedIn Share</span>
               </a>
             </div>
           </div>
-        </div>
-
-        {/* CV Jobs History */}
-        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-          <div className="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
-            <h2 className="text-base font-bold text-slate-800">Your CV Revamp History</h2>
-            <span className="text-xs text-slate-400 font-semibold">{jobs.length} total requests</span>
-          </div>
-
-          {jobs.length === 0 ? (
-            /* Empty state placeholder */
-            <div className="text-center py-20 px-4 space-y-5">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-                <FileText className="h-6 w-6" />
-              </div>
-              <div className="max-w-sm mx-auto space-y-2">
-                <h3 className="text-sm font-semibold text-slate-800">No revamp jobs found</h3>
-                <p className="text-xs leading-relaxed text-slate-500">
-                  You haven&apos;t optimized any CVs yet. Purchase credits or upload your file to start transforming your career materials.
-                </p>
-              </div>
-              <div>
-                <Link
-                  href={credits > 0 ? '/choice' : '/payment'}
-                  className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-bold text-white transition-all hover:bg-primary-800 shadow-sm hover:shadow-primary-100"
-                >
-                  <span>Create My First CV</span>
-                  <PlusCircle className="h-4 w-4 text-gold" />
-                </Link>
-              </div>
-            </div>
-          ) : (
-            /* Jobs history table */
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                    <th className="py-4 px-6">Created</th>
-                    <th className="py-4 px-6">Industry</th>
-                    <th className="py-4 px-6">ATS Score</th>
-                    <th className="py-4 px-6">Status</th>
-                    <th className="py-4 px-6 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-xs font-medium text-slate-700">
-                  {jobs.map((job) => {
-                    const jobDate = new Date(job.created_at).toLocaleDateString(undefined, {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric',
-                    })
-                    const atsScore = job.ats_score?.overall || 'N/A'
-
-                    return (
-                      <tr key={job.id} className="hover:bg-slate-50/50 transition-colors">
-                        <td className="py-4.5 px-6 flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-slate-400" />
-                          <span>{jobDate}</span>
-                        </td>
-                        <td className="py-4.5 px-6">{job.target_industry}</td>
-                        <td className="py-4.5 px-6 font-bold text-slate-800">
-                          {job.status === 'completed' ? (
-                            <div className="flex items-center gap-1">
-                              <TrendingUp className="h-3.5 w-3.5 text-gold" />
-                              <span>{atsScore}/100</span>
-                            </div>
-                          ) : (
-                            <span className="text-slate-405">—</span>
-                          )}
-                        </td>
-                        <td className="py-4.5 px-6">
-                          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                            job.status === 'completed'
-                              ? 'bg-gold-50 text-gold-700 border border-gold-100'
-                              : job.status === 'processing'
-                              ? 'bg-primary-50 text-primary border border-primary-100'
-                              : 'bg-red-50 text-red-700 border border-red-100'
-                          }`}>
-                            {job.status}
-                          </span>
-                        </td>
-                        <td className="py-4.5 px-6 text-right">
-                          <Link
-                            href={job.status === 'completed' ? `/result/${job.id}` : '#'}
-                            className={`inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 ${
-                              job.status !== 'completed' ? 'pointer-events-none opacity-50' : ''
-                            }`}
-                          >
-                            <Eye className="h-3.5 w-3.5" />
-                            <span>View Report</span>
-                          </Link>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
         </div>
       </main>
 
