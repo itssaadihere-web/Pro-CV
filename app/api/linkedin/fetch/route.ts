@@ -1,6 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GoogleGenAI } from '@google/genai'
 
+async function fetchLinkedinMeta(url: string): Promise<string> {
+  try {
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9'
+      },
+      next: { revalidate: 3600 }
+    })
+
+    if (!res.ok) return ''
+    const html = await res.text()
+
+    const titleMatch = html.match(/<meta\s+property=["']og:title["']\s+content=["'](.*?)["']/i) || html.match(/<title>(.*?)<\/title>/i)
+    const descMatch = html.match(/<meta\s+property=["']og:description["']\s+content=["'](.*?)["']/i) || html.match(/<meta\s+name=["']description["']\s+content=["'](.*?)["']/i)
+
+    const title = titleMatch ? titleMatch[1] : ''
+    const desc = descMatch ? descMatch[1] : ''
+
+    if (title || desc) {
+      return `Scraped Meta Information:\nTitle: ${title}\nDescription: ${desc}`
+    }
+  } catch (err) {
+    console.warn('Public scraping error:', err)
+  }
+  return ''
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { url } = await req.json()
@@ -8,6 +37,13 @@ export async function POST(req: NextRequest) {
     if (!url || typeof url !== 'string' || !url.includes('linkedin.com')) {
       return NextResponse.json({ error: 'Please provide a valid LinkedIn profile URL.' }, { status: 400 })
     }
+
+    // Extract handle from URL (e.g., https://www.linkedin.com/in/itsaadihere/ -> itsaadihere)
+    const handleMatch = url.match(/linkedin\.com\/in\/([^\/\?#]+)/i)
+    const rawHandle = handleMatch ? handleMatch[1] : ''
+    const formattedHandleName = rawHandle
+      ? rawHandle.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+      : ''
 
     const proxycurlKey = process.env.PROXYCURL_API_KEY
     let currentProfileText = ''
@@ -28,7 +64,11 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // If Proxycurl is not configured or failed, fallback to Gemini profile extraction from URL context
+    // Attempt public HTML meta scraping if Proxycurl text is empty
+    if (!currentProfileText) {
+      currentProfileText = await fetchLinkedinMeta(url)
+    }
+
     const geminiKey = process.env.GEMINI_API_KEY
     if (!geminiKey) {
       return NextResponse.json({ error: 'Gemini API key is missing' }, { status: 500 })
@@ -36,45 +76,48 @@ export async function POST(req: NextRequest) {
 
     const ai = new GoogleGenAI({ apiKey: geminiKey })
 
-    const systemPrompt = `You are a LinkedIn Profile Data Extractor.
-Extract structured professional details from the LinkedIn profile information or URL provided.
-Return strictly valid JSON matching this schema:
+    const systemPrompt = `You are a strict LinkedIn Profile Data Extractor.
+CRITICAL RULES:
+1. Do NOT invent fake random people, fake names (like Aarti Sharma or John Doe), fake companies, or fake universities (like UC Berkeley or IIT Delhi).
+2. If real name is present in the scraped title or text, extract it. If not, use the URL handle derived name: "${formattedHandleName}".
+3. If specific experiences or educations are not explicitly provided in the payload text, leave "experiences" and "educations" as EMPTY ARRAYS []. Do NOT generate dummy placeholder experiences.
+4. Output strictly valid JSON matching this schema:
 
 {
-  "fullName": "Full Name extracted or parsed from URL handle",
-  "jobTitle": "Job title or headline",
-  "summary": "About / Bio summary",
+  "fullName": "Real name from text or ${formattedHandleName}",
+  "jobTitle": "Extracted headline / job title or empty string if unknown",
+  "summary": "Extracted summary / description or empty string if unknown",
   "experiences": [
     {
-      "company": "Company Name",
-      "position": "Job Title",
-      "startDate": "Start Date e.g. 2021",
-      "endDate": "End Date e.g. Present",
+      "company": "Real Company Name",
+      "position": "Real Position Title",
+      "startDate": "Start Date",
+      "endDate": "End Date",
       "location": "Location",
-      "description": "Responsibilities"
+      "description": "Details"
     }
   ],
   "educations": [
     {
-      "institution": "University/School",
-      "degree": "Degree e.g. BS Computer Science",
+      "institution": "Real University Name",
+      "degree": "Degree",
       "fieldOfStudy": "Field",
       "graduationYear": "Year"
     }
   ],
-  "skills": ["Skill 1", "Skill 2"]
+  "skills": ["Real Skill 1", "Real Skill 2"]
 }`
 
     const userPrompt = currentProfileText
-      ? `Extract CV details from this Proxycurl LinkedIn payload:\n${currentProfileText}`
-      : `Extract baseline professional profile details for the person with LinkedIn URL: ${url}`
+      ? `Extract profile details from this fetched payload:\n${currentProfileText}`
+      : `Extract real profile details for LinkedIn profile URL handle "${formattedHandleName}" (${url}). Do not invent fake names or placeholder experiences.`
 
     const result = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: userPrompt,
       config: {
         systemInstruction: systemPrompt,
-        temperature: 0.2,
+        temperature: 0.1,
         responseMimeType: 'application/json',
       }
     })
@@ -86,6 +129,11 @@ Return strictly valid JSON matching this schema:
       profileData = JSON.parse(cleanJson)
     } catch (e) {
       profileData = {}
+    }
+
+    // Enforce name fix if empty or hallucinated
+    if (!profileData.fullName || profileData.fullName.includes('Aarti') || profileData.fullName.includes('John Doe')) {
+      profileData.fullName = formattedHandleName || 'LinkedIn User'
     }
 
     return NextResponse.json({
