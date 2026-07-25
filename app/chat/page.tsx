@@ -259,12 +259,57 @@ export default function ChatPage() {
 
   // --- LinkedIn Auto-Fetch Handler ---
   const [fetchingLinkedin, setFetchingLinkedin] = useState(false)
+  const [showLinkedinModal, setShowLinkedinModal] = useState(false)
+  const [linkedinModalInput, setLinkedinModalInput] = useState('')
+
+  const findLinkedinUrlInState = (): string | null => {
+    // 1. Check contact fields
+    const contactMatch = form.contacts.find(c => c.value.includes('linkedin.com') || (c.label.toLowerCase().includes('linkedin') && c.value.trim()))
+    if (contactMatch && contactMatch.value.trim()) return contactMatch.value.trim()
+
+    // 2. Check location field (user might have accidentally pasted in Location)
+    if (form.location && form.location.includes('linkedin.com')) return form.location.trim()
+
+    // 3. Check chat message history
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const msg = messages[i]
+      if (msg.role === 'user' && msg.content.includes('linkedin.com')) {
+        const urlMatch = msg.content.match(/https?:\/\/[^\s]*linkedin\.com[^\s]*/i)
+        if (urlMatch) return urlMatch[0]
+      }
+    }
+
+    return null
+  }
 
   const handleFetchLinkedin = async (urlToFetch?: string) => {
-    const targetUrl = urlToFetch || form.contacts.find(c => c.label.toLowerCase().includes('linkedin') || c.value.includes('linkedin.com'))?.value
-    if (!targetUrl || !targetUrl.trim()) {
-      toast.error('Please enter a LinkedIn profile URL in your links section or chat first.')
+    let targetUrl = urlToFetch?.trim() || findLinkedinUrlInState()
+
+    if (!targetUrl) {
+      setShowLinkedinModal(true)
       return
+    }
+
+    // Clean location field if user accidentally pasted URL in location
+    if (form.location && form.location.includes('linkedin.com')) {
+      setForm(prev => ({
+        ...prev,
+        location: '',
+        contacts: prev.contacts.some(c => c.value === targetUrl)
+          ? prev.contacts
+          : [...prev.contacts, { id: Date.now().toString(), label: 'LinkedIn', value: targetUrl }]
+      }))
+    } else {
+      // Ensure LinkedIn contact item has the URL
+      setForm(prev => {
+        if (!prev.contacts.some(c => c.value.includes('linkedin.com'))) {
+          return {
+            ...prev,
+            contacts: prev.contacts.map(c => (c.label.toLowerCase().includes('linkedin') && !c.value) ? { ...c, value: targetUrl } : c)
+          }
+        }
+        return prev
+      })
     }
 
     setFetchingLinkedin(true)
@@ -272,7 +317,7 @@ export default function ChatPage() {
       const res = await fetch('/api/linkedin/fetch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: targetUrl.trim() })
+        body: JSON.stringify({ url: targetUrl })
       })
       const data = await res.json()
       if (!res.ok || !data.success) {
@@ -283,9 +328,9 @@ export default function ChatPage() {
       let count = 0
       setForm(prev => {
         const updated = { ...prev }
-        if (p.fullName) { updated.fullName = p.fullName; count++ }
-        if (p.jobTitle) { updated.jobTitle = p.jobTitle; count++ }
-        if (p.summary) { updated.summary = p.summary; count++ }
+        if (p.fullName && p.fullName.trim()) { updated.fullName = p.fullName; count++ }
+        if (p.jobTitle && p.jobTitle.trim()) { updated.jobTitle = p.jobTitle; count++ }
+        if (p.summary && p.summary.trim()) { updated.summary = p.summary; count++ }
         if (Array.isArray(p.experiences) && p.experiences.length > 0) {
           updated.experiences = p.experiences.map((exp: any, i: number) => ({
             id: Date.now().toString() + i,
@@ -315,6 +360,7 @@ export default function ChatPage() {
         return updated
       })
 
+      setShowLinkedinModal(false)
       toast.success(`Successfully fetched & populated ${count} fields from LinkedIn!`)
     } catch (err: any) {
       toast.error(err.message || 'Could not fetch LinkedIn details.')
@@ -1248,6 +1294,54 @@ export default function ChatPage() {
           </div>
 
         </div>
+
+        {/* LinkedIn Profile URL Modal Prompt */}
+        {showLinkedinModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
+            <div className="bg-white rounded-3xl p-6 max-w-md w-full text-left space-y-4 shadow-2xl border border-slate-100">
+              <div className="flex justify-between items-center border-b border-slate-150 pb-3">
+                <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-emerald-600" />
+                  <span>Fetch LinkedIn Profile</span>
+                </h3>
+                <button onClick={() => setShowLinkedinModal(false)} className="text-slate-400 hover:text-slate-600 font-bold text-sm">✕</button>
+              </div>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Paste your LinkedIn profile URL below to automatically extract your Name, Job Title, Summary, Work Experience, Education, and Skills directly into your form:
+              </p>
+              <input
+                type="url"
+                placeholder="https://www.linkedin.com/in/username/"
+                value={linkedinModalInput}
+                onChange={e => setLinkedinModalInput(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && linkedinModalInput.trim()) {
+                    handleFetchLinkedin(linkedinModalInput)
+                  }
+                }}
+                className="w-full rounded-xl border border-slate-300 bg-white p-3 text-xs text-slate-800 focus:border-emerald-600 focus:outline-none"
+              />
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowLinkedinModal(false)}
+                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={!linkedinModalInput.trim() || fetchingLinkedin}
+                  onClick={() => handleFetchLinkedin(linkedinModalInput)}
+                  className="flex items-center gap-1.5 px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md disabled:opacity-50"
+                >
+                  {fetchingLinkedin ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Globe className="h-3.5 w-3.5" />}
+                  <span>Fetch Profile Details</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   )

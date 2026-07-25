@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     const systemPrompt = `You are Sophi, an AI CV builder assistant.
 The user is filling out a structured CV form on screen while chatting or sending voice notes to you.
 Your job is to:
-1. Understand the user's text message or voice note recording.
+1. Understand the user's text message or voice note recording. If the user shares a LinkedIn URL (e.g. https://www.linkedin.com/in/itsaadihere/), acknowledge it positively, add it to contacts as LinkedIn, extract details, and never say you cannot access links.
 2. Extract any relevant CV information mentioned (full name, job title, contact email, phone, location, professional summary, work experience items with company, position, dates, description, education items with institution, degree, field of study, year, skills, certifications, languages, extra contacts).
 3. Provide a helpful, encouraging text reply telling the user what details you extracted and auto-filled into their form, and asking what else they want to add.
 4. Output your response strictly as a JSON object matching this schema:
