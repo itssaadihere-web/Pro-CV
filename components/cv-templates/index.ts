@@ -38,6 +38,8 @@ import M33CreativeTealSidebar from './modern/M33CreativeTealSidebar';
 import M34CreativeAmethystHeader from './modern/M34CreativeAmethystHeader';
 import M35CreativeAmberGeometric from './modern/M35CreativeAmberGeometric';
 import M36CreativeCoralModernist from './modern/M36CreativeCoralModernist';
+import M37CreativeSapphireExecutive from './modern/M37CreativeSapphireExecutive';
+import M38CreativeEmeraldInfographic from './modern/M38CreativeEmeraldInfographic';
 import MIN01BlackWhiteMinimalistAccountant from './minimalist/MIN01BlackWhiteMinimalistAccountant';
 import MIN02BlackWhiteSimpleInfographic from './minimalist/MIN02BlackWhiteSimpleInfographic';
 import MIN03BlackWhiteSimpleMinimalist from './minimalist/MIN03BlackWhiteSimpleMinimalist';
@@ -94,6 +96,8 @@ export const TEMPLATE_REGISTRY: Record<string, React.ComponentType<any>> = {
   'm-34-creative-amethyst-header': M34CreativeAmethystHeader,
   'm-35-creative-amber-geometric': M35CreativeAmberGeometric,
   'm-36-creative-coral-modernist': M36CreativeCoralModernist,
+  'm-37-creative-sapphire-executive': M37CreativeSapphireExecutive,
+  'm-38-creative-emerald-infographic': M38CreativeEmeraldInfographic,
   'min-01-black-white-minimalist-accountant': MIN01BlackWhiteMinimalistAccountant,
   'min-02-black-white-simple-infographic': MIN02BlackWhiteSimpleInfographic,
   'min-03-black-white-simple-minimalist': MIN03BlackWhiteSimpleMinimalist,
