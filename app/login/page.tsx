@@ -25,9 +25,18 @@ export default function LoginPage() {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
       })
-      if (error) throw error
+      if (error) {
+        // Fallback attempt with standard linkedin provider key
+        const fallback = await supabase.auth.signInWithOAuth({
+          provider: 'linkedin' as any,
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback`,
+          },
+        })
+        if (fallback.error) throw fallback.error
+      }
     } catch (err: any) {
-      toast.error(err.message || 'LinkedIn login failed.')
+      toast.error('LinkedIn OAuth is disabled in Supabase. Please enable LinkedIn under Supabase Auth Providers.')
       setLoading(false)
     }
   }
