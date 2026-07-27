@@ -202,7 +202,7 @@ export default function DashboardPage() {
                     </p>
                   </div>
                   <Link
-                    href="/upload"
+                    href="/choice"
                     className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary py-2 px-3 text-xs font-bold text-white hover:bg-primary-850 transition-colors shadow-2xs"
                   >
                     <PlusCircle className="h-3.5 w-3.5 text-gold" />
@@ -246,7 +246,7 @@ export default function DashboardPage() {
                     </p>
                   </div>
                   <Link
-                    href="/chat"
+                    href="/linkedin-optimizer"
                     className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 py-2 px-3 text-xs font-bold text-white hover:bg-blue-700 transition-colors shadow-2xs"
                   >
                     <Compass className="h-3.5 w-3.5 text-blue-200" />
@@ -290,7 +290,7 @@ export default function DashboardPage() {
                     </p>
                   </div>
                   <Link
-                    href="/chat"
+                    href="/tailor-cv"
                     className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-indigo-600 py-2 px-3 text-xs font-bold text-white hover:bg-indigo-700 transition-colors shadow-2xs"
                   >
                     <Settings className="h-3.5 w-3.5 text-indigo-200" />
