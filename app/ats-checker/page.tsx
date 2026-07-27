@@ -5,9 +5,14 @@ import Header from '@/components/Header';
 import { motion } from 'framer-motion';
 import { AlertTriangle, CheckCircle, ShieldAlert, XCircle, Search, ShieldCheck, UploadCloud, FileText, Loader2, CheckCircle2, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { getClientSupabase } from '@/lib/supabase';
 
 export default function ATSCheckerPage() {
+  const router = useRouter();
+  const supabase = getClientSupabase();
+
   const [inputMode, setInputMode] = useState<'upload' | 'paste'>('upload');
   const [text, setText] = useState('');
   const [fileName, setFileName] = useState('');
@@ -76,14 +81,54 @@ export default function ATSCheckerPage() {
     }
   };
 
-  const handleScan = () => {
+  const handleScan = async () => {
     if (text.length < 50) {
       toast.error('CV content must be at least 50 characters long');
       return;
     }
+
+    // Check session
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast.error('Please sign in to use ATS Score Evaluator (10 Credits).');
+      router.push('/login');
+      return;
+    }
+
+    // Deduct 10 Credits for ATS Evaluation
+    const { deductCredits } = await import('@/lib/creditService');
+    const deduction = await deductCredits(session.user.id, 'ATS_EVALUATION', supabase);
+
+    if (!deduction.success) {
+      toast.error(deduction.error || 'Insufficient credits for ATS scan (10 Credits required). Redirecting to refill...');
+      router.push('/payment');
+      return;
+    }
+
+    toast.success(`10 Credits used for ATS Scan. (${deduction.remainingCredits} Credits remaining)`);
     setIsScanning(true);
     setScanComplete(false);
     setProgress(0);
+  };
+
+  const handleFixCV = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast.error('Please sign in to transform your CV.');
+      router.push('/login');
+      return;
+    }
+
+    const { getUserCredits } = await import('@/lib/creditService');
+    const { credits } = await getUserCredits(session.user.id, supabase);
+
+    if (credits >= 30) {
+      toast.success(`30 Credits available! Navigating to CV Transformation...`);
+      router.push('/upload');
+    } else {
+      toast.error(`Insufficient credits for full CV transformation (Requires 30 Credits, Available: ${credits} Credits). Redirecting to refill...`);
+      router.push('/payment');
+    }
   };
 
   useEffect(() => {
@@ -333,11 +378,15 @@ export default function ATSCheckerPage() {
                   Don't let algorithms reject your application. Let Sophi's AI completely rewrite and optimize your CV to score 90+ on ATS tests.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center gap-4">
-                  <Link href="/login" className="w-full sm:w-auto px-8 py-3 bg-white text-primary font-bold rounded-xl hover:bg-slate-50 transition-colors text-center">
-                    Optimize for 1500 PKR
-                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleFixCV}
+                    className="w-full sm:w-auto px-8 py-3 bg-white text-primary font-extrabold rounded-xl hover:bg-slate-50 transition-all text-center shadow-md cursor-pointer"
+                  >
+                    Transform My CV (30 Credits)
+                  </button>
                   <span className="text-xs font-medium text-primary-200 flex items-center gap-1">
-                    <ShieldCheck className="w-4 h-4" /> Results in 60 seconds
+                    <ShieldCheck className="w-4 h-4 text-gold" /> Executive ATS Design (90+ Score)
                   </span>
                 </div>
               </div>

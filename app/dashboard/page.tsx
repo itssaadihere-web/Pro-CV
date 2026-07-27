@@ -298,23 +298,10 @@ export default function DashboardPage() {
                   </Link>
                 </div>
 
-                {/* 6 & 7 Export & Template Switch Rates */}
-                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between space-y-2">
-                  <div className="space-y-2 text-xs">
-                    <div className="flex items-center justify-between border-b border-slate-200 pb-1.5">
-                      <span className="font-bold text-slate-800">Clean Un-watermarked PDF Export</span>
-                      <span className="font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-[11px]">2 Credits</span>
-                    </div>
-                    <div className="flex items-center justify-between pt-0.5">
-                      <span className="font-bold text-slate-800">Try Different Template Click</span>
-                      <span className="font-black text-slate-700 bg-slate-200/60 px-2 py-0.5 rounded text-[11px]">1 Credit</span>
-                    </div>
-                  </div>
-                  <p className="text-[10px] text-slate-400 italic pt-1">
-                    Applied directly on CV Result & Preview page.
-                  </p>
-                </div>
-
+              </div>
+              <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[11px] font-semibold text-slate-500">
+                <span>✦ Clean PDF Download: <strong className="text-slate-700">2 Credits</strong></span>
+                <span>✦ Try Different Template: <strong className="text-slate-700">1 Credit</strong> (Applied on preview page)</span>
               </div>
             </div>
 
