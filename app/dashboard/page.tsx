@@ -17,6 +17,7 @@ import {
   Gift,
   Copy,
   Compass,
+  Zap,
 } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
@@ -161,111 +162,163 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Main Grid: CV History (Left 8 cols) + Referral & Wallet Card (Right 4 cols) */}
+        {/* Main Grid: Left Column (8 cols) + Right Column (4 cols) */}
         <div className="grid gap-8 lg:grid-cols-12 items-start">
           
-          {/* CV Jobs History (Left side) */}
-          <div className="lg:col-span-8 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-            <div className="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
-              <h2 className="text-base font-bold text-slate-900">Your CV Revamp History</h2>
-              <span className="text-xs text-slate-400 font-semibold">{jobs.length} total requests</span>
-            </div>
+          {/* LEFT COLUMN: Services Rate List + CV History + Credit Statement Log */}
+          <div className="lg:col-span-8 space-y-8">
 
-            {jobs.length === 0 ? (
-              /* Empty state placeholder */
-              <div className="text-center py-20 px-4 space-y-5">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-                  <FileText className="h-6 w-6" />
-                </div>
-                <div className="max-w-sm mx-auto space-y-2">
-                  <h3 className="text-sm font-semibold text-slate-800">No revamp jobs found</h3>
-                  <p className="text-xs leading-relaxed text-slate-500">
-                    You haven&apos;t optimized any CVs yet. Purchase credits or upload your file to start transforming your career materials.
+            {/* CARD 1: Sophi Services & Credit Rate List (Front & Center Quick Action Grid) */}
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+                <div>
+                  <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                    <span>⚡ Sophi AI Services & Credit Rates</span>
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Clear upfront pricing per service. Select any service to launch directly.
                   </p>
                 </div>
-                <div>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-3 py-1 text-xs font-bold text-primary border border-primary-100 self-start sm:self-auto">
+                  <Zap className="h-3.5 w-3.5 text-gold fill-gold" />
+                  <span>Available: {credits} Credits</span>
+                </span>
+              </div>
+
+              {/* Grid of All 7 Services */}
+              <div className="grid gap-4 sm:grid-cols-2">
+                
+                {/* 1. Create CV from Scratch */}
+                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between space-y-3 hover:border-primary-200 hover:bg-white transition-all">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-extrabold text-slate-900">Create CV from Scratch</span>
+                      <span className="rounded-full bg-primary-50 px-2.5 py-0.5 text-[11px] font-black text-primary border border-primary-100">
+                        30 Credits
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">
+                      Build a brand new ATS-formatted executive CV step-by-step.
+                    </p>
+                  </div>
                   <Link
-                    href={credits > 0 ? '/choice' : '/payment'}
-                    className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-bold text-white transition-all hover:bg-primary-850 shadow-sm hover:shadow-primary-100"
+                    href="/upload"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary py-2 px-3 text-xs font-bold text-white hover:bg-primary-850 transition-colors shadow-2xs"
                   >
-                    <span>Create My First CV</span>
-                    <PlusCircle className="h-4 w-4 text-gold" />
+                    <PlusCircle className="h-3.5 w-3.5 text-gold" />
+                    <span>Create CV (30 Cr)</span>
                   </Link>
                 </div>
-              </div>
-            ) : (
-              /* Jobs history table */
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                      <th className="py-4 px-6">Created</th>
-                      <th className="py-4 px-6">Industry</th>
-                      <th className="py-4 px-6">ATS Score</th>
-                      <th className="py-4 px-6">Status</th>
-                      <th className="py-4 px-6 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-xs font-medium text-slate-700">
-                    {jobs.map((job) => {
-                      const jobDate = new Date(job.created_at).toLocaleDateString(undefined, {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })
-                      const atsScore = job.ats_score?.overall || 'N/A'
 
-                      return (
-                        <tr key={job.id} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="py-4.5 px-6 flex items-center gap-2">
-                            <Calendar className="h-4 w-4 text-slate-400" />
-                            <span>{jobDate}</span>
-                          </td>
-                          <td className="py-4.5 px-6">{job.target_industry}</td>
-                          <td className="py-4.5 px-6 font-bold text-slate-800">
-                            {job.status === 'completed' ? (
-                              <div className="flex items-center gap-1">
-                                <TrendingUp className="h-3.5 w-3.5 text-gold" />
-                                <span>{atsScore}/100</span>
-                              </div>
-                            ) : (
-                              <span className="text-slate-400">—</span>
-                            )}
-                          </td>
-                          <td className="py-4.5 px-6">
-                            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                              job.status === 'completed'
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                : job.status === 'processing'
-                                ? 'bg-primary-50 text-primary border border-primary-100'
-                                : 'bg-red-50 text-red-700 border border-red-100'
-                            }`}>
-                              {job.status}
-                            </span>
-                          </td>
-                          <td className="py-4.5 px-6 text-right">
-                            <Link
-                              href={job.status === 'completed' ? `/result/${job.id}` : '#'}
-                              className={`inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 ${
-                                job.status !== 'completed' ? 'pointer-events-none opacity-50' : ''
-                              }`}
-                            >
-                              <Eye className="h-3.5 w-3.5" />
-                              <span>View Report</span>
-                            </Link>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+                {/* 2. Transform Current CV */}
+                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between space-y-3 hover:border-primary-200 hover:bg-white transition-all">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-extrabold text-slate-900">Transform Current CV</span>
+                      <span className="rounded-full bg-primary-50 px-2.5 py-0.5 text-[11px] font-black text-primary border border-primary-100">
+                        30 Credits
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">
+                      Upload your PDF/DOCX resume for complete AI redesign.
+                    </p>
+                  </div>
+                  <Link
+                    href="/upload"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary py-2 px-3 text-xs font-bold text-white hover:bg-primary-850 transition-colors shadow-2xs"
+                  >
+                    <FileText className="h-3.5 w-3.5 text-gold" />
+                    <span>Transform CV (30 Cr)</span>
+                  </Link>
+                </div>
 
-          {/* LEFT COLUMN: CV Jobs + Credit Statement History Log */}
-          <div className="lg:col-span-8 space-y-8">
-            {/* CV Jobs History Table */}
+                {/* 3. LinkedIn Profile Optimizer */}
+                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between space-y-3 hover:border-blue-200 hover:bg-white transition-all">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-extrabold text-slate-900">LinkedIn Optimizer</span>
+                      <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[11px] font-black text-blue-700 border border-blue-100">
+                        20 Credits
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">
+                      Headline hook, bio summary, & 10 skill badge suggestions.
+                    </p>
+                  </div>
+                  <Link
+                    href="/chat"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 py-2 px-3 text-xs font-bold text-white hover:bg-blue-700 transition-colors shadow-2xs"
+                  >
+                    <Compass className="h-3.5 w-3.5 text-blue-200" />
+                    <span>Optimize LinkedIn (20 Cr)</span>
+                  </Link>
+                </div>
+
+                {/* 4. ATS Compatibility Scan */}
+                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between space-y-3 hover:border-amber-200 hover:bg-white transition-all">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-extrabold text-slate-900">ATS Score Evaluator</span>
+                      <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-[11px] font-black text-amber-700 border border-amber-100">
+                        10 Credits
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">
+                      5-dimension compatibility score, keyword gap & flaw report.
+                    </p>
+                  </div>
+                  <Link
+                    href="/ats-checker"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-amber-600 py-2 px-3 text-xs font-bold text-white hover:bg-amber-700 transition-colors shadow-2xs"
+                  >
+                    <TrendingUp className="h-3.5 w-3.5 text-amber-200" />
+                    <span>Scan ATS (10 Cr)</span>
+                  </Link>
+                </div>
+
+                {/* 5. Job-Specific CV Tailoring */}
+                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between space-y-3 hover:border-indigo-200 hover:bg-white transition-all">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-extrabold text-slate-900">Job-Specific CV Tailor</span>
+                      <span className="rounded-full bg-indigo-50 px-2.5 py-0.5 text-[11px] font-black text-indigo-700 border border-indigo-100">
+                        5 Credits
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">
+                      Align existing portal CV for a specific target job opening.
+                    </p>
+                  </div>
+                  <Link
+                    href="/chat"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-indigo-600 py-2 px-3 text-xs font-bold text-white hover:bg-indigo-700 transition-colors shadow-2xs"
+                  >
+                    <Settings className="h-3.5 w-3.5 text-indigo-200" />
+                    <span>Tailor CV (5 Cr)</span>
+                  </Link>
+                </div>
+
+                {/* 6 & 7 Export & Template Switch Rates */}
+                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between space-y-2">
+                  <div className="space-y-2 text-xs">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-1.5">
+                      <span className="font-bold text-slate-800">Clean Un-watermarked PDF Export</span>
+                      <span className="font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-[11px]">2 Credits</span>
+                    </div>
+                    <div className="flex items-center justify-between pt-0.5">
+                      <span className="font-bold text-slate-800">Try Different Template Click</span>
+                      <span className="font-black text-slate-700 bg-slate-200/60 px-2 py-0.5 rounded text-[11px]">1 Credit</span>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-slate-400 italic pt-1">
+                    Applied directly on CV Result & Preview page.
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            {/* CARD 2: Your CV Revamp History (Single Table - No Duplicates!) */}
             <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
               <div className="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
                 <h2 className="text-base font-bold text-slate-900">Your CV Revamp History</h2>
@@ -281,7 +334,7 @@ export default function DashboardPage() {
                   <div className="max-w-sm mx-auto space-y-1">
                     <h3 className="text-sm font-semibold text-slate-800">No revamp jobs found</h3>
                     <p className="text-xs leading-relaxed text-slate-500">
-                      You haven&apos;t optimized any CVs yet. Use your credits to create or transform your career materials.
+                      You haven&apos;t optimized any CVs yet. Select a service above to get started.
                     </p>
                   </div>
                   <div>
@@ -364,7 +417,7 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {/* Credit Statement & History Log Table */}
+            {/* CARD 3: Credit Statement & History Log Table */}
             <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
               <div className="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
                 <div>
@@ -425,130 +478,90 @@ export default function DashboardPage() {
                 </div>
               )}
             </div>
+
           </div>
 
-          {/* RIGHT COLUMN: Hostinger-Style Multi-Service Referral Component */}
-          <div className="lg:col-span-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-6">
+          {/* RIGHT COLUMN: Referral Program Box (Clean standalone card) */}
+          <div className="lg:col-span-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
             <div>
               <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200/60 mb-2">
                 Referral Program
               </span>
-              <h3 className="text-lg font-extrabold text-slate-900 leading-snug">
-                Know what your friend needs? Refer the exact service.
+              <h3 className="text-base font-extrabold text-slate-900 leading-snug">
+                Know what your friend needs? Refer Sophi & Earn.
               </h3>
             </div>
 
-            {/* Service Selection Tabs (Hostinger Style) */}
-            <div className="flex border-b border-slate-200 text-xs font-bold gap-1 overflow-x-auto pb-1">
-              <button
-                onClick={() => setActiveReferralTab('cv')}
-                className={`px-3 py-2 rounded-lg transition-colors shrink-0 ${
-                  activeReferralTab === 'cv'
-                    ? 'bg-primary text-white shadow-sm'
-                    : 'text-slate-600 hover:bg-slate-100'
-                }`}
-              >
-                CV Creation (30 Cr)
-              </button>
-              <button
-                onClick={() => setActiveReferralTab('linkedin')}
-                className={`px-3 py-2 rounded-lg transition-colors shrink-0 ${
-                  activeReferralTab === 'linkedin'
-                    ? 'bg-primary text-white shadow-sm'
-                    : 'text-slate-600 hover:bg-slate-100'
-                }`}
-              >
-                LinkedIn (20 Cr)
-              </button>
-              <button
-                onClick={() => setActiveReferralTab('ats')}
-                className={`px-3 py-2 rounded-lg transition-colors shrink-0 ${
-                  activeReferralTab === 'ats'
-                    ? 'bg-primary text-white shadow-sm'
-                    : 'text-slate-600 hover:bg-slate-100'
-                }`}
-              >
-                ATS Scan (10 Cr)
-              </button>
-              <button
-                onClick={() => setActiveReferralTab('tailor')}
-                className={`px-3 py-2 rounded-lg transition-colors shrink-0 ${
-                  activeReferralTab === 'tailor'
-                    ? 'bg-primary text-white shadow-sm'
-                    : 'text-slate-600 hover:bg-slate-100'
-                }`}
-              >
-                CV Tailor (5 Cr)
-              </button>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Share your referral link with friends. When they sign up & buy a 1500 PKR credit package, <strong>you earn 10 Credits (100 PKR value)</strong> instantly!
+            </p>
+
+            {/* Hostinger Style Service Tabs */}
+            <div className="space-y-3">
+              <div className="flex border-b border-slate-200 text-xs font-bold gap-1 overflow-x-auto pb-1">
+                <button
+                  type="button"
+                  onClick={() => setActiveReferralTab('cv')}
+                  className={`px-2.5 py-1.5 rounded-lg transition-colors shrink-0 ${
+                    activeReferralTab === 'cv'
+                      ? 'bg-primary text-white shadow-xs'
+                      : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  CV (30 Cr)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveReferralTab('linkedin')}
+                  className={`px-2.5 py-1.5 rounded-lg transition-colors shrink-0 ${
+                    activeReferralTab === 'linkedin'
+                      ? 'bg-primary text-white shadow-xs'
+                      : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  LinkedIn (20 Cr)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveReferralTab('ats')}
+                  className={`px-2.5 py-1.5 rounded-lg transition-colors shrink-0 ${
+                    activeReferralTab === 'ats'
+                      ? 'bg-primary text-white shadow-xs'
+                      : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  ATS (10 Cr)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveReferralTab('tailor')}
+                  className={`px-2.5 py-1.5 rounded-lg transition-colors shrink-0 ${
+                    activeReferralTab === 'tailor'
+                      ? 'bg-primary text-white shadow-xs'
+                      : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  Tailor (5 Cr)
+                </button>
+              </div>
+
+              {/* Active Referral Tab Info */}
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+                <div className="text-xs font-bold text-slate-800">
+                  {activeReferralTab === 'cv' && 'CV Creation & Transformation (30 Credits)'}
+                  {activeReferralTab === 'linkedin' && 'LinkedIn Profile Optimizer (20 Credits)'}
+                  {activeReferralTab === 'ats' && 'ATS Score Evaluator (10 Credits)'}
+                  {activeReferralTab === 'tailor' && 'Job-Specific CV Tailoring (5 Credits)'}
+                </div>
+                <div className="text-[11px] font-semibold text-emerald-700 space-y-1">
+                  <div>✦ You earn: 10 Credits (100 PKR value)</div>
+                  <div>✦ Friend gets: 150 Credits on 1500 PKR refill</div>
+                </div>
+              </div>
             </div>
 
-            {/* Active Tab Service Details Card */}
-            {activeReferralTab === 'cv' && (
-              <div className="space-y-4 bg-slate-50/80 p-4 rounded-xl border border-slate-200">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-primary" />
-                  <strong className="text-sm text-slate-900 font-extrabold">CV Creation & Revamp (30 Credits)</strong>
-                </div>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Ideal for professionals building a new CV or transforming an existing resume into 5 executive ATS designs.
-                </p>
-                <div className="space-y-1.5 text-[11px] font-bold text-emerald-700">
-                  <div>✦ Earn 10 Credits (100 PKR value) per referral</div>
-                  <div>✦ Your friend gets 150 Credits on 1500 PKR purchase</div>
-                </div>
-              </div>
-            )}
-
-            {activeReferralTab === 'linkedin' && (
-              <div className="space-y-4 bg-slate-50/80 p-4 rounded-xl border border-slate-200">
-                <div className="flex items-center gap-2">
-                  <Compass className="h-5 w-5 text-primary" />
-                  <strong className="text-sm text-slate-900 font-extrabold">LinkedIn Profile Optimizer (20 Credits)</strong>
-                </div>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  In-depth audit, headline hook, bio summary, and skill badge optimization to boost profile views.
-                </p>
-                <div className="space-y-1.5 text-[11px] font-bold text-emerald-700">
-                  <div>✦ Earn 10 Credits (100 PKR value) per referral</div>
-                  <div>✦ Your friend gets 150 Credits on 1500 PKR purchase</div>
-                </div>
-              </div>
-            )}
-
-            {activeReferralTab === 'ats' && (
-              <div className="space-y-4 bg-slate-50/80 p-4 rounded-xl border border-slate-200">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-primary" />
-                  <strong className="text-sm text-slate-900 font-extrabold">ATS Score Evaluator (10 Credits)</strong>
-                </div>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Scans CV against 5 recruitment dimensions to find missing keywords and formatting flaws.
-                </p>
-                <div className="space-y-1.5 text-[11px] font-bold text-emerald-700">
-                  <div>✦ Earn 10 Credits (100 PKR value) per referral</div>
-                  <div>✦ Your friend gets 150 Credits on 1500 PKR purchase</div>
-                </div>
-              </div>
-            )}
-
-            {activeReferralTab === 'tailor' && (
-              <div className="space-y-4 bg-slate-50/80 p-4 rounded-xl border border-slate-200">
-                <div className="flex items-center gap-2">
-                  <Settings className="h-5 w-5 text-primary" />
-                  <strong className="text-sm text-slate-900 font-extrabold">Job-Specific CV Tailoring (5 Credits)</strong>
-                </div>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Quick AI alignment of an existing portal CV for a specific target job opening.
-                </p>
-                <div className="space-y-1.5 text-[11px] font-bold text-emerald-700">
-                  <div>✦ Earn 10 Credits (100 PKR value) per referral</div>
-                  <div>✦ Your friend gets 150 Credits on 1500 PKR purchase</div>
-                </div>
-              </div>
-            )}
-
             {/* Referral Link & Promo Code */}
-            <div className="space-y-2">
+            <div className="space-y-2 pt-1">
               <label className="block text-xs font-bold text-slate-700">
                 Your Referral Link ({profile?.referral_code || (profile?.email ? profile.email.substring(0, 4).toUpperCase() + '100' : 'SOPH100')})
               </label>
@@ -593,6 +606,7 @@ export default function DashboardPage() {
               </a>
             </div>
           </div>
+
         </div>
       </main>
 
