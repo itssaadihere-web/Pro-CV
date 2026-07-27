@@ -16,6 +16,7 @@ import {
   Settings,
   Gift,
   Copy,
+  Compass,
 } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
@@ -30,6 +31,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [profile, setProfile] = useState<any>(null)
   const [jobs, setJobs] = useState<any[]>([])
+  const [transactions, setTransactions] = useState<any[]>([])
+  const [activeReferralTab, setActiveReferralTab] = useState<'cv' | 'linkedin' | 'ats' | 'tailor'>('cv')
 
   useEffect(() => {
     async function loadDashboardData() {
@@ -41,6 +44,10 @@ export default function DashboardPage() {
           return
         }
 
+        // Initialize welcome credits for new users (+50 Credits)
+        const { initializeWelcomeCredits } = await import('@/lib/creditService')
+        await initializeWelcomeCredits(session.user.id)
+
         // Fetch User Profile
         const { data: prof, error: profError } = await supabase
           .from('profiles')
@@ -49,7 +56,7 @@ export default function DashboardPage() {
           .single()
 
         let finalProf = prof
-          if (profError) {
+        if (profError) {
           console.warn('Profile not found in profiles table. Attempting to create profile record.')
           const isTestUser = session.user.email?.toLowerCase() === 'test@joinsophi.com'
           const { data: newProf } = await supabase
@@ -59,7 +66,7 @@ export default function DashboardPage() {
               email: session.user.email,
               full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0],
               has_paid: isTestUser,
-              cv_credits: isTestUser ? 100 : 0,
+              cv_credits: isTestUser ? 100 : 50,
             })
             .select('*')
             .single()
@@ -67,12 +74,6 @@ export default function DashboardPage() {
           finalProf = newProf
         }
 
-        const isTestUser = session.user.email?.toLowerCase() === 'test@joinsophi.com'
-        if (isTestUser && finalProf && finalProf.cv_credits === 0) {
-          // If for some reason they have 0 credits, we shouldn't refill unless asked (per requirement).
-          // "only there is an account that is the test ID wont be needing to pay for CV as this acount already have 100 credit in balance and just in case this acount credit ends I will ask you to again refill but don't refill on your own only when I say to you"
-          // So we do NOT auto refill.
-        }
         setProfile(finalProf)
 
         // Fetch user CV optimization jobs
@@ -84,6 +85,18 @@ export default function DashboardPage() {
 
         if (!cvJobsError && cvJobs) {
           setJobs(cvJobs)
+        }
+
+        // Fetch credit statement history
+        const { data: txs } = await supabase
+          .from('credit_transactions')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .order('created_at', { ascending: false })
+          .limit(30)
+
+        if (txs) {
+          setTransactions(txs)
         }
 
       } catch (err: any) {
@@ -250,43 +263,294 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Refer a Friend & 100 PKR Wallet Reward Card (Right side - Sophi Website Theme) */}
-          <div className="lg:col-span-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
-            <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 text-amber-700 border border-amber-200/60">
-                <Gift className="h-5 w-5" />
+          {/* LEFT COLUMN: CV Jobs + Credit Statement History Log */}
+          <div className="lg:col-span-8 space-y-8">
+            {/* CV Jobs History Table */}
+            <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+              <div className="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+                <h2 className="text-base font-bold text-slate-900">Your CV Revamp History</h2>
+                <span className="text-xs text-slate-400 font-semibold">{jobs.length} total requests</span>
               </div>
-              <div>
-                <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/60 mb-0.5">
-                  Referral Reward
-                </span>
-                <h3 className="text-base font-bold text-slate-900 leading-snug">
-                  Earn 100 PKR per Friend
-                </h3>
-              </div>
+
+              {jobs.length === 0 ? (
+                /* Empty state placeholder */
+                <div className="text-center py-16 px-4 space-y-4">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+                    <FileText className="h-6 w-6" />
+                  </div>
+                  <div className="max-w-sm mx-auto space-y-1">
+                    <h3 className="text-sm font-semibold text-slate-800">No revamp jobs found</h3>
+                    <p className="text-xs leading-relaxed text-slate-500">
+                      You haven&apos;t optimized any CVs yet. Use your credits to create or transform your career materials.
+                    </p>
+                  </div>
+                  <div>
+                    <Link
+                      href={credits >= 30 ? '/choice' : '/payment'}
+                      className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2 text-xs font-bold text-white transition-all hover:bg-primary-850 shadow-sm"
+                    >
+                      <span>Create My First CV (30 Cr)</span>
+                      <PlusCircle className="h-4 w-4 text-gold" />
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                /* Jobs history table */
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                        <th className="py-4 px-6">Created</th>
+                        <th className="py-4 px-6">Industry</th>
+                        <th className="py-4 px-6">ATS Score</th>
+                        <th className="py-4 px-6">Status</th>
+                        <th className="py-4 px-6 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-xs font-medium text-slate-700">
+                      {jobs.map((job) => {
+                        const jobDate = new Date(job.created_at).toLocaleDateString(undefined, {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })
+                        const atsScore = job.ats_score?.overall || 'N/A'
+
+                        return (
+                          <tr key={job.id} className="hover:bg-slate-50/50 transition-colors">
+                            <td className="py-4 px-6 flex items-center gap-2">
+                              <Calendar className="h-4 w-4 text-slate-400" />
+                              <span>{jobDate}</span>
+                            </td>
+                            <td className="py-4 px-6">{job.target_industry}</td>
+                            <td className="py-4 px-6 font-bold text-slate-800">
+                              {job.status === 'completed' ? (
+                                <div className="flex items-center gap-1">
+                                  <TrendingUp className="h-3.5 w-3.5 text-gold" />
+                                  <span>{atsScore}/100</span>
+                                </div>
+                              ) : (
+                                <span className="text-slate-400">—</span>
+                              )}
+                            </td>
+                            <td className="py-4 px-6">
+                              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                                job.status === 'completed'
+                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                  : job.status === 'processing'
+                                  ? 'bg-primary-50 text-primary border border-primary-100'
+                                  : 'bg-red-50 text-red-700 border border-red-100'
+                              }`}>
+                                {job.status}
+                              </span>
+                            </td>
+                            <td className="py-4 px-6 text-right">
+                              <Link
+                                href={job.status === 'completed' ? `/result/${job.id}` : '#'}
+                                className={`inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 ${
+                                  job.status !== 'completed' ? 'pointer-events-none opacity-50' : ''
+                                }`}
+                              >
+                                <Eye className="h-3.5 w-3.5" />
+                                <span>View Report</span>
+                              </Link>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Share your link or promo code. When a friend signs up and completes a CV purchase, <strong>100 PKR is credited to your wallet</strong> and auto-adjusted on your next CV purchase.
-            </p>
-
-            {/* Wallet Balance Display */}
-            <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-4 flex items-center justify-between">
-              <div>
-                <span className="block text-[11px] font-bold uppercase text-slate-500">Your Wallet Balance</span>
-                <span className="block text-2xl font-black text-slate-900 mt-0.5">
-                  Rs. {profile?.wallet_balance_pkr || 0} <span className="text-xs font-bold text-slate-500">PKR</span>
+            {/* Credit Statement & History Log Table */}
+            <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+              <div className="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+                <div>
+                  <h2 className="text-base font-bold text-slate-900">Credit Statement & History Log</h2>
+                  <p className="text-[11px] text-slate-500">Transparent statement of all earned and used credits</p>
+                </div>
+                <span className="text-xs font-bold text-primary bg-primary-50 px-2.5 py-1 rounded-full border border-primary-100">
+                  ⚡ {profile?.cv_credits ?? 0} Credits Remaining
                 </span>
               </div>
-              <div className="h-10 w-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">
-                Rs.
-              </div>
+
+              {transactions.length === 0 ? (
+                <div className="p-8 text-center text-xs text-slate-500 italic">
+                  No credit transactions recorded yet. Welcome credits and service usage will appear here.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                        <th className="py-3 px-6">Date</th>
+                        <th className="py-3 px-6">Service / Action</th>
+                        <th className="py-3 px-6">Change</th>
+                        <th className="py-3 px-6 text-right">Balance</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-xs font-medium text-slate-700">
+                      {transactions.map((tx) => {
+                        const txDate = new Date(tx.created_at).toLocaleDateString(undefined, {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                        const isPositive = tx.credits_changed > 0
+
+                        return (
+                          <tr key={tx.id} className="hover:bg-slate-50/50 transition-colors">
+                            <td className="py-3 px-6 text-slate-400 font-mono text-[11px]">{txDate}</td>
+                            <td className="py-3 px-6 font-bold text-slate-800">{tx.service_name}</td>
+                            <td className="py-3 px-6">
+                              <span className={`inline-block font-mono font-bold px-2 py-0.5 rounded-md ${
+                                isPositive
+                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                  : 'bg-slate-100 text-slate-700 border border-slate-200'
+                              }`}>
+                                {isPositive ? `+${tx.credits_changed}` : tx.credits_changed} Cr
+                              </span>
+                            </td>
+                            <td className="py-3 px-6 text-right font-mono font-extrabold text-slate-900">
+                              {tx.balance_after} Cr
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
+          </div>
+
+          {/* RIGHT COLUMN: Hostinger-Style Multi-Service Referral Component */}
+          <div className="lg:col-span-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-6">
+            <div>
+              <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200/60 mb-2">
+                Referral Program
+              </span>
+              <h3 className="text-lg font-extrabold text-slate-900 leading-snug">
+                Know what your friend needs? Refer the exact service.
+              </h3>
+            </div>
+
+            {/* Service Selection Tabs (Hostinger Style) */}
+            <div className="flex border-b border-slate-200 text-xs font-bold gap-1 overflow-x-auto pb-1">
+              <button
+                onClick={() => setActiveReferralTab('cv')}
+                className={`px-3 py-2 rounded-lg transition-colors shrink-0 ${
+                  activeReferralTab === 'cv'
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                CV Creation (30 Cr)
+              </button>
+              <button
+                onClick={() => setActiveReferralTab('linkedin')}
+                className={`px-3 py-2 rounded-lg transition-colors shrink-0 ${
+                  activeReferralTab === 'linkedin'
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                LinkedIn (20 Cr)
+              </button>
+              <button
+                onClick={() => setActiveReferralTab('ats')}
+                className={`px-3 py-2 rounded-lg transition-colors shrink-0 ${
+                  activeReferralTab === 'ats'
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                ATS Scan (10 Cr)
+              </button>
+              <button
+                onClick={() => setActiveReferralTab('tailor')}
+                className={`px-3 py-2 rounded-lg transition-colors shrink-0 ${
+                  activeReferralTab === 'tailor'
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                CV Tailor (5 Cr)
+              </button>
+            </div>
+
+            {/* Active Tab Service Details Card */}
+            {activeReferralTab === 'cv' && (
+              <div className="space-y-4 bg-slate-50/80 p-4 rounded-xl border border-slate-200">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-primary" />
+                  <strong className="text-sm text-slate-900 font-extrabold">CV Creation & Revamp (30 Credits)</strong>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Ideal for professionals building a new CV or transforming an existing resume into 5 executive ATS designs.
+                </p>
+                <div className="space-y-1.5 text-[11px] font-bold text-emerald-700">
+                  <div>✦ Earn 10 Credits (100 PKR value) per referral</div>
+                  <div>✦ Your friend gets 150 Credits on 1500 PKR purchase</div>
+                </div>
+              </div>
+            )}
+
+            {activeReferralTab === 'linkedin' && (
+              <div className="space-y-4 bg-slate-50/80 p-4 rounded-xl border border-slate-200">
+                <div className="flex items-center gap-2">
+                  <Compass className="h-5 w-5 text-primary" />
+                  <strong className="text-sm text-slate-900 font-extrabold">LinkedIn Profile Optimizer (20 Credits)</strong>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  In-depth audit, headline hook, bio summary, and skill badge optimization to boost profile views.
+                </p>
+                <div className="space-y-1.5 text-[11px] font-bold text-emerald-700">
+                  <div>✦ Earn 10 Credits (100 PKR value) per referral</div>
+                  <div>✦ Your friend gets 150 Credits on 1500 PKR purchase</div>
+                </div>
+              </div>
+            )}
+
+            {activeReferralTab === 'ats' && (
+              <div className="space-y-4 bg-slate-50/80 p-4 rounded-xl border border-slate-200">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  <strong className="text-sm text-slate-900 font-extrabold">ATS Score Evaluator (10 Credits)</strong>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Scans CV against 5 recruitment dimensions to find missing keywords and formatting flaws.
+                </p>
+                <div className="space-y-1.5 text-[11px] font-bold text-emerald-700">
+                  <div>✦ Earn 10 Credits (100 PKR value) per referral</div>
+                  <div>✦ Your friend gets 150 Credits on 1500 PKR purchase</div>
+                </div>
+              </div>
+            )}
+
+            {activeReferralTab === 'tailor' && (
+              <div className="space-y-4 bg-slate-50/80 p-4 rounded-xl border border-slate-200">
+                <div className="flex items-center gap-2">
+                  <Settings className="h-5 w-5 text-primary" />
+                  <strong className="text-sm text-slate-900 font-extrabold">Job-Specific CV Tailoring (5 Credits)</strong>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Quick AI alignment of an existing portal CV for a specific target job opening.
+                </p>
+                <div className="space-y-1.5 text-[11px] font-bold text-emerald-700">
+                  <div>✦ Earn 10 Credits (100 PKR value) per referral</div>
+                  <div>✦ Your friend gets 150 Credits on 1500 PKR purchase</div>
+                </div>
+              </div>
+            )}
 
             {/* Referral Link & Promo Code */}
             <div className="space-y-2">
               <label className="block text-xs font-bold text-slate-700">
-                Referral Link ({profile?.referral_code || (profile?.email ? profile.email.substring(0, 4).toUpperCase() + '100' : 'SOPH100')})
+                Your Referral Link ({profile?.referral_code || (profile?.email ? profile.email.substring(0, 4).toUpperCase() + '100' : 'SOPH100')})
               </label>
               <div className="flex items-center gap-2">
                 <input
@@ -304,7 +568,7 @@ export default function DashboardPage() {
                   }}
                   className="px-3.5 py-2 bg-primary hover:bg-primary-850 text-white rounded-xl text-xs font-bold transition-all shadow-sm shrink-0"
                 >
-                  Copy
+                  Copy Link
                 </button>
               </div>
             </div>
@@ -312,7 +576,7 @@ export default function DashboardPage() {
             {/* Social Share Buttons */}
             <div className="grid grid-cols-2 gap-2 pt-1">
               <a
-                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Create an ATS-optimized CV with Sophi AI! Sign up using my referral link: ${typeof window !== 'undefined' ? window.location.origin : 'https://joinsophi.com'}/login?ref=${profile?.referral_code || 'SOPH100'}`)}`}
+                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Get 150 Sophi AI Credits to optimize your CV & LinkedIn profile! Sign up using my link: ${typeof window !== 'undefined' ? window.location.origin : 'https://joinsophi.com'}/login?ref=${profile?.referral_code || 'SOPH100'}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-1.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-sm text-center"

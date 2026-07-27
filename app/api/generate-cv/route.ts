@@ -187,29 +187,9 @@ Please run the full transformation and output all sections as specified in your 
       return NextResponse.json({ error: 'Failed to update job in database.' }, { status: 500 })
     }
 
-    // 3. Decrement user credits (only in non-beta mode)
-    if (!isBetaActive()) {
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('email, cv_credits')
-        .eq('id', userId)
-        .single()
-
-      if (!profileError && profile) {
-        if (profile.email === 'syedsaad.mob@gmail.com') {
-          await supabase
-            .from('profiles')
-            .update({ cv_credits: 99, has_paid: true })
-            .eq('id', userId)
-        } else {
-          const newCredits = Math.max(0, (profile.cv_credits || 1) - 1)
-          await supabase
-            .from('profiles')
-            .update({ cv_credits: newCredits })
-            .eq('id', userId)
-        }
-      }
-    }
+    // 3. Decrement user credits (30 Credits for Full CV Creation / Revamp)
+    const { deductCredits } = await import('@/lib/creditService')
+    await deductCredits(userId, 'CREATE_CV')
 
     return NextResponse.json({ success: true, sections, templateId })
   } catch (error: any) {

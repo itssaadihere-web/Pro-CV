@@ -12,6 +12,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing jobId or templateId' }, { status: 400 })
     }
 
+    const supabase = getServiceSupabase()
+    const { data: job } = await supabase
+      .from('cv_jobs')
+      .select('user_id')
+      .eq('id', jobId)
+      .single()
+
+    if (job?.user_id) {
+      const { deductCredits } = await import('@/lib/creditService')
+      const deduction = await deductCredits(job.user_id, 'DOWNLOAD_PDF')
+      if (!deduction.success) {
+        return NextResponse.json(
+          { error: deduction.error || 'Insufficient credits for clean PDF export (2 Credits required).' },
+          { status: 402 }
+        )
+      }
+    }
+
     const host = req.headers.get('host') || 'localhost:3000'
     const protocol = host.includes('localhost') ? 'http' : 'https'
     const appUrl = `${protocol}://${host}`

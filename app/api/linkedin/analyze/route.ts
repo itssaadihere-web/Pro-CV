@@ -3,10 +3,21 @@ import { GoogleGenAI } from '@google/genai'
 
 export async function POST(req: NextRequest) {
   try {
-    const { url, idealProfile } = await req.json()
+    const { url, idealProfile, userId } = await req.json()
 
     if (!url) {
       return NextResponse.json({ error: 'LinkedIn URL is required' }, { status: 400 })
+    }
+
+    if (userId) {
+      const { deductCredits } = await import('@/lib/creditService')
+      const deduction = await deductCredits(userId, 'LINKEDIN_OPTIMIZER')
+      if (!deduction.success) {
+        return NextResponse.json(
+          { error: deduction.error || 'Insufficient credits for LinkedIn Optimizer (20 Credits required).' },
+          { status: 402 }
+        )
+      }
     }
 
     const proxycurlKey = process.env.PROXYCURL_API_KEY

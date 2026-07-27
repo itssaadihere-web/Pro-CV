@@ -89,24 +89,22 @@ async function handleVerification(req: NextRequest) {
       )
     }
 
-    // Add 1 credit, set has_paid = true, record payment reference
-    const { error: updateError } = await supabase
+    // Grant 150 Credits, set has_paid = true, record payment reference
+    const { addCredits } = await import('@/lib/creditService')
+    const { rewardReferrer } = await import('@/lib/referralService')
+
+    await addCredits(profile.id, 150, '1500 PKR Package (150 Credits)', true)
+    
+    // Check and reward referrer with 10 Credits (100 PKR value)
+    await rewardReferrer(profile.id)
+
+    await supabase
       .from('profiles')
       .update({
-        has_paid: true,
-        cv_credits: (profile.cv_credits || 0) + 1,
         payment_ref: reference || orderRefNum,
         paid_at: new Date().toISOString(),
       })
       .eq('id', profile.id)
-
-    if (updateError) {
-      console.error('Error updating profile in callback:', updateError)
-      return NextResponse.redirect(
-        new URL(`/payment/callback?status=failed&message=Failed+to+unlock+credits`, appUrl),
-        { status: 303 }
-      )
-    }
 
     // Redirect to success page
     return NextResponse.redirect(

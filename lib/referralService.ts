@@ -1,4 +1,5 @@
 import { getServiceSupabase } from '@/lib/supabase-server'
+import { addCredits } from '@/lib/creditService'
 
 /**
  * Generate a unique 6-character referral code (e.g. SAAD8X)
@@ -36,9 +37,9 @@ export async function getOrCreateReferralCode(userId: string, emailOrName?: stri
 }
 
 /**
- * Reward referrer with 100 PKR wallet credit when referred user completes payment
+ * Reward referrer with 10 Credits (100 PKR value) when referred user completes payment
  */
-export async function rewardReferrer(refereeUserId: string): Promise<{ success: boolean; rewardedAmount?: number }> {
+export async function rewardReferrer(refereeUserId: string): Promise<{ success: boolean; rewardedCredits?: number }> {
   const supabase = getServiceSupabase()
   
   try {
@@ -54,21 +55,8 @@ export async function rewardReferrer(refereeUserId: string): Promise<{ success: 
 
     const referrerId = refereeProf.referred_by
 
-    // Fetch current wallet balance of referrer
-    const { data: referrerProf } = await supabase
-      .from('profiles')
-      .select('wallet_balance_pkr')
-      .eq('id', referrerId)
-      .single()
-
-    const currentWallet = referrerProf?.wallet_balance_pkr || 0
-    const updatedWallet = currentWallet + 100
-
-    // Update referrer wallet balance
-    await supabase
-      .from('profiles')
-      .update({ wallet_balance_pkr: updatedWallet })
-      .eq('id', referrerId)
+    // Add 10 Credits to referrer (100 PKR value)
+    await addCredits(referrerId, 10, 'Referral Reward Payout (+10 Credits)')
 
     // Mark referee as rewarded so payout is given only once
     await supabase
@@ -76,7 +64,7 @@ export async function rewardReferrer(refereeUserId: string): Promise<{ success: 
       .update({ referral_rewarded: true })
       .eq('id', refereeUserId)
 
-    return { success: true, rewardedAmount: 100 }
+    return { success: true, rewardedCredits: 10 }
   } catch (err) {
     console.error('Error rewarding referrer:', err)
     return { success: false }

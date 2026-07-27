@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { getClientSupabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
-import { FileText, LogOut, User as UserIcon, CreditCard, PlusCircle } from 'lucide-react'
+import { FileText, LogOut, User as UserIcon, CreditCard, PlusCircle, Zap } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { isBetaActive } from '@/lib/beta'
 import Logo from './Logo'
@@ -105,18 +105,15 @@ export default function Header() {
                   Dashboard
                 </Link>
 
-                {isBetaActive() ? (
-                  <div className="flex items-center gap-1.5 rounded-full bg-gold-50 border border-gold-200 px-3 py-1 text-xs font-bold text-gold-700">
-                    <span className="h-1.5 w-1.5 rounded-full bg-gold animate-pulse" />
-                    <span>Free Beta Active</span>
-                  </div>
-                ) : (
-                  credits !== null && (
-                    <div className="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-                      <CreditCard className="h-3.5 w-3.5 text-slate-500" />
-                      <span>{credits} {credits === 1 ? 'Credit' : 'Credits'}</span>
-                    </div>
-                  )
+                {credits !== null && (
+                  <Link
+                    href="/payment"
+                    className="flex items-center gap-1.5 rounded-full bg-primary-50 border border-primary-100 px-3 py-1 text-xs font-bold text-primary hover:bg-primary-100 transition-colors shadow-2xs"
+                    title="Available Credits - Click to Refill"
+                  >
+                    <Zap className="h-3.5 w-3.5 text-gold fill-gold" />
+                    <span>{credits} Credits</span>
+                  </Link>
                 )}
 
                 <Link

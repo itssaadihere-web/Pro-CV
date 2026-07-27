@@ -1,9 +1,9 @@
 import { getRouteSupabase } from '@/lib/supabase-server'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { initializeWelcomeCredits } from '@/lib/creditService'
 
 export const dynamic = 'force-dynamic'
-
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,7 +12,10 @@ export async function GET(request: NextRequest) {
 
     if (code) {
       const supabase = getRouteSupabase()
-      await supabase.auth.exchangeCodeForSession(code)
+      const { data } = await supabase.auth.exchangeCodeForSession(code)
+      if (data?.session?.user?.id) {
+        await initializeWelcomeCredits(data.session.user.id)
+      }
     }
 
     // Redirect to dashboard after successful exchange

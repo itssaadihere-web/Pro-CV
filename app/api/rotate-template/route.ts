@@ -41,6 +41,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Job not found or query failed' }, { status: 404 })
     }
 
+    // Deduct 1 Credit for template switch action
+    const { deductCredits } = await import('@/lib/creditService')
+    const deduction = await deductCredits(job.user_id, 'ROTATE_TEMPLATE')
+
+    if (!deduction.success) {
+      return NextResponse.json(
+        { error: deduction.error || 'Insufficient credits for template switch (1 Credit required).' },
+        { status: 402 }
+      )
+    }
+
     const rotation = new TemplateRotationEngine()
     const nextTemplateId = await rotation.getNextTemplate(job.user_id, preferredStyle)
 
@@ -55,6 +66,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       templateId: nextTemplateId,
+      remainingCredits: deduction.remainingCredits,
     })
   } catch (error: any) {
     console.error('Error in /api/rotate-template:', error)
