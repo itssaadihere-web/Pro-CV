@@ -106,8 +106,8 @@ export default function PaymentPage() {
           <div className="mt-6 rounded-xl bg-slate-50 p-5 border border-slate-150">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-base font-bold text-slate-800">Sophi CV Revamp Credit</h3>
-                <p className="text-xs text-slate-500 mt-1">Unlock 1 AI CV transformation & ATS review</p>
+                <h3 className="text-base font-bold text-slate-800">Sophi AI 150 Credits Package</h3>
+                <p className="text-xs text-slate-500 mt-1">150 Credits (Build 5 CVs, LinkedIn Optimizer, ATS Scans & PDF Downloads)</p>
               </div>
               <span className="text-lg font-black text-slate-900">1,500 PKR</span>
             </div>

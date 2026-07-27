@@ -22,15 +22,17 @@ export default function Header() {
       setUser(session?.user || null)
       
       if (session?.user) {
-        // Fetch credits
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('cv_credits')
-          .eq('id', session.user.id)
-          .single()
-        
-        if (profile) {
-          setCredits(profile.cv_credits)
+        try {
+          const { initializeWelcomeCredits } = await import('@/lib/creditService')
+          const currentCredits = await initializeWelcomeCredits(session.user.id, supabase, session.user.email)
+          setCredits(currentCredits)
+        } catch {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('cv_credits')
+            .eq('id', session.user.id)
+            .maybeSingle()
+          setCredits(profile?.cv_credits ?? 50)
         }
       }
     }
@@ -41,13 +43,17 @@ export default function Header() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user || null)
       if (session?.user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('cv_credits')
-          .eq('id', session.user.id)
-          .single()
-        if (profile) {
-          setCredits(profile.cv_credits)
+        try {
+          const { initializeWelcomeCredits } = await import('@/lib/creditService')
+          const currentCredits = await initializeWelcomeCredits(session.user.id, supabase, session.user.email)
+          setCredits(currentCredits)
+        } catch {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('cv_credits')
+            .eq('id', session.user.id)
+            .maybeSingle()
+          setCredits(profile?.cv_credits ?? 50)
         }
       } else {
         setCredits(null)

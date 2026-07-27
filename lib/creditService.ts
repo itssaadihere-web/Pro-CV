@@ -38,13 +38,13 @@ export const SERVICE_NAMES: Record<ServiceType, string> = {
   REFERRAL_REWARD: 'Referral Reward Payout',
 }
 
-export async function getUserCredits(userId: string): Promise<{ credits: number; hasPaid: boolean }> {
-  const supabase = getServiceSupabase()
+export async function getUserCredits(userId: string, customClient?: any): Promise<{ credits: number; hasPaid: boolean }> {
+  const supabase = customClient || getServiceSupabase()
   const { data: profile } = await supabase
     .from('profiles')
     .select('cv_credits, has_paid')
     .eq('id', userId)
-    .single()
+    .maybeSingle()
 
   return {
     credits: profile?.cv_credits ?? 0,
@@ -52,52 +52,93 @@ export async function getUserCredits(userId: string): Promise<{ credits: number;
   }
 }
 
-export async function initializeWelcomeCredits(userId: string): Promise<number> {
-  const supabase = getServiceSupabase()
+export async function initializeWelcomeCredits(userId: string, customClient?: any, userEmail?: string): Promise<number> {
+  const supabase = customClient || getServiceSupabase()
 
-  // Check if profile exists and if welcome bonus has already been granted
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('cv_credits, welcome_bonus_granted')
-    .eq('id', userId)
-    .single()
+  try {
+    // 1. Check if profile exists
+    const { data: profile, error: selectErr } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle()
 
-  if (profile?.welcome_bonus_granted) {
-    return profile.cv_credits ?? 0
+    // 2. If profile doesn't exist at all, create it with 50 credits
+    if (!profile) {
+      const isTestUser = userEmail?.toLowerCase() === 'test@joinsophi.com'
+      const initialCredits = isTestUser ? 100 : CREDIT_COSTS.WELCOME_BONUS // 50
+
+      const { error: insertErr } = await supabase.from('profiles').upsert({
+        id: userId,
+        email: userEmail,
+        cv_credits: initialCredits,
+        welcome_bonus_granted: true,
+      })
+
+      if (insertErr) {
+        // Fallback if welcome_bonus_granted column is missing in DB schema
+        await supabase.from('profiles').upsert({
+          id: userId,
+          email: userEmail,
+          cv_credits: initialCredits,
+        })
+      }
+
+      await logCreditTransaction(userId, SERVICE_NAMES.WELCOME_BONUS, initialCredits, initialCredits, customClient)
+      return initialCredits
+    }
+
+    // 3. If profile exists, check if welcome bonus has been granted or if cv_credits is 0
+    const isGranted = Boolean(profile.welcome_bonus_granted)
+    const currentCredits = profile.cv_credits ?? 0
+
+    if (!isGranted || currentCredits === 0) {
+      const isTestUser = profile.email?.toLowerCase() === 'test@joinsophi.com'
+      const newBalance = isTestUser ? 100 : CREDIT_COSTS.WELCOME_BONUS // 50
+
+      const { error: updateErr } = await supabase
+        .from('profiles')
+        .update({
+          cv_credits: newBalance,
+          welcome_bonus_granted: true,
+        })
+        .eq('id', userId)
+
+      if (updateErr) {
+        await supabase
+          .from('profiles')
+          .update({ cv_credits: newBalance })
+          .eq('id', userId)
+      }
+
+      await logCreditTransaction(userId, SERVICE_NAMES.WELCOME_BONUS, newBalance, newBalance, customClient)
+      return newBalance
+    }
+
+    return currentCredits
+  } catch (err) {
+    console.error('Error initializing welcome credits:', err)
+    return CREDIT_COSTS.WELCOME_BONUS
   }
-
-  const newBalance = (profile?.cv_credits ?? 0) + CREDIT_COSTS.WELCOME_BONUS
-
-  await supabase
-    .from('profiles')
-    .upsert({
-      id: userId,
-      cv_credits: newBalance,
-      welcome_bonus_granted: true,
-    })
-
-  // Log transaction
-  await logCreditTransaction(userId, SERVICE_NAMES.WELCOME_BONUS, CREDIT_COSTS.WELCOME_BONUS, newBalance)
-
-  return newBalance
 }
 
 export async function deductCredits(
   userId: string,
-  serviceType: ServiceType
+  serviceType: ServiceType,
+  customClient?: any
 ): Promise<{ success: boolean; remainingCredits: number; error?: string }> {
-  const supabase = getServiceSupabase()
+  const supabase = customClient || getServiceSupabase()
   const cost = CREDIT_COSTS[serviceType]
   const serviceName = SERVICE_NAMES[serviceType]
 
-  const { credits, hasPaid } = await getUserCredits(userId)
+  const { credits, hasPaid } = await getUserCredits(userId, customClient)
 
   // Test account bypass check
   const { data: userProf } = await supabase
     .from('profiles')
     .select('email')
     .eq('id', userId)
-    .single()
+    .maybeSingle()
 
   const isTestUser = userProf?.email?.toLowerCase() === 'test@joinsophi.com'
   if (isTestUser) {
@@ -125,7 +166,7 @@ export async function deductCredits(
   }
 
   // Log transaction
-  await logCreditTransaction(userId, serviceName, -cost, newBalance)
+  await logCreditTransaction(userId, serviceName, -cost, newBalance, customClient)
 
   return { success: true, remainingCredits: newBalance }
 }
@@ -134,10 +175,11 @@ export async function addCredits(
   userId: string,
   amount: number,
   serviceName: string,
-  markPaid: boolean = false
+  markPaid: boolean = false,
+  customClient?: any
 ): Promise<number> {
-  const supabase = getServiceSupabase()
-  const { credits } = await getUserCredits(userId)
+  const supabase = customClient || getServiceSupabase()
+  const { credits } = await getUserCredits(userId, customClient)
 
   const newBalance = credits + amount
 
@@ -151,7 +193,7 @@ export async function addCredits(
     .update(updateData)
     .eq('id', userId)
 
-  await logCreditTransaction(userId, serviceName, amount, newBalance)
+  await logCreditTransaction(userId, serviceName, amount, newBalance, customClient)
 
   return newBalance
 }
@@ -160,9 +202,10 @@ export async function logCreditTransaction(
   userId: string,
   serviceName: string,
   creditsChanged: number,
-  balanceAfter: number
+  balanceAfter: number,
+  customClient?: any
 ) {
-  const supabase = getServiceSupabase()
+  const supabase = customClient || getServiceSupabase()
   try {
     await supabase.from('credit_transactions').insert({
       user_id: userId,
@@ -176,8 +219,8 @@ export async function logCreditTransaction(
   }
 }
 
-export async function getCreditStatement(userId: string): Promise<any[]> {
-  const supabase = getServiceSupabase()
+export async function getCreditStatement(userId: string, customClient?: any): Promise<any[]> {
+  const supabase = customClient || getServiceSupabase()
   const { data } = await supabase
     .from('credit_transactions')
     .select('*')

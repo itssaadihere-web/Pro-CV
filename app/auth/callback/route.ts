@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       const supabase = getRouteSupabase()
       const { data } = await supabase.auth.exchangeCodeForSession(code)
       if (data?.session?.user?.id) {
-        await initializeWelcomeCredits(data.session.user.id)
+        await initializeWelcomeCredits(data.session.user.id, supabase, data.session.user.email)
       }
     }
 

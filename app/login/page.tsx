@@ -74,20 +74,30 @@ export default function LoginPage() {
 
         if (error) throw error
 
+        if (data.user) {
+          const { initializeWelcomeCredits } = await import('@/lib/creditService')
+          await initializeWelcomeCredits(data.user.id, supabase, email)
+        }
+
         if (data.user && !data.session) {
-          toast.success('Account created! Please check your email for the confirmation link.')
+          toast.success('Account created! Please check your email for confirmation link.')
         } else {
-          toast.success('Account created and logged in successfully!')
+          toast.success('Account created! 50 Free Welcome Credits granted.')
           window.location.href = '/dashboard'
         }
       } else {
         // Sign In Flow
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
 
         if (error) throw error
+
+        if (data.user) {
+          const { initializeWelcomeCredits } = await import('@/lib/creditService')
+          await initializeWelcomeCredits(data.user.id, supabase, email)
+        }
 
         toast.success('Logged in successfully!')
         window.location.href = '/dashboard'

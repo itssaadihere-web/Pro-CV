@@ -60,7 +60,7 @@ function PaymentCallbackInner() {
             <div className="space-y-2">
               <h2 className="text-2xl font-bold text-slate-900">Payment Successful!</h2>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Thank you for choosing Sophi. Your payment was verified, and your CV revamp slot has been unlocked.
+                Thank you for choosing Sophi. Your payment was verified, and your 150 AI CV Credits have been unlocked.
               </p>
             </div>
 
@@ -68,7 +68,7 @@ function PaymentCallbackInner() {
             <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 text-left space-y-2 text-xs text-slate-600 font-medium">
               <div className="flex justify-between">
                 <span>Product</span>
-                <span className="text-slate-900">1x AI CV Revamp Slot</span>
+                <span className="text-slate-900">150x AI CV Credits</span>
               </div>
               <div className="flex justify-between">
                 <span>Amount Paid</span>

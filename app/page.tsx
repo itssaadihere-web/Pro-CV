@@ -233,7 +233,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-base font-bold text-slate-850">Pay 1500 PKR</h3>
               <p className="text-xs leading-relaxed text-slate-550">
-                Unlock full access securely via Safepay. Simple slot credits activation.
+                Unlock full access securely via Safepay or DirectPay. Simple 150 credits package activation.
               </p>
             </div>
 

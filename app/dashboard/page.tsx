@@ -46,7 +46,7 @@ export default function DashboardPage() {
 
         // Initialize welcome credits for new users (+50 Credits)
         const { initializeWelcomeCredits } = await import('@/lib/creditService')
-        await initializeWelcomeCredits(session.user.id)
+        await initializeWelcomeCredits(session.user.id, supabase, session.user.email)
 
         // Fetch User Profile
         const { data: prof, error: profError } = await supabase
@@ -156,7 +156,7 @@ export default function DashboardPage() {
               className="flex items-center gap-1 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white transition-all hover:bg-primary-800 hover:shadow-md hover:shadow-primary-100"
             >
               <PlusCircle className="h-4 w-4 text-gold" />
-              <span>{credits > 0 ? 'Create CV' : 'Buy Slots'}</span>
+              <span>{credits > 0 ? 'Create CV' : 'Buy Credits'}</span>
             </Link>
           </div>
         </div>
