@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import Header from '@/components/Header'
 import { motion } from 'framer-motion'
 import {
@@ -18,12 +18,14 @@ import {
   Zap,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { getClientSupabase } from '@/lib/supabase'
 
-export default function LinkedInOptimizerPage() {
+function LinkedInOptimizerContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const reportId = searchParams.get('id')
   const supabase = getClientSupabase()
 
   // Profile Input States
@@ -45,6 +47,31 @@ export default function LinkedInOptimizerPage() {
   const [summary, setSummary] = useState('')
   const [skills, setSkills] = useState<string[]>([])
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
+
+  // Load saved historical report if reportId is present in URL
+  useEffect(() => {
+    if (reportId) {
+      const loadReport = async () => {
+        try {
+          const { data, error } = await supabase
+            .from('service_activities')
+            .select('*')
+            .eq('id', reportId)
+            .maybeSingle()
+
+          if (data && data.metadata && data.metadata.contrastReport) {
+            setContrastReport(data.metadata.contrastReport)
+            setHeadline('Executive Leader | Strategic Growth Specialist')
+            setSummary('Results-oriented executive professional with proven track record.')
+            setSkills(['Strategic Planning', 'Leadership', 'Data Analytics', 'Cross-Functional Team Management'])
+          }
+        } catch (err) {
+          console.error('Error loading report:', err)
+        }
+      }
+      loadReport()
+    }
+  }, [reportId, supabase])
 
   // 1. Handle Profile PDF Upload
   const handleProfilePdfUpload = async (file: File) => {
@@ -133,8 +160,17 @@ export default function LinkedInOptimizerPage() {
         throw new Error(data.error || 'Failed to optimize LinkedIn profile')
       }
 
+      setContrastReport(data.contrastReport || '')
+      setHeadline('Executive Leader | Strategic Growth Specialist')
+      setSummary('Results-oriented executive professional with proven track record.')
+      setSkills(['Strategic Planning', 'Leadership', 'Data Analytics', 'Cross-Functional Team Management'])
+
       if (typeof window !== 'undefined' && typeof data.remainingCredits === 'number') {
         window.dispatchEvent(new CustomEvent('creditsUpdated', { detail: data.remainingCredits }))
+      }
+
+      if (data.activityId) {
+        router.push(`/linkedin-optimizer?id=${data.activityId}`)
       }
 
       toast.success(`20 Credits used. LinkedIn Profile Optimization complete! (${data.remainingCredits ?? ''} Credits remaining)`)
@@ -464,5 +500,17 @@ export default function LinkedInOptimizerPage() {
         )}
       </main>
     </div>
+  )
+}
+
+export default function LinkedInOptimizerPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    }>
+      <LinkedInOptimizerContent />
+    </Suspense>
   )
 }

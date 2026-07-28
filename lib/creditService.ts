@@ -260,20 +260,37 @@ export async function logServiceActivity(
   targetUrl: string,
   metadata: any = {},
   customClient?: any
-) {
+): Promise<string | null> {
   const supabase = customClient || getServiceSupabase()
   try {
-    await supabase.from('service_activities').insert({
-      user_id: userId,
-      service_type: serviceType,
-      service_title: serviceTitle,
-      status: 'completed',
-      target_url: targetUrl,
-      metadata,
-      created_at: new Date().toISOString(),
-    })
+    const { data } = await supabase
+      .from('service_activities')
+      .insert({
+        user_id: userId,
+        service_type: serviceType,
+        service_title: serviceTitle,
+        status: 'completed',
+        target_url: targetUrl,
+        metadata,
+        created_at: new Date().toISOString(),
+      })
+      .select('id')
+      .maybeSingle()
+
+    if (data?.id) {
+      if (targetUrl.includes('ID_PLACEHOLDER')) {
+        const realUrl = targetUrl.replace('ID_PLACEHOLDER', data.id)
+        await supabase
+          .from('service_activities')
+          .update({ target_url: realUrl })
+          .eq('id', data.id)
+      }
+      return data.id
+    }
+    return null
   } catch (err) {
     console.warn('Failed to log service activity:', err)
+    return null
   }
 }
 

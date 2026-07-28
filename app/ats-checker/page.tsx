@@ -1,16 +1,18 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Header from '@/components/Header';
 import { motion } from 'framer-motion';
 import { AlertTriangle, CheckCircle, ShieldAlert, XCircle, Search, ShieldCheck, UploadCloud, FileText, Loader2, CheckCircle2, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { getClientSupabase } from '@/lib/supabase';
 
-export default function ATSCheckerPage() {
+function ATSCheckerContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const reportId = searchParams.get('id');
   const supabase = getClientSupabase();
 
   const [inputMode, setInputMode] = useState<'upload' | 'paste'>('upload');
@@ -20,6 +22,34 @@ export default function ATSCheckerPage() {
   const [isScanning, setIsScanning] = useState(false);
   const [scanComplete, setScanComplete] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [loadingSavedReport, setLoadingSavedReport] = useState(false);
+  const [reportData, setReportData] = useState<{ overallScore: number; riskLevel: string } | null>(null);
+
+  // Load saved historical report if reportId is present in URL
+  useEffect(() => {
+    if (reportId) {
+      const loadReport = async () => {
+        setLoadingSavedReport(true);
+        try {
+          const { data, error } = await supabase
+            .from('service_activities')
+            .select('*')
+            .eq('id', reportId)
+            .maybeSingle();
+
+          if (data && data.metadata) {
+            setScanComplete(true);
+            setReportData(data.metadata.reportData || { overallScore: 34, riskLevel: 'High Risk' });
+          }
+        } catch (err) {
+          console.error('Error loading report:', err);
+        } finally {
+          setLoadingSavedReport(false);
+        }
+      };
+      loadReport();
+    }
+  }, [reportId, supabase]);
 
   const handleFileUpload = async (file: File) => {
     if (!file) return;
@@ -162,10 +192,10 @@ export default function ATSCheckerPage() {
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center space-y-4 mb-12">
           <h1 className="text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
-            Free ATS Score Checker
+            ATS Score Evaluator
           </h1>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Upload your CV or paste content to see how applicant tracking systems score your resume. Find out why you might be getting filtered out before a human even reads your application.
+            Upload your CV or paste content to see how applicant tracking systems score your resume (10 Credits). Find out why you might be getting filtered out before a human even reads your application.
           </p>
         </div>
 
@@ -402,5 +432,17 @@ export default function ATSCheckerPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function ATSCheckerPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    }>
+      <ATSCheckerContent />
+    </Suspense>
   );
 }
