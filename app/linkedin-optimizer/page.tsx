@@ -222,12 +222,26 @@ function LinkedInOptimizerContent() {
     toast.success('Exported Contrast Report!')
   }
 
-  const handleReset = () => {
-    setContrastReport('')
-    setHeadline('')
-    setSummary('')
-    setSkills([])
-    window.history.pushState({}, '', '/linkedin-optimizer')
+  const handleReset = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) {
+      router.push('/login')
+      return
+    }
+
+    const { getUserCredits } = await import('@/lib/creditService')
+    const { credits } = await getUserCredits(session.user.id, supabase)
+
+    if (credits >= 20) {
+      setContrastReport('')
+      setHeadline('')
+      setSummary('')
+      setSkills([])
+      window.history.pushState({}, '', '/linkedin-optimizer')
+    } else {
+      toast.error(`Insufficient credits for LinkedIn Optimizer (Requires 20 Credits, Available: ${credits} Credits). Redirecting to refill...`)
+      router.push('/payment')
+    }
   }
 
   return (
