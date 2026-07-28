@@ -1,27 +1,37 @@
 import { getServiceSupabase } from '@/lib/supabase-server'
+import { getClientSupabase } from '@/lib/supabase'
 import { addCredits } from '@/lib/creditService'
 
+function getEffectiveSupabaseClient(customClient?: any) {
+  if (customClient) return customClient
+  if (typeof window !== 'undefined') return getClientSupabase()
+  return getServiceSupabase()
+}
+
 /**
- * Generate a unique 6-character referral code (e.g. SAAD8X)
+ * Generate a unique referral code based on email username (e.g. TEST30, SAAD30)
  */
 export function generateReferralCode(emailOrName?: string): string {
-  const prefix = emailOrName ? emailOrName.substring(0, 4).toUpperCase().replace(/[^A-Z]/g, '') : 'REF'
-  const cleanPrefix = (prefix.length >= 3 ? prefix : 'SOPH').substring(0, 4)
-  const randomSuffix = Math.floor(10 + Math.random() * 90) // 2 digit number
-  return `${cleanPrefix}${randomSuffix}`
+  if (emailOrName) {
+    const cleanName = emailOrName.split('@')[0].toUpperCase().replace(/[^A-Z0-9]/g, '')
+    if (cleanName.length >= 2) {
+      return `${cleanName}30`
+    }
+  }
+  return 'SOPH30'
 }
 
 /**
  * Get or create unique referral code for user profile
  */
-export async function getOrCreateReferralCode(userId: string, emailOrName?: string): Promise<string> {
-  const supabase = getServiceSupabase()
+export async function getOrCreateReferralCode(userId: string, emailOrName?: string, customClient?: any): Promise<string> {
+  const supabase = getEffectiveSupabaseClient(customClient)
   
   const { data: profile } = await supabase
     .from('profiles')
-    .select('referral_code, wallet_balance_pkr')
+    .select('referral_code')
     .eq('id', userId)
-    .single()
+    .maybeSingle()
 
   if (profile?.referral_code) {
     return profile.referral_code
@@ -34,6 +44,64 @@ export async function getOrCreateReferralCode(userId: string, emailOrName?: stri
     .eq('id', userId)
 
   return newCode
+}
+
+/**
+ * Find referrer user_id by referral code or username prefix (case-insensitive)
+ */
+export async function findReferrerByCode(code: string, customClient?: any): Promise<string | null> {
+  if (!code || !code.trim()) return null
+  const cleanCode = code.trim().toUpperCase()
+  const supabase = getEffectiveSupabaseClient(customClient)
+
+  try {
+    // 1. Direct match on referral_code column
+    const { data: directMatch } = await supabase
+      .from('profiles')
+      .select('id')
+      .ilike('referral_code', cleanCode)
+      .maybeSingle()
+
+    if (directMatch?.id) return directMatch.id
+
+    // 2. Extract username prefix if code ends with '30' or '100' (e.g. 'TEST' from 'TEST30' or 'TEST100')
+    const prefix = cleanCode.replace(/(30|100)$/i, '').toLowerCase()
+    if (prefix && prefix.length >= 2) {
+      const { data: emailMatch } = await supabase
+        .from('profiles')
+        .select('id')
+        .ilike('email', `${prefix}@%`)
+        .maybeSingle()
+
+      if (emailMatch?.id) return emailMatch.id
+    }
+
+    return null
+  } catch (err) {
+    console.error('Error finding referrer by code:', err)
+    return null
+  }
+}
+
+/**
+ * Link a new user to their referrer if a valid referral code is provided
+ */
+export async function linkReferralCode(refereeUserId: string, code: string, customClient?: any): Promise<boolean> {
+  if (!code || !code.trim()) return false
+  const referrerId = await findReferrerByCode(code, customClient)
+  if (!referrerId || referrerId === refereeUserId) return false
+
+  const supabase = getEffectiveSupabaseClient(customClient)
+  try {
+    await supabase
+      .from('profiles')
+      .update({ referred_by: referrerId })
+      .eq('id', refereeUserId)
+    return true
+  } catch (err) {
+    console.error('Error linking referral code:', err)
+    return false
+  }
 }
 
 /**

@@ -74,11 +74,14 @@ export async function initializeWelcomeCredits(userId: string, customClient?: an
     if (!profile) {
       const isTestUser = userEmail?.toLowerCase() === 'test@joinsophi.com'
       const initialCredits = isTestUser ? 100 : CREDIT_COSTS.WELCOME_BONUS // 50
+      const { generateReferralCode } = await import('@/lib/referralService')
+      const refCode = generateReferralCode(userEmail)
 
       const { error: insertErr } = await supabase.from('profiles').upsert({
         id: userId,
         email: userEmail,
         cv_credits: initialCredits,
+        referral_code: refCode,
         welcome_bonus_granted: true,
       })
 
@@ -88,6 +91,7 @@ export async function initializeWelcomeCredits(userId: string, customClient?: an
           id: userId,
           email: userEmail,
           cv_credits: initialCredits,
+          referral_code: refCode,
         })
       }
 

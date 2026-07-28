@@ -603,19 +603,20 @@ export default function DashboardPage() {
             {/* Referral Link & Promo Code */}
             <div className="space-y-2 pt-1">
               <label className="block text-xs font-bold text-slate-700">
-                Your Referral Link ({profile?.referral_code || (profile?.email ? profile.email.substring(0, 4).toUpperCase() + '100' : 'SOPH100')})
+                Your Referral Code: <span className="font-mono text-primary font-extrabold">{profile?.referral_code || (profile?.email ? profile.email.split('@')[0].toUpperCase() + '30' : 'SOPH30')}</span>
               </label>
               <div className="flex items-center gap-2">
                 <input
                   type="text"
                   readOnly
-                  value={typeof window !== 'undefined' ? `${window.location.origin}/login?ref=${profile?.referral_code || (profile?.email ? profile.email.substring(0, 4).toUpperCase() + '100' : 'SOPH100')}` : `https://joinsophi.com/login?ref=${profile?.referral_code || 'SOPH100'}`}
+                  value={typeof window !== 'undefined' ? `${window.location.origin}/login?ref=${profile?.referral_code || (profile?.email ? profile.email.split('@')[0].toUpperCase() + '30' : 'SOPH30')}` : `https://joinsophi.com/login?ref=${profile?.referral_code || 'SOPH30'}`}
                   className="flex-1 rounded-xl border border-slate-300 bg-slate-50 py-2 px-3 text-xs text-slate-800 font-mono focus:outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => {
-                    const refLink = `${window.location.origin}/login?ref=${profile?.referral_code || 'SOPH100'}`
+                    const refCode = profile?.referral_code || (profile?.email ? profile.email.split('@')[0].toUpperCase() + '30' : 'SOPH30')
+                    const refLink = `${window.location.origin}/login?ref=${refCode}`
                     navigator.clipboard.writeText(refLink)
                     toast.success('Referral link copied to clipboard!')
                   }}
@@ -629,7 +630,7 @@ export default function DashboardPage() {
             {/* Social Share Buttons */}
             <div className="grid grid-cols-2 gap-2 pt-1">
               <a
-                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Get Sophi AI Credits to optimize your CV & LinkedIn profile! Sign up using my link: ${typeof window !== 'undefined' ? window.location.origin : 'https://joinsophi.com'}/login?ref=${profile?.referral_code || 'SOPH100'}`)}`}
+                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Get Sophi AI Credits to optimize your CV & LinkedIn profile! Sign up using my link: ${typeof window !== 'undefined' ? window.location.origin : 'https://joinsophi.com'}/login?ref=${profile?.referral_code || (profile?.email ? profile.email.split('@')[0].toUpperCase() + '30' : 'SOPH30')}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-1.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-sm text-center"
@@ -637,7 +638,7 @@ export default function DashboardPage() {
                 <span>WhatsApp Share</span>
               </a>
               <a
-                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`${typeof window !== 'undefined' ? window.location.origin : 'https://joinsophi.com'}/login?ref=${profile?.referral_code || 'SOPH100'}`)}`}
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`${typeof window !== 'undefined' ? window.location.origin : 'https://joinsophi.com'}/login?ref=${profile?.referral_code || (profile?.email ? profile.email.split('@')[0].toUpperCase() + '30' : 'SOPH30')}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-1.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors shadow-sm text-center"

@@ -1,20 +1,31 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { getClientSupabase } from '@/lib/supabase'
-import { Mail, Lock, Loader2, ArrowLeft } from 'lucide-react'
+import { Mail, Lock, Loader2, ArrowLeft, Tag } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import Logo from '@/components/Logo'
 
-export default function LoginPage() {
+function LoginContent() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [referralCode, setReferralCode] = useState('')
   const [isSignUp, setIsSignUp] = useState(false)
   const [loading, setLoading] = useState(false)
   
+  const searchParams = useSearchParams()
   const supabase = getClientSupabase()
+
+  useEffect(() => {
+    const refFromUrl = searchParams.get('ref') || searchParams.get('referral')
+    if (refFromUrl) {
+      setReferralCode(refFromUrl.toUpperCase())
+      setIsSignUp(true)
+    }
+  }, [searchParams])
 
   const handleLinkedinLogin = async () => {
     try {
@@ -77,6 +88,12 @@ export default function LoginPage() {
         if (data.user) {
           const { initializeWelcomeCredits } = await import('@/lib/creditService')
           await initializeWelcomeCredits(data.user.id, supabase, email)
+
+          // Link referral code if provided and not removed by user
+          if (referralCode.trim()) {
+            const { linkReferralCode } = await import('@/lib/referralService')
+            await linkReferralCode(data.user.id, referralCode.trim(), supabase)
+          }
         }
 
         if (data.user && !data.session) {
@@ -185,24 +202,61 @@ export default function LoginPage() {
 
             {/* Confirm Password (only visible on Sign Up) */}
             {isSignUp && (
-              <div className="animate-fade-in">
-                <label htmlFor="confirmPassword" className="block text-xs font-bold text-slate-700 uppercase tracking-wide">
-                  Confirm Password
-                </label>
-                <div className="relative mt-2">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <Lock className="h-4 w-4 text-slate-400" />
+              <div className="animate-fade-in space-y-4">
+                <div>
+                  <label htmlFor="confirmPassword" className="block text-xs font-bold text-slate-700 uppercase tracking-wide">
+                    Confirm Password
+                  </label>
+                  <div className="relative mt-2">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <Lock className="h-4 w-4 text-slate-400" />
+                    </div>
+                    <input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      required
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="block w-full rounded-lg border border-slate-350 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-800 placeholder-slate-400 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
                   </div>
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    required
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="block w-full rounded-lg border border-slate-350 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-800 placeholder-slate-400 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
+                </div>
+
+                {/* Referral Code (Optional) */}
+                <div>
+                  <label htmlFor="referralCode" className="block text-xs font-bold text-slate-700 uppercase tracking-wide flex justify-between items-center">
+                    <span>Referral Code <span className="text-slate-400 font-normal lowercase">(optional)</span></span>
+                    {referralCode && (
+                      <button
+                        type="button"
+                        onClick={() => setReferralCode('')}
+                        className="text-[11px] font-semibold text-rose-600 hover:underline capitalize"
+                      >
+                        Clear code
+                      </button>
+                    )}
+                  </label>
+                  <div className="relative mt-2">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <Tag className="h-4 w-4 text-amber-500" />
+                    </div>
+                    <input
+                      id="referralCode"
+                      name="referralCode"
+                      type="text"
+                      value={referralCode}
+                      onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                      placeholder="e.g. TEST30"
+                      className="block w-full rounded-lg border border-amber-300 bg-amber-50/40 py-2.5 pl-10 pr-3 text-sm font-mono font-bold text-slate-800 placeholder-slate-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    />
+                  </div>
+                  <p className="mt-1 text-[11px] text-slate-500">
+                    {referralCode
+                      ? '✦ Auto-filled from referral link. Leave code intact to reward your friend.'
+                      : '✦ Have a friend’s referral code? Enter it above to connect your profile.'}
+                  </p>
                 </div>
               </div>
             )}
@@ -263,5 +317,17 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-slate-50">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   )
 }
