@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GoogleGenAI } from '@google/genai'
 
+function sanitizeReportText(text: string): string {
+  if (!text) return ''
+  return text
+    .replace(/^[#]+\s*/gm, '') // Strip leading #, ##, ###
+    .replace(/\*\*(.*?)\*\*/g, '$1') // Strip bold **
+    .replace(/\*(.*?)\*/g, '$1') // Strip italic *
+    .replace(/`/g, '')
+    .trim()
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { url, profileText, idealProfile, userId } = await req.json()
@@ -48,7 +58,7 @@ export async function POST(req: NextRequest) {
     }
 
     const geminiKey = process.env.GEMINI_API_KEY
-    let contrastReport = ''
+    let rawReport = ''
 
     if (geminiKey) {
       try {
@@ -68,44 +78,45 @@ Top Skills: ${skills}
 CURRENT PROFILE DATA:
 ${currentProfileText}
 
-Please generate a high-impact LinkedIn Contrast & Optimization Report.
+Please generate a clean, high-impact LinkedIn Contrast & Optimization Report.
+CRITICAL FORMATTING INSTRUCTION: Do NOT output any markdown headers (like #, ##, ###) or asterisk formatting (like ** or *). Use clean plain text with bullet points (•) and numbered sections.
+
 Include:
 1. 🎯 HEADLINE CONTRAST & COPY-PASTE SUGGESTIONS
 2. 📝 ABOUT SECTION CONTRAST & REWRITTEN BIO
 3. ⚡ TOP 10 SKILLS TO FEATURE ON LINKEDIN
-4. 🚀 PROFILE VISIBILITY & RECRUITER SEARCH OPTIMIZATION TIPS
-
-Format clearly with headings and bullet points.`
+4. 🚀 PROFILE VISIBILITY & RECRUITER SEARCH OPTIMIZATION TIPS`
 
         const result = await ai.models.generateContent({
           model: 'gemini-1.5-flash',
           contents: prompt,
         })
-        contrastReport = result.text || ''
+        rawReport = result.text || ''
       } catch (aiErr) {
         console.error('Gemini AI error in LinkedIn optimizer:', aiErr)
       }
     }
 
-    if (!contrastReport) {
-      contrastReport = `## 🎯 LinkedIn Optimization Report
+    if (!rawReport) {
+      rawReport = `🎯 LinkedIn Optimization Report
 
-### 1. Headline Suggestion
-**Recommended:** Executive Leader | Strategic Operations & Growth Specialist
-*Reasoning:* Incorporates high-volume recruiter search keywords.
+1. Headline Suggestion
+Recommended: Executive Leader | Strategic Operations & Growth Specialist
+Reasoning: Incorporates high-volume recruiter search keywords.
 
-### 2. About / Summary Rewrite
-**Recommended Bio:**
+2. About / Summary Rewrite
+Recommended Bio:
 Results-driven professional with expertise in leading cross-functional teams, driving operational efficiency, and scaling high-impact initiatives.
 
-### 3. Top Skills to Feature
-- Strategic Planning
-- Operations Management
-- Team Leadership
-- Data Analytics & Reporting
-- Client Relationship Management`
+3. Top Skills to Feature
+• Strategic Planning
+• Operations Management
+• Team Leadership
+• Data Analytics & Reporting
+• Client Relationship Management`
     }
 
+    const contrastReport = sanitizeReportText(rawReport)
     const finalHeadline = idealProfile?.headline || 'Executive Leader | Strategic Operations & Growth Specialist'
     const finalSummary = idealProfile?.about || 'Results-driven professional with expertise in leading cross-functional teams, driving operational efficiency, and scaling high-impact initiatives.'
     const finalSkills = idealProfile?.skills || ['Strategic Planning', 'Operations Management', 'Team Leadership', 'Data Analytics', 'Client Relationship Management']

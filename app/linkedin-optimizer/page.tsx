@@ -25,6 +25,16 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { getClientSupabase } from '@/lib/supabase'
 
+function sanitizeReportText(text: string): string {
+  if (!text) return ''
+  return text
+    .replace(/^[#]+\s*/gm, '') // Strip leading #, ##, ###
+    .replace(/\*\*(.*?)\*\*/g, '$1') // Strip bold **
+    .replace(/\*(.*?)\*/g, '$1') // Strip italic *
+    .replace(/`/g, '')
+    .trim()
+}
+
 function LinkedInOptimizerContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -65,7 +75,7 @@ function LinkedInOptimizerContent() {
             .maybeSingle()
 
           if (data && data.metadata && data.metadata.contrastReport) {
-            setContrastReport(data.metadata.contrastReport)
+            setContrastReport(sanitizeReportText(data.metadata.contrastReport))
             setHeadline(data.metadata.headline || 'Executive Leader | Strategic Growth Specialist')
             setSummary(data.metadata.summary || 'Results-oriented executive professional with proven track record.')
             setSkills(data.metadata.skills || ['Strategic Planning', 'Leadership', 'Data Analytics', 'Cross-Functional Team Management'])
@@ -167,7 +177,7 @@ function LinkedInOptimizerContent() {
         throw new Error(data.error || 'Failed to optimize LinkedIn profile')
       }
 
-      setContrastReport(data.contrastReport || '')
+      setContrastReport(sanitizeReportText(data.contrastReport || ''))
       setHeadline(data.headline || 'Executive Leader | Strategic Growth Specialist')
       setSummary(data.summary || 'Results-oriented executive professional with proven track record.')
       setSkills(data.skills || ['Strategic Planning', 'Leadership', 'Data Analytics', 'Cross-Functional Team Management'])
