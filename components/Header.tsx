@@ -146,13 +146,21 @@ export default function Header() {
                   </Link>
                 )}
 
-                <Link
-                  href={isBetaActive() || (credits && credits > 0) ? '/upload' : '/payment'}
-                  className="flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white transition-all hover:bg-primary-800 hover:shadow-md hover:shadow-primary-100"
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isBetaActive() || (credits !== null && credits >= 30)) {
+                      router.push('/upload')
+                    } else {
+                      toast.error(`Insufficient Credits! Transform CV requires 30 Credits, but you currently have ${credits ?? 0} Credits. Redirecting to payment...`)
+                      router.push('/payment')
+                    }
+                  }}
+                  className="flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white transition-all hover:bg-primary-800 hover:shadow-md hover:shadow-primary-100 cursor-pointer"
                 >
                   <PlusCircle className="h-4 w-4 text-gold" />
                   <span className="hidden sm:inline">Transform CV</span>
-                </Link>
+                </button>
 
                 <button
                   onClick={handleSignOut}

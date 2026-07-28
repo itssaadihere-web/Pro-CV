@@ -196,6 +196,15 @@ export default function DashboardPage() {
 
   const credits = profile?.cv_credits ?? 0
 
+  const handleServiceLaunch = (serviceCost: number, targetUrl: string, serviceTitle: string) => {
+    if (credits >= serviceCost) {
+      router.push(targetUrl)
+    } else {
+      toast.error(`Insufficient Credits! ${serviceTitle} requires ${serviceCost} Credits, but you currently have ${credits} Credits. Redirecting to payment...`)
+      router.push('/payment')
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50">
@@ -287,13 +296,14 @@ export default function DashboardPage() {
                       Build a brand new ATS-formatted executive CV step-by-step.
                     </p>
                   </div>
-                  <Link
-                    href="/choice"
-                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 px-3.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-2xs border border-slate-800"
+                  <button
+                    type="button"
+                    onClick={() => handleServiceLaunch(30, '/choice', 'Create CV from Scratch')}
+                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 px-3.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-2xs border border-slate-800 cursor-pointer"
                   >
                     <PlusCircle className="h-3.5 w-3.5 text-gold" />
                     <span>Create CV (30 Cr)</span>
-                  </Link>
+                  </button>
                 </div>
 
                 {/* 2. Transform Current CV */}
@@ -314,13 +324,14 @@ export default function DashboardPage() {
                       Upload your PDF/DOCX resume for complete AI redesign.
                     </p>
                   </div>
-                  <Link
-                    href="/upload"
-                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 px-3.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-2xs border border-slate-800"
+                  <button
+                    type="button"
+                    onClick={() => handleServiceLaunch(30, '/upload', 'Transform Current CV')}
+                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 px-3.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-2xs border border-slate-800 cursor-pointer"
                   >
                     <FileText className="h-3.5 w-3.5 text-gold" />
                     <span>Transform CV (30 Cr)</span>
-                  </Link>
+                  </button>
                 </div>
 
                 {/* 3. LinkedIn Profile Optimizer */}
@@ -341,13 +352,14 @@ export default function DashboardPage() {
                       Headline hook, bio summary, & 10 skill badge suggestions.
                     </p>
                   </div>
-                  <Link
-                    href="/linkedin-optimizer"
-                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 px-3.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-2xs border border-slate-800"
+                  <button
+                    type="button"
+                    onClick={() => handleServiceLaunch(20, '/linkedin-optimizer', 'LinkedIn Profile Optimizer')}
+                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 px-3.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-2xs border border-slate-800 cursor-pointer"
                   >
                     <Compass className="h-3.5 w-3.5 text-gold" />
                     <span>Optimize LinkedIn (20 Cr)</span>
-                  </Link>
+                  </button>
                 </div>
 
                 {/* 4. ATS Compatibility Scan */}
@@ -368,13 +380,14 @@ export default function DashboardPage() {
                       5-dimension compatibility score, keyword gap & flaw report.
                     </p>
                   </div>
-                  <Link
-                    href="/ats-checker"
-                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 px-3.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-2xs border border-slate-800"
+                  <button
+                    type="button"
+                    onClick={() => handleServiceLaunch(10, '/ats-checker', 'ATS Score Evaluator')}
+                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 px-3.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-2xs border border-slate-800 cursor-pointer"
                   >
                     <TrendingUp className="h-3.5 w-3.5 text-gold" />
                     <span>Scan ATS (10 Cr)</span>
-                  </Link>
+                  </button>
                 </div>
 
                 {/* 5. Job-Specific CV Tailoring */}
@@ -395,13 +408,14 @@ export default function DashboardPage() {
                       Align existing portal CV for a specific target job opening.
                     </p>
                   </div>
-                  <Link
-                    href="/tailor-cv"
-                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 px-3.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-2xs border border-slate-800"
+                  <button
+                    type="button"
+                    onClick={() => handleServiceLaunch(5, '/tailor-cv', 'Job-Specific CV Tailoring')}
+                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 px-3.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-2xs border border-slate-800 cursor-pointer"
                   >
                     <Settings className="h-3.5 w-3.5 text-gold" />
                     <span>Tailor CV (5 Cr)</span>
-                  </Link>
+                  </button>
                 </div>
 
               </div>
