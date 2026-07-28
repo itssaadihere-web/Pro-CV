@@ -231,14 +231,43 @@ export async function logCreditTransaction(
   }
 }
 
+export async function logServiceActivity(
+  userId: string,
+  serviceType: ServiceType,
+  serviceTitle: string,
+  targetUrl: string,
+  metadata: any = {},
+  customClient?: any
+) {
+  const supabase = customClient || getServiceSupabase()
+  try {
+    await supabase.from('service_activities').insert({
+      user_id: userId,
+      service_type: serviceType,
+      service_title: serviceTitle,
+      status: 'completed',
+      target_url: targetUrl,
+      metadata,
+      created_at: new Date().toISOString(),
+    })
+  } catch (err) {
+    console.warn('Failed to log service activity:', err)
+  }
+}
+
 export async function getCreditStatement(userId: string, customClient?: any): Promise<any[]> {
   const supabase = customClient || getServiceSupabase()
-  const { data } = await supabase
-    .from('credit_transactions')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(50)
+  try {
+    const { data, error } = await supabase
+      .from('credit_transactions')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(50)
 
-  return data ?? []
+    if (error || !data) return []
+    return data
+  } catch {
+    return []
+  }
 }

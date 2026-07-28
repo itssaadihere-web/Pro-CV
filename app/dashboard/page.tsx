@@ -32,6 +32,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [profile, setProfile] = useState<any>(null)
   const [jobs, setJobs] = useState<any[]>([])
+  const [activities, setActivities] = useState<any[]>([])
   const [transactions, setTransactions] = useState<any[]>([])
   const [activeReferralTab, setActiveReferralTab] = useState<'cv' | 'linkedin' | 'ats' | 'tailor'>('cv')
 
@@ -77,27 +78,98 @@ export default function DashboardPage() {
 
         setProfile(finalProf)
 
-        // Fetch user CV optimization jobs
-        const { data: cvJobs, error: cvJobsError } = await supabase
+        // 1. Fetch user CV optimization jobs
+        const { data: cvJobs } = await supabase
           .from('cv_jobs')
           .select('*')
           .eq('user_id', session.user.id)
           .order('created_at', { ascending: false })
 
-        if (!cvJobsError && cvJobs) {
+        if (cvJobs) {
           setJobs(cvJobs)
         }
 
-        // Fetch credit statement history
+        // 2. Fetch service_activities table (if created)
+        const { data: directActivities } = await supabase
+          .from('service_activities')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .order('created_at', { ascending: false })
+
+        // Combine cv_jobs and service_activities into a unified activity feed
+        const combinedFeed: any[] = []
+
+        if (cvJobs && cvJobs.length > 0) {
+          cvJobs.forEach((job: any) => {
+            combinedFeed.push({
+              id: job.id,
+              created_at: job.created_at,
+              service_type: 'CREATE_CV',
+              service_title: 'CV Transformation & Revamp',
+              status: job.status || 'completed',
+              target_url: `/result/${job.id}`,
+            })
+          })
+        }
+
+        if (directActivities && directActivities.length > 0) {
+          directActivities.forEach((act: any) => {
+            // Avoid duplicate entry if job ID matches
+            if (!combinedFeed.some((f) => f.id === act.id || (f.target_url && f.target_url.includes(act.metadata?.jobId)))) {
+              combinedFeed.push({
+                id: act.id,
+                created_at: act.created_at,
+                service_type: act.service_type,
+                service_title: act.service_title,
+                status: act.status || 'completed',
+                target_url: act.target_url || '/dashboard',
+              })
+            }
+          })
+        }
+
+        combinedFeed.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        setActivities(combinedFeed)
+
+        // 3. Fetch credit statement transactions
         const { data: txs } = await supabase
           .from('credit_transactions')
           .select('*')
           .eq('user_id', session.user.id)
           .order('created_at', { ascending: false })
-          .limit(30)
+          .limit(50)
 
-        if (txs) {
+        if (txs && txs.length > 0) {
           setTransactions(txs)
+        } else {
+          // Synthetic fallback credit statement if credit_transactions table was created recently
+          const syntheticLog: any[] = []
+          let runningBalance = finalProf?.cv_credits ?? 0
+
+          if (cvJobs && cvJobs.length > 0) {
+            cvJobs.forEach((job: any) => {
+              const balanceBefore = runningBalance + 30
+              syntheticLog.push({
+                id: `synth-job-${job.id}`,
+                created_at: job.created_at,
+                service_name: 'Create CV from Scratch / Transform CV',
+                credits_changed: -30,
+                balance_after: runningBalance,
+              })
+              runningBalance = balanceBefore
+            })
+          }
+
+          syntheticLog.push({
+            id: 'synth-welcome',
+            created_at: session.user.created_at || new Date().toISOString(),
+            service_name: 'Welcome Signup Bonus',
+            credits_changed: 50,
+            balance_after: 50,
+          })
+
+          syntheticLog.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+          setTransactions(syntheticLog)
         }
 
       } catch (err: any) {
@@ -327,23 +399,26 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* CARD 2: Your CV Revamp History (Single Table - No Duplicates!) */}
+            {/* CARD 2: Service Activity History (Tracks All 5 Sophi Services) */}
             <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
               <div className="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
-                <h2 className="text-base font-bold text-slate-900">Your CV Revamp History</h2>
-                <span className="text-xs text-slate-400 font-semibold">{jobs.length} total requests</span>
+                <div>
+                  <h2 className="text-base font-bold text-slate-900">Service Activity History</h2>
+                  <p className="text-[11px] text-slate-500">History log of all availed Sophi AI services</p>
+                </div>
+                <span className="text-xs text-slate-400 font-semibold">{activities.length} total activities</span>
               </div>
 
-              {jobs.length === 0 ? (
+              {activities.length === 0 ? (
                 /* Empty state placeholder */
                 <div className="text-center py-16 px-4 space-y-4">
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
                     <FileText className="h-6 w-6" />
                   </div>
                   <div className="max-w-sm mx-auto space-y-1">
-                    <h3 className="text-sm font-semibold text-slate-800">No revamp jobs found</h3>
+                    <h3 className="text-sm font-semibold text-slate-800">No service activity found</h3>
                     <p className="text-xs leading-relaxed text-slate-500">
-                      You haven&apos;t optimized any CVs yet. Select a service above to get started.
+                      You haven&apos;t used any Sophi AI services yet. Select a service above to get started.
                     </p>
                   </div>
                   <div>
@@ -357,61 +432,70 @@ export default function DashboardPage() {
                   </div>
                 </div>
               ) : (
-                /* Jobs history table */
+                /* Multi-service activity table */
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                        <th className="py-4 px-6">Created</th>
-                        <th className="py-4 px-6">Industry</th>
-                        <th className="py-4 px-6">ATS Score</th>
+                        <th className="py-4 px-6">Date</th>
+                        <th className="py-4 px-6">Service Type</th>
                         <th className="py-4 px-6">Status</th>
                         <th className="py-4 px-6 text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-xs font-medium text-slate-700">
-                      {jobs.map((job) => {
-                        const jobDate = new Date(job.created_at).toLocaleDateString(undefined, {
+                      {activities.map((act) => {
+                        const actDate = new Date(act.created_at).toLocaleDateString(undefined, {
                           year: 'numeric',
                           month: 'short',
                           day: 'numeric',
                         })
-                        const atsScore = job.ats_score?.overall || 'N/A'
+
+                        const isCv = act.service_type === 'CREATE_CV' || act.service_type === 'TRANSFORM_CV'
+                        const isLinkedin = act.service_type === 'LINKEDIN_OPTIMIZER'
+                        const isAts = act.service_type === 'ATS_EVALUATION'
+                        const isTailor = act.service_type === 'TAILOR_CV'
 
                         return (
-                          <tr key={job.id} className="hover:bg-slate-50/50 transition-colors">
-                            <td className="py-4 px-6 flex items-center gap-2">
+                          <tr key={act.id} className="hover:bg-slate-50/50 transition-colors">
+                            <td className="py-4 px-6 flex items-center gap-2 text-slate-500">
                               <Calendar className="h-4 w-4 text-slate-400" />
-                              <span>{jobDate}</span>
+                              <span>{actDate}</span>
                             </td>
-                            <td className="py-4 px-6">{job.target_industry}</td>
-                            <td className="py-4 px-6 font-bold text-slate-800">
-                              {job.status === 'completed' ? (
-                                <div className="flex items-center gap-1">
-                                  <TrendingUp className="h-3.5 w-3.5 text-gold" />
-                                  <span>{atsScore}/100</span>
-                                </div>
-                              ) : (
-                                <span className="text-slate-400">—</span>
-                              )}
+                            <td className="py-4 px-6 font-bold">
+                              <span className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-bold ${
+                                isCv
+                                  ? 'bg-slate-900 text-white shadow-2xs'
+                                  : isLinkedin
+                                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                                  : isAts
+                                  ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                                  : isTailor
+                                  ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                                  : 'bg-slate-100 text-slate-700 border border-slate-200'
+                              }`}>
+                                {isCv && '📄 CV Transformation & Revamp'}
+                                {isLinkedin && '💼 LinkedIn Profile Optimizer'}
+                                {isAts && '🎯 ATS Score Evaluator'}
+                                {isTailor && '✂️ Job-Specific CV Tailor'}
+                                {!isCv && !isLinkedin && !isAts && !isTailor && (act.service_title || 'Sophi AI Service')}
+                              </span>
                             </td>
                             <td className="py-4 px-6">
-                              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                                job.status === 'completed'
+                              <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                                act.status === 'completed'
                                   ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                  : job.status === 'processing'
+                                  : act.status === 'processing'
                                   ? 'bg-primary-50 text-primary border border-primary-100'
-                                  : 'bg-red-50 text-red-700 border border-red-100'
+                                  : 'bg-slate-100 text-slate-700 border border-slate-200'
                               }`}>
-                                {job.status}
+                                {act.status}
                               </span>
                             </td>
                             <td className="py-4 px-6 text-right">
                               <Link
-                                href={job.status === 'completed' ? `/result/${job.id}` : '#'}
-                                className={`inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 ${
-                                  job.status !== 'completed' ? 'pointer-events-none opacity-50' : ''
-                                }`}
+                                href={act.target_url || '/dashboard'}
+                                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-900"
                               >
                                 <Eye className="h-3.5 w-3.5" />
                                 <span>View Report</span>

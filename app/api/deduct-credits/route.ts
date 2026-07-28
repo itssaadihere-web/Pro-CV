@@ -26,6 +26,27 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Log activity in service_activities table
+    const { logServiceActivity, SERVICE_NAMES } = await import('@/lib/creditService')
+    const serviceTitle = SERVICE_NAMES[serviceType as ServiceType] || serviceType
+    const urlMap: Record<string, string> = {
+      ATS_EVALUATION: '/ats-checker',
+      TAILOR_CV: '/tailor-cv',
+      LINKEDIN_OPTIMIZER: '/linkedin-optimizer',
+      CREATE_CV: '/choice',
+      TRANSFORM_CV: '/upload',
+    }
+    const targetUrl = urlMap[serviceType] || '/dashboard'
+
+    await logServiceActivity(
+      session.user.id,
+      serviceType as ServiceType,
+      serviceTitle,
+      targetUrl,
+      { creditsUsed: deduction.remainingCredits },
+      serviceSupabase
+    )
+
     return NextResponse.json({
       success: true,
       remainingCredits: deduction.remainingCredits,

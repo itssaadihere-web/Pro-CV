@@ -193,8 +193,9 @@ Please run the full transformation and output all sections as specified in your 
     }
 
     // 3. Decrement user credits (30 Credits for Full CV Creation / Revamp)
-    const { deductCredits } = await import('@/lib/creditService')
+    const { deductCredits, logServiceActivity } = await import('@/lib/creditService')
     await deductCredits(userId, 'CREATE_CV')
+    await logServiceActivity(userId, 'CREATE_CV', 'CV Transformation & Revamp', `/result/${jobId}`, { jobId }, supabase)
 
     return NextResponse.json({ success: true, sections, templateId })
   } catch (error: any) {
