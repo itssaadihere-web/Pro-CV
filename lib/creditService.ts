@@ -1,4 +1,11 @@
 import { getServiceSupabase } from '@/lib/supabase-server'
+import { getClientSupabase } from '@/lib/supabase'
+
+function getEffectiveSupabaseClient(customClient?: any) {
+  if (customClient) return customClient
+  if (typeof window !== 'undefined') return getClientSupabase()
+  return getServiceSupabase()
+}
 
 export type ServiceType =
   | 'CREATE_CV'
@@ -39,7 +46,7 @@ export const SERVICE_NAMES: Record<ServiceType, string> = {
 }
 
 export async function getUserCredits(userId: string, customClient?: any): Promise<{ credits: number; hasPaid: boolean }> {
-  const supabase = customClient || getServiceSupabase()
+  const supabase = getEffectiveSupabaseClient(customClient)
   const { data: profile } = await supabase
     .from('profiles')
     .select('cv_credits, has_paid')
@@ -53,7 +60,7 @@ export async function getUserCredits(userId: string, customClient?: any): Promis
 }
 
 export async function initializeWelcomeCredits(userId: string, customClient?: any, userEmail?: string): Promise<number> {
-  const supabase = customClient || getServiceSupabase()
+  const supabase = getEffectiveSupabaseClient(customClient)
 
   try {
     // 1. Check if profile exists
@@ -127,7 +134,7 @@ export async function deductCredits(
   serviceType: ServiceType,
   customClient?: any
 ): Promise<{ success: boolean; remainingCredits: number; error?: string }> {
-  const supabase = customClient || getServiceSupabase()
+  const supabase = getEffectiveSupabaseClient(customClient)
   const cost = CREDIT_COSTS[serviceType]
   const serviceName = SERVICE_NAMES[serviceType]
 
@@ -178,7 +185,7 @@ export async function addCredits(
   markPaid: boolean = false,
   customClient?: any
 ): Promise<number> {
-  const supabase = customClient || getServiceSupabase()
+  const supabase = getEffectiveSupabaseClient(customClient)
   const { credits } = await getUserCredits(userId, customClient)
 
   const newBalance = credits + amount

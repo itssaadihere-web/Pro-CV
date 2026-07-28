@@ -146,18 +146,21 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Credits Summary Card */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex items-center justify-between">
+          {/* Single Unified Credit Summary Header */}
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-1">
-              <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Credits Remaining</span>
-              <span className="block text-3xl font-extrabold text-slate-950">{credits}</span>
+              <span className="block text-xs font-extrabold text-slate-400 uppercase tracking-wider">Account Balance</span>
+              <div className="flex items-center gap-2">
+                <span className="text-3xl font-black text-slate-950">{credits}</span>
+                <span className="text-xs font-bold text-slate-500">Credits Available</span>
+              </div>
             </div>
             <Link
-              href={credits > 0 ? '/choice' : '/payment'}
-              className="flex items-center gap-1 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white transition-all hover:bg-primary-800 hover:shadow-md hover:shadow-primary-100"
+              href="/payment"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-5 py-3 text-xs font-bold text-white transition-all hover:bg-slate-800 shadow-sm border border-slate-800"
             >
               <PlusCircle className="h-4 w-4 text-gold" />
-              <span>{credits > 0 ? 'Create CV' : 'Buy Credits'}</span>
+              <span>Buy Credits (1500 PKR)</span>
             </Link>
           </div>
         </div>
@@ -170,30 +173,29 @@ export default function DashboardPage() {
 
             {/* CARD 1: Sophi Services & Credit Rate List (Front & Center Quick Action Grid) */}
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
-                <div>
-                  <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-                    <span>⚡ Sophi AI Services & Credit Rates</span>
-                  </h2>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Clear upfront pricing per service. Select any service to launch directly.
-                  </p>
-                </div>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-3 py-1 text-xs font-bold text-primary border border-primary-100 self-start sm:self-auto">
-                  <Zap className="h-3.5 w-3.5 text-gold fill-gold" />
-                  <span>Available: {credits} Credits</span>
-                </span>
+              <div className="border-b border-slate-100 pb-4">
+                <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                  <span>Sophi AI Services & Direct Launch</span>
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Select any service below to launch directly with your available credit balance.
+                </p>
               </div>
 
-              {/* Grid of All 7 Services */}
+              {/* Grid of All 5 Primary Services */}
               <div className="grid gap-4 sm:grid-cols-2">
                 
                 {/* 1. Create CV from Scratch */}
-                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between space-y-3 hover:border-primary-200 hover:bg-white transition-all">
-                  <div className="space-y-1">
+                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between space-y-4 hover:border-slate-300 hover:bg-white transition-all">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-extrabold text-slate-900">Create CV from Scratch</span>
-                      <span className="rounded-full bg-primary-50 px-2.5 py-0.5 text-[11px] font-black text-primary border border-primary-100">
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-gold font-bold shadow-2xs shrink-0">
+                          <PlusCircle className="h-4 w-4 text-gold" />
+                        </div>
+                        <span className="text-xs font-extrabold text-slate-900">Create CV from Scratch</span>
+                      </div>
+                      <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-black text-slate-800 border border-slate-200">
                         30 Credits
                       </span>
                     </div>
@@ -203,7 +205,7 @@ export default function DashboardPage() {
                   </div>
                   <Link
                     href="/choice"
-                    className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary py-2 px-3 text-xs font-bold text-white hover:bg-primary-850 transition-colors shadow-2xs"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 px-3.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-2xs border border-slate-800"
                   >
                     <PlusCircle className="h-3.5 w-3.5 text-gold" />
                     <span>Create CV (30 Cr)</span>
@@ -211,11 +213,16 @@ export default function DashboardPage() {
                 </div>
 
                 {/* 2. Transform Current CV */}
-                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between space-y-3 hover:border-primary-200 hover:bg-white transition-all">
-                  <div className="space-y-1">
+                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between space-y-4 hover:border-slate-300 hover:bg-white transition-all">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-extrabold text-slate-900">Transform Current CV</span>
-                      <span className="rounded-full bg-primary-50 px-2.5 py-0.5 text-[11px] font-black text-primary border border-primary-100">
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-gold font-bold shadow-2xs shrink-0">
+                          <FileText className="h-4 w-4 text-gold" />
+                        </div>
+                        <span className="text-xs font-extrabold text-slate-900">Transform Current CV</span>
+                      </div>
+                      <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-black text-slate-800 border border-slate-200">
                         30 Credits
                       </span>
                     </div>
@@ -225,7 +232,7 @@ export default function DashboardPage() {
                   </div>
                   <Link
                     href="/upload"
-                    className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary py-2 px-3 text-xs font-bold text-white hover:bg-primary-850 transition-colors shadow-2xs"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 px-3.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-2xs border border-slate-800"
                   >
                     <FileText className="h-3.5 w-3.5 text-gold" />
                     <span>Transform CV (30 Cr)</span>
@@ -233,10 +240,15 @@ export default function DashboardPage() {
                 </div>
 
                 {/* 3. LinkedIn Profile Optimizer */}
-                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between space-y-3 hover:border-blue-200 hover:bg-white transition-all">
-                  <div className="space-y-1">
+                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between space-y-4 hover:border-slate-300 hover:bg-white transition-all">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-extrabold text-slate-900">LinkedIn Optimizer</span>
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-gold font-bold shadow-2xs shrink-0">
+                          <Compass className="h-4 w-4 text-gold" />
+                        </div>
+                        <span className="text-xs font-extrabold text-slate-900">LinkedIn Optimizer</span>
+                      </div>
                       <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[11px] font-black text-blue-700 border border-blue-100">
                         20 Credits
                       </span>
@@ -247,18 +259,23 @@ export default function DashboardPage() {
                   </div>
                   <Link
                     href="/linkedin-optimizer"
-                    className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 py-2 px-3 text-xs font-bold text-white hover:bg-blue-700 transition-colors shadow-2xs"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 px-3.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-2xs border border-slate-800"
                   >
-                    <Compass className="h-3.5 w-3.5 text-blue-200" />
+                    <Compass className="h-3.5 w-3.5 text-gold" />
                     <span>Optimize LinkedIn (20 Cr)</span>
                   </Link>
                 </div>
 
                 {/* 4. ATS Compatibility Scan */}
-                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between space-y-3 hover:border-amber-200 hover:bg-white transition-all">
-                  <div className="space-y-1">
+                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between space-y-4 hover:border-slate-300 hover:bg-white transition-all">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-extrabold text-slate-900">ATS Score Evaluator</span>
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-gold font-bold shadow-2xs shrink-0">
+                          <TrendingUp className="h-4 w-4 text-gold" />
+                        </div>
+                        <span className="text-xs font-extrabold text-slate-900">ATS Score Evaluator</span>
+                      </div>
                       <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-[11px] font-black text-amber-700 border border-amber-100">
                         10 Credits
                       </span>
@@ -269,18 +286,23 @@ export default function DashboardPage() {
                   </div>
                   <Link
                     href="/ats-checker"
-                    className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-amber-600 py-2 px-3 text-xs font-bold text-white hover:bg-amber-700 transition-colors shadow-2xs"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 px-3.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-2xs border border-slate-800"
                   >
-                    <TrendingUp className="h-3.5 w-3.5 text-amber-200" />
+                    <TrendingUp className="h-3.5 w-3.5 text-gold" />
                     <span>Scan ATS (10 Cr)</span>
                   </Link>
                 </div>
 
                 {/* 5. Job-Specific CV Tailoring */}
-                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between space-y-3 hover:border-indigo-200 hover:bg-white transition-all">
-                  <div className="space-y-1">
+                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between space-y-4 hover:border-slate-300 hover:bg-white transition-all sm:col-span-2 md:col-span-1">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-extrabold text-slate-900">Job-Specific CV Tailor</span>
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-gold font-bold shadow-2xs shrink-0">
+                          <Settings className="h-4 w-4 text-gold" />
+                        </div>
+                        <span className="text-xs font-extrabold text-slate-900">Job-Specific CV Tailor</span>
+                      </div>
                       <span className="rounded-full bg-indigo-50 px-2.5 py-0.5 text-[11px] font-black text-indigo-700 border border-indigo-100">
                         5 Credits
                       </span>
@@ -291,9 +313,9 @@ export default function DashboardPage() {
                   </div>
                   <Link
                     href="/tailor-cv"
-                    className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-indigo-600 py-2 px-3 text-xs font-bold text-white hover:bg-indigo-700 transition-colors shadow-2xs"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 px-3.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-2xs border border-slate-800"
                   >
-                    <Settings className="h-3.5 w-3.5 text-indigo-200" />
+                    <Settings className="h-3.5 w-3.5 text-gold" />
                     <span>Tailor CV (5 Cr)</span>
                   </Link>
                 </div>
