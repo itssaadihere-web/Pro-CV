@@ -64,74 +64,82 @@ export async function initializeWelcomeCredits(userId: string, customClient?: an
 
   try {
     // 1. Check if profile exists
-    const { data: profile, error: selectErr } = await supabase
+    const { data: profile } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', userId)
       .maybeSingle()
 
-    // 2. If profile doesn't exist at all, create it with 50 credits
-    if (!profile) {
-      const isTestUser = userEmail?.toLowerCase() === 'test@joinsophi.com'
-      const initialCredits = isTestUser ? 100 : CREDIT_COSTS.WELCOME_BONUS // 50
-      const { generateReferralCode } = await import('@/lib/referralService')
-      const refCode = generateReferralCode(userEmail)
+    const isTestUser = (userEmail || profile?.email)?.toLowerCase() === 'test@joinsophi.com'
+    const bonusAmount = isTestUser ? 100 : CREDIT_COSTS.WELCOME_BONUS // 50
+    const { generateReferralCode } = await import('@/lib/referralService')
+    const refCode = generateReferralCode(userEmail || profile?.email)
 
+    // 2. If profile doesn't exist at all, create it with welcome credits
+    if (!profile) {
       const { error: insertErr } = await supabase.from('profiles').upsert({
         id: userId,
         email: userEmail,
-        cv_credits: initialCredits,
+        cv_credits: bonusAmount,
         referral_code: refCode,
         welcome_bonus_granted: true,
       })
 
       if (insertErr) {
-        // Fallback if welcome_bonus_granted column is missing in DB schema
         await supabase.from('profiles').upsert({
           id: userId,
           email: userEmail,
-          cv_credits: initialCredits,
+          cv_credits: bonusAmount,
           referral_code: refCode,
         })
       }
 
-      await logCreditTransaction(userId, SERVICE_NAMES.WELCOME_BONUS, initialCredits, initialCredits, customClient)
-      return initialCredits
+      await logCreditTransaction(userId, SERVICE_NAMES.WELCOME_BONUS, bonusAmount, bonusAmount, customClient)
+      return bonusAmount
     }
 
-    // 3. If profile exists, check if welcome bonus was already granted
+    // 3. If profile exists:
     const isGranted = Boolean(profile.welcome_bonus_granted)
     const currentCredits = profile.cv_credits ?? 0
 
-    // If welcome bonus has already been granted, respect the existing balance (even if 0)
-    if (isGranted) {
+    // If already granted and has non-zero credits, return current balance
+    if (isGranted && currentCredits > 0) {
       return currentCredits
     }
 
-    // If welcome_bonus_granted flag is false/null, but cv_credits is already defined (not null/undefined),
-    // mark welcome_bonus_granted as true without altering the current credits balance.
-    if (profile.cv_credits !== null && profile.cv_credits !== undefined) {
-      await supabase
-        .from('profiles')
-        .update({ welcome_bonus_granted: true })
-        .eq('id', userId)
-      return currentCredits
-    }
+    // Check if user has any logged credit transactions
+    const { data: txs } = await supabase
+      .from('credit_transactions')
+      .select('id')
+      .eq('user_id', userId)
+      .limit(1)
 
-    // Otherwise, this is a brand new account needing initial welcome credits
-    const isTestUser = profile.email?.toLowerCase() === 'test@joinsophi.com'
-    const newBalance = isTestUser ? 100 : CREDIT_COSTS.WELCOME_BONUS // 50
+    const hasNoTx = !txs || txs.length === 0
 
-    await supabase
-      .from('profiles')
-      .update({
+    // Grant 50 welcome credits if welcome_bonus_granted is false, OR if balance is 0 and user hasn't paid
+    if (!isGranted || (currentCredits === 0 && !profile.has_paid)) {
+      const newBalance = Math.max(currentCredits, bonusAmount)
+      const updateData: any = {
         cv_credits: newBalance,
         welcome_bonus_granted: true,
-      })
-      .eq('id', userId)
+      }
+      if (!profile.referral_code) {
+        updateData.referral_code = refCode
+      }
 
-    await logCreditTransaction(userId, SERVICE_NAMES.WELCOME_BONUS, newBalance, newBalance, customClient)
-    return newBalance
+      await supabase
+        .from('profiles')
+        .update(updateData)
+        .eq('id', userId)
+
+      if (hasNoTx) {
+        await logCreditTransaction(userId, SERVICE_NAMES.WELCOME_BONUS, bonusAmount, newBalance, customClient)
+      }
+
+      return newBalance
+    }
+
+    return currentCredits
   } catch (err) {
     console.error('Error initializing welcome credits:', err)
     return CREDIT_COSTS.WELCOME_BONUS

@@ -47,7 +47,7 @@ export default function DashboardPage() {
 
         // Initialize welcome credits for new users (+50 Credits)
         const { initializeWelcomeCredits } = await import('@/lib/creditService')
-        await initializeWelcomeCredits(session.user.id, supabase, session.user.email)
+        const activeCredits = await initializeWelcomeCredits(session.user.id, supabase, session.user.email)
 
         // Fetch User Profile
         const { data: prof, error: profError } = await supabase
@@ -67,12 +67,16 @@ export default function DashboardPage() {
               email: session.user.email,
               full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0],
               has_paid: isTestUser,
-              cv_credits: isTestUser ? 100 : 50,
+              cv_credits: activeCredits || (isTestUser ? 100 : 50),
             })
             .select('*')
             .single()
 
           finalProf = newProf
+        }
+
+        if (finalProf && (!finalProf.cv_credits || finalProf.cv_credits === 0) && activeCredits > 0) {
+          finalProf = { ...finalProf, cv_credits: activeCredits }
         }
 
         setProfile(finalProf)
