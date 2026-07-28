@@ -106,6 +106,10 @@ Results-driven professional with expertise in leading cross-functional teams, dr
 - Client Relationship Management`
     }
 
+    const finalHeadline = idealProfile?.headline || 'Executive Leader | Strategic Operations & Growth Specialist'
+    const finalSummary = idealProfile?.about || 'Results-driven professional with expertise in leading cross-functional teams, driving operational efficiency, and scaling high-impact initiatives.'
+    const finalSkills = idealProfile?.skills || ['Strategic Planning', 'Operations Management', 'Team Leadership', 'Data Analytics', 'Client Relationship Management']
+
     let activityId: string | null = null
     if (userId) {
       activityId = await logServiceActivity(
@@ -113,7 +117,14 @@ Results-driven professional with expertise in leading cross-functional teams, dr
         'LINKEDIN_OPTIMIZER',
         'LinkedIn Profile Optimizer',
         '/linkedin-optimizer?id=ID_PLACEHOLDER',
-        { contrastReport, url, currentProfileText },
+        {
+          contrastReport,
+          headline: finalHeadline,
+          summary: finalSummary,
+          skills: finalSkills,
+          url,
+          currentProfileText,
+        },
         serviceSupabase
       )
     }
@@ -122,6 +133,9 @@ Results-driven professional with expertise in leading cross-functional teams, dr
       success: true,
       activityId,
       contrastReport,
+      headline: finalHeadline,
+      summary: finalSummary,
+      skills: finalSkills,
       remainingCredits
     })
 
