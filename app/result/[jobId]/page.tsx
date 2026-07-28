@@ -189,12 +189,6 @@ export default function ResultPage() {
   }
 
   const handleRegenerateWithDifferentTemplate = async () => {
-    if (!hasPaid && previewCount >= 5) {
-      setShowPaymentModal(true)
-      toast.error('You have reached 5 free template previews! Upgrade to full version for further templates.')
-      return
-    }
-
     setRotatingTemplate(true)
     try {
       const res = await fetch('/api/rotate-template', {
@@ -210,6 +204,11 @@ export default function ResultPage() {
 
       const data = await res.json().catch(() => null)
       if (!res.ok) {
+        if (res.status === 402 || data?.error?.toLowerCase().includes('insufficient credits')) {
+          toast.error(data?.error || 'Insufficient credits for template switch (1 Credit required). Redirecting to refill...')
+          router.push('/payment')
+          return
+        }
         throw new Error(data?.error || 'Failed to rotate template')
       }
       
@@ -219,8 +218,12 @@ export default function ResultPage() {
       }))
       
       setSelectedTemplate(data.templateId)
-      setPreviewCount((prev) => prev + 1)
-      toast.success(`Switched template layout! (Preview ${previewCount + 1}/5)`)
+
+      if (typeof window !== 'undefined' && typeof data.remainingCredits === 'number') {
+        window.dispatchEvent(new CustomEvent('creditsUpdated', { detail: data.remainingCredits }))
+      }
+
+      toast.success(`Switched template layout! 1 Credit used. (${data.remainingCredits ?? ''} Credits remaining)`)
     } catch (err: any) {
       console.error(err)
       toast.error(err.message || 'Error rotating template.')
