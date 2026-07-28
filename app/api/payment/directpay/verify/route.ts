@@ -44,12 +44,16 @@ async function handleVerification(req: NextRequest) {
       );
     }
 
-    // Unlock credit for user
+    // Grant 150 Credits & mark user as paid
+    const { addCredits } = await import('@/lib/creditService');
+    const { rewardReferrer } = await import('@/lib/referralService');
+
+    await addCredits(profile.id, 150, '1500 PKR Package (150 Credits)', true);
+    await rewardReferrer(profile.id);
+
     const { error: updateError } = await supabase
       .from('profiles')
       .update({
-        has_paid: true,
-        cv_credits: (profile.cv_credits || 0) + 1,
         payment_ref: txn,
         paid_at: new Date().toISOString(),
       })

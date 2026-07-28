@@ -133,12 +133,11 @@ export default function LinkedInOptimizerPage() {
         throw new Error(data.error || 'Failed to optimize LinkedIn profile')
       }
 
-      setContrastReport(data.contrastReport || 'Contrast report generated successfully.')
-      setHeadline(data.headline || 'Executive Specialist | Operations & Strategy Lead')
-      setSummary(data.summary || 'Accomplished professional with a proven track record in driving operational excellence, strategic planning, and team leadership.')
-      setSkills(data.skills || ['Strategic Planning', 'Project Management', 'Team Leadership', 'Analytics', 'Business Development'])
+      if (typeof window !== 'undefined' && typeof data.remainingCredits === 'number') {
+        window.dispatchEvent(new CustomEvent('creditsUpdated', { detail: data.remainingCredits }))
+      }
 
-      toast.success('20 Credits used. LinkedIn Profile Optimization complete!')
+      toast.success(`20 Credits used. LinkedIn Profile Optimization complete! (${data.remainingCredits ?? ''} Credits remaining)`)
     } catch (err: any) {
       console.error(err)
       toast.error(err.message || 'Error optimizing LinkedIn profile.')

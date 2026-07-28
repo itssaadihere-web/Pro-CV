@@ -108,15 +108,20 @@ export async function POST(req: NextRequest) {
         })
         .eq('id', userId)
     } else {
-      // Normal mode: verify user has credits
+      // Normal mode: verify user has credits (30 Credits required for CREATE_CV / TRANSFORM_CV)
       const { data: profile } = await supabase
         .from('profiles')
         .select('cv_credits, email')
         .eq('id', userId)
         .single()
 
-      if (!profile || (profile.email !== 'syedsaad.mob@gmail.com' && (profile.cv_credits ?? 0) < 1)) {
-        return NextResponse.json({ error: 'No credits. Please purchase.' }, { status: 403 })
+      const userCredits = profile?.cv_credits ?? 0
+      const isExempt = profile?.email === 'syedsaad.mob@gmail.com' || profile?.email?.toLowerCase() === 'test@joinsophi.com'
+
+      if (!profile || (!isExempt && userCredits < 30)) {
+        return NextResponse.json({
+          error: `Insufficient credits. Requires 30 Credits, but you have ${userCredits} Credits available. Please purchase credits to continue.`
+        }, { status: 403 })
       }
     }
 

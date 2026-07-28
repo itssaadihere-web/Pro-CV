@@ -9,6 +9,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'LinkedIn URL is required' }, { status: 400 })
     }
 
+    let remainingCredits: number | undefined
+
     if (userId) {
       const { deductCredits } = await import('@/lib/creditService')
       const deduction = await deductCredits(userId, 'LINKEDIN_OPTIMIZER')
@@ -18,6 +20,7 @@ export async function POST(req: NextRequest) {
           { status: 402 }
         )
       }
+      remainingCredits = deduction.remainingCredits
     }
 
     const proxycurlKey = process.env.PROXYCURL_API_KEY
@@ -74,7 +77,8 @@ Make it actionable so they can copy-paste to update their profile.`
 
     return NextResponse.json({
       success: true,
-      contrastReport: result.text
+      contrastReport: result.text,
+      remainingCredits
     })
 
   } catch (error: any) {

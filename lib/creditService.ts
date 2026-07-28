@@ -95,34 +95,39 @@ export async function initializeWelcomeCredits(userId: string, customClient?: an
       return initialCredits
     }
 
-    // 3. If profile exists, check if welcome bonus has been granted or if cv_credits is 0
+    // 3. If profile exists, check if welcome bonus was already granted
     const isGranted = Boolean(profile.welcome_bonus_granted)
     const currentCredits = profile.cv_credits ?? 0
 
-    if (!isGranted || currentCredits === 0) {
-      const isTestUser = profile.email?.toLowerCase() === 'test@joinsophi.com'
-      const newBalance = isTestUser ? 100 : CREDIT_COSTS.WELCOME_BONUS // 50
-
-      const { error: updateErr } = await supabase
-        .from('profiles')
-        .update({
-          cv_credits: newBalance,
-          welcome_bonus_granted: true,
-        })
-        .eq('id', userId)
-
-      if (updateErr) {
-        await supabase
-          .from('profiles')
-          .update({ cv_credits: newBalance })
-          .eq('id', userId)
-      }
-
-      await logCreditTransaction(userId, SERVICE_NAMES.WELCOME_BONUS, newBalance, newBalance, customClient)
-      return newBalance
+    // If welcome bonus has already been granted, respect the existing balance (even if 0)
+    if (isGranted) {
+      return currentCredits
     }
 
-    return currentCredits
+    // If welcome_bonus_granted flag is false/null, but cv_credits is already defined (not null/undefined),
+    // mark welcome_bonus_granted as true without altering the current credits balance.
+    if (profile.cv_credits !== null && profile.cv_credits !== undefined) {
+      await supabase
+        .from('profiles')
+        .update({ welcome_bonus_granted: true })
+        .eq('id', userId)
+      return currentCredits
+    }
+
+    // Otherwise, this is a brand new account needing initial welcome credits
+    const isTestUser = profile.email?.toLowerCase() === 'test@joinsophi.com'
+    const newBalance = isTestUser ? 100 : CREDIT_COSTS.WELCOME_BONUS // 50
+
+    await supabase
+      .from('profiles')
+      .update({
+        cv_credits: newBalance,
+        welcome_bonus_granted: true,
+      })
+      .eq('id', userId)
+
+    await logCreditTransaction(userId, SERVICE_NAMES.WELCOME_BONUS, newBalance, newBalance, customClient)
+    return newBalance
   } catch (err) {
     console.error('Error initializing welcome credits:', err)
     return CREDIT_COSTS.WELCOME_BONUS

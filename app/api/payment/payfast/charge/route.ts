@@ -19,15 +19,12 @@ export async function POST(req: Request) {
     
     // "00" is Processed OK for Payfast
     if (res.code === "00" || res.status_code === "00") {
-       const { data: profile } = await supabase.from('profiles').select('id, cv_credits').eq('id', session.user.id).single();
-       if (profile) {
-          await supabase.from('profiles').update({
-             has_paid: true,
-             cv_credits: (profile.cv_credits || 0) + 1,
-             payment_ref: res.transaction_id,
-             paid_at: new Date().toISOString()
-          }).eq('id', profile.id);
-       }
+       const { addCredits } = await import('@/lib/creditService');
+       await addCredits(session.user.id, 150, '1500 PKR Package (150 Credits)', true);
+       await supabase.from('profiles').update({
+          payment_ref: res.transaction_id,
+          paid_at: new Date().toISOString()
+       }).eq('id', session.user.id);
     } else {
        return NextResponse.json({ error: res.status_msg || res.message || 'Transaction Failed' }, { status: 400 });
     }

@@ -17,44 +17,47 @@ export default function Header() {
   const [credits, setCredits] = useState<number | null>(null)
 
   useEffect(() => {
+    async function fetchUserCredits(userId: string) {
+      try {
+        const { getUserCredits } = await import('@/lib/creditService')
+        const { credits } = await getUserCredits(userId, supabase)
+        setCredits(credits)
+      } catch {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('cv_credits')
+          .eq('id', userId)
+          .maybeSingle()
+        setCredits(profile?.cv_credits ?? 0)
+      }
+    }
+
     async function getSession() {
       const { data: { session } } = await supabase.auth.getSession()
       setUser(session?.user || null)
       
       if (session?.user) {
-        try {
-          const { initializeWelcomeCredits } = await import('@/lib/creditService')
-          const currentCredits = await initializeWelcomeCredits(session.user.id, supabase, session.user.email)
-          setCredits(currentCredits)
-        } catch {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('cv_credits')
-            .eq('id', session.user.id)
-            .maybeSingle()
-          setCredits(profile?.cv_credits ?? 50)
-        }
+        await fetchUserCredits(session.user.id)
       }
     }
 
     getSession()
 
+    const handleCreditsUpdate = (event: any) => {
+      if (typeof event.detail === 'number') {
+        setCredits(event.detail)
+      } else if (user?.id) {
+        fetchUserCredits(user.id)
+      }
+    }
+
+    window.addEventListener('creditsUpdated', handleCreditsUpdate)
+
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user || null)
       if (session?.user) {
-        try {
-          const { initializeWelcomeCredits } = await import('@/lib/creditService')
-          const currentCredits = await initializeWelcomeCredits(session.user.id, supabase, session.user.email)
-          setCredits(currentCredits)
-        } catch {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('cv_credits')
-            .eq('id', session.user.id)
-            .maybeSingle()
-          setCredits(profile?.cv_credits ?? 50)
-        }
+        await fetchUserCredits(session.user.id)
       } else {
         setCredits(null)
       }
@@ -62,8 +65,9 @@ export default function Header() {
 
     return () => {
       subscription.unsubscribe()
+      window.removeEventListener('creditsUpdated', handleCreditsUpdate)
     }
-  }, [supabase, pathname])
+  }, [supabase, pathname, user?.id])
 
   const handleSignOut = async () => {
     try {

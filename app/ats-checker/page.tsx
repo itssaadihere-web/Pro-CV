@@ -105,6 +105,9 @@ export default function ATSCheckerPage() {
       return;
     }
 
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('creditsUpdated', { detail: deduction.remainingCredits }));
+    }
     toast.success(`10 Credits used for ATS Scan. (${deduction.remainingCredits} Credits remaining)`);
     setIsScanning(true);
     setScanComplete(false);
