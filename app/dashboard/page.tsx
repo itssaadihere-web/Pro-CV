@@ -81,6 +81,10 @@ export default function DashboardPage() {
 
         setProfile(finalProf)
 
+        if (typeof window !== 'undefined' && finalProf?.cv_credits !== undefined) {
+          window.dispatchEvent(new CustomEvent('creditsUpdated', { detail: finalProf.cv_credits }))
+        }
+
         // 1. Fetch user CV optimization jobs
         const { data: cvJobs } = await supabase
           .from('cv_jobs')

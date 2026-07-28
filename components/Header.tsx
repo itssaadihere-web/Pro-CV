@@ -17,11 +17,11 @@ export default function Header() {
   const [credits, setCredits] = useState<number | null>(null)
 
   useEffect(() => {
-    async function fetchUserCredits(userId: string) {
+    async function fetchUserCredits(userId: string, email?: string) {
       try {
-        const { getUserCredits } = await import('@/lib/creditService')
-        const { credits } = await getUserCredits(userId, supabase)
-        setCredits(credits)
+        const { initializeWelcomeCredits } = await import('@/lib/creditService')
+        const activeCredits = await initializeWelcomeCredits(userId, supabase, email)
+        setCredits(activeCredits)
       } catch {
         const { data: profile } = await supabase
           .from('profiles')
@@ -37,7 +37,7 @@ export default function Header() {
       setUser(session?.user || null)
       
       if (session?.user) {
-        await fetchUserCredits(session.user.id)
+        await fetchUserCredits(session.user.id, session.user.email)
       }
     }
 
@@ -47,7 +47,7 @@ export default function Header() {
       if (typeof event.detail === 'number') {
         setCredits(event.detail)
       } else if (user?.id) {
-        fetchUserCredits(user.id)
+        fetchUserCredits(user.id, user.email)
       }
     }
 
@@ -57,7 +57,7 @@ export default function Header() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user || null)
       if (session?.user) {
-        await fetchUserCredits(session.user.id)
+        await fetchUserCredits(session.user.id, session.user.email)
       } else {
         setCredits(null)
       }
