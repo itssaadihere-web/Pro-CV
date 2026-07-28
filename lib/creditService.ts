@@ -29,7 +29,7 @@ export const CREDIT_COSTS: Record<ServiceType, number> = {
   ROTATE_TEMPLATE: 1,
   WELCOME_BONUS: 50,
   PURCHASE_REFILL: 150,
-  REFERRAL_REWARD: 10,
+  REFERRAL_REWARD: 30,
 }
 
 export const SERVICE_NAMES: Record<ServiceType, string> = {
@@ -144,18 +144,6 @@ export async function deductCredits(
   const serviceName = SERVICE_NAMES[serviceType]
 
   const { credits, hasPaid } = await getUserCredits(userId, customClient)
-
-  // Test account bypass check
-  const { data: userProf } = await supabase
-    .from('profiles')
-    .select('email')
-    .eq('id', userId)
-    .maybeSingle()
-
-  const isTestUser = userProf?.email?.toLowerCase() === 'test@joinsophi.com'
-  if (isTestUser) {
-    return { success: true, remainingCredits: credits }
-  }
 
   if (credits < cost) {
     return {

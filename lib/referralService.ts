@@ -37,7 +37,7 @@ export async function getOrCreateReferralCode(userId: string, emailOrName?: stri
 }
 
 /**
- * Reward referrer with 10 Credits (100 PKR value) when referred user completes payment
+ * Reward referrer with 30 Credits (300 PKR value / 1 Free CV Transformation) when referred user completes payment
  */
 export async function rewardReferrer(refereeUserId: string): Promise<{ success: boolean; rewardedCredits?: number }> {
   const supabase = getServiceSupabase()
@@ -55,8 +55,8 @@ export async function rewardReferrer(refereeUserId: string): Promise<{ success: 
 
     const referrerId = refereeProf.referred_by
 
-    // Add 10 Credits to referrer (100 PKR value)
-    await addCredits(referrerId, 10, 'Referral Reward Payout (+10 Credits)')
+    // Add 30 Credits to referrer (300 PKR value / 1 Free CV Transformation)
+    await addCredits(referrerId, 30, 'Referral Reward Payout (+30 Credits)')
 
     // Mark referee as rewarded so payout is given only once
     await supabase
@@ -64,7 +64,7 @@ export async function rewardReferrer(refereeUserId: string): Promise<{ success: 
       .update({ referral_rewarded: true })
       .eq('id', refereeUserId)
 
-    return { success: true, rewardedCredits: 10 }
+    return { success: true, rewardedCredits: 30 }
   } catch (err) {
     console.error('Error rewarding referrer:', err)
     return { success: false }

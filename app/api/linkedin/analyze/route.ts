@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     let remainingCredits: number | undefined
 
     if (userId) {
-      const { deductCredits } = await import('@/lib/creditService')
+      const { deductCredits, logServiceActivity } = await import('@/lib/creditService')
       const deduction = await deductCredits(userId, 'LINKEDIN_OPTIMIZER')
       if (!deduction.success) {
         return NextResponse.json(
@@ -21,6 +21,16 @@ export async function POST(req: NextRequest) {
         )
       }
       remainingCredits = deduction.remainingCredits
+
+      const { getServiceSupabase } = await import('@/lib/supabase-server')
+      await logServiceActivity(
+        userId,
+        'LINKEDIN_OPTIMIZER',
+        'LinkedIn Profile Optimizer',
+        '/linkedin-optimizer',
+        { creditsUsed: deduction.remainingCredits },
+        getServiceSupabase()
+      )
     }
 
     const proxycurlKey = process.env.PROXYCURL_API_KEY

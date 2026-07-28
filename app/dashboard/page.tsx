@@ -34,7 +34,6 @@ export default function DashboardPage() {
   const [jobs, setJobs] = useState<any[]>([])
   const [activities, setActivities] = useState<any[]>([])
   const [transactions, setTransactions] = useState<any[]>([])
-  const [activeReferralTab, setActiveReferralTab] = useState<'cv' | 'linkedin' | 'ats' | 'tailor'>('cv')
 
   useEffect(() => {
     async function loadDashboardData() {
@@ -581,75 +580,23 @@ export default function DashboardPage() {
                 Referral Program
               </span>
               <h3 className="text-base font-extrabold text-slate-900 leading-snug">
-                Know what your friend needs? Refer Sophi & Earn.
+                Refer Friends & Earn 30 Free Credits
               </h3>
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Share your referral link with friends. When they sign up & buy a 1500 PKR credit package, <strong>you earn 10 Credits (100 PKR value)</strong> instantly!
-            </p>
-
-            {/* Hostinger Style Service Tabs */}
-            <div className="space-y-3">
-              <div className="flex border-b border-slate-200 text-xs font-bold gap-1 overflow-x-auto pb-1">
-                <button
-                  type="button"
-                  onClick={() => setActiveReferralTab('cv')}
-                  className={`px-2.5 py-1.5 rounded-lg transition-colors shrink-0 ${
-                    activeReferralTab === 'cv'
-                      ? 'bg-primary text-white shadow-xs'
-                      : 'text-slate-600 hover:bg-slate-100'
-                  }`}
-                >
-                  CV (30 Cr)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveReferralTab('linkedin')}
-                  className={`px-2.5 py-1.5 rounded-lg transition-colors shrink-0 ${
-                    activeReferralTab === 'linkedin'
-                      ? 'bg-primary text-white shadow-xs'
-                      : 'text-slate-600 hover:bg-slate-100'
-                  }`}
-                >
-                  LinkedIn (20 Cr)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveReferralTab('ats')}
-                  className={`px-2.5 py-1.5 rounded-lg transition-colors shrink-0 ${
-                    activeReferralTab === 'ats'
-                      ? 'bg-primary text-white shadow-xs'
-                      : 'text-slate-600 hover:bg-slate-100'
-                  }`}
-                >
-                  ATS (10 Cr)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveReferralTab('tailor')}
-                  className={`px-2.5 py-1.5 rounded-lg transition-colors shrink-0 ${
-                    activeReferralTab === 'tailor'
-                      ? 'bg-primary text-white shadow-xs'
-                      : 'text-slate-600 hover:bg-slate-100'
-                  }`}
-                >
-                  Tailor (5 Cr)
-                </button>
+            {/* Clear explanation of reward & payment condition */}
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2 text-xs text-slate-700">
+              <div className="flex items-start gap-2">
+                <span className="text-amber-600 font-bold text-sm">🎁</span>
+                <p className="leading-relaxed">
+                  <strong>What You Earn:</strong> You receive <strong className="text-amber-700 font-extrabold">30 Credits</strong> per referral — enough to transform <strong>1 Full CV</strong> for free!
+                </p>
               </div>
-
-              {/* Active Referral Tab Info */}
-              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
-                <div className="text-xs font-bold text-slate-800">
-                  {activeReferralTab === 'cv' && 'CV Creation & Transformation (30 Credits)'}
-                  {activeReferralTab === 'linkedin' && 'LinkedIn Profile Optimizer (20 Credits)'}
-                  {activeReferralTab === 'ats' && 'ATS Score Evaluator (10 Credits)'}
-                  {activeReferralTab === 'tailor' && 'Job-Specific CV Tailoring (5 Credits)'}
-                </div>
-                <div className="text-[11px] font-semibold text-emerald-700 space-y-1">
-                  <div>✦ You earn: 10 Credits (100 PKR value)</div>
-                  <div>✦ Friend gets: 150 Credits on 1500 PKR refill</div>
-                </div>
+              <div className="flex items-start gap-2 pt-2 border-t border-slate-200/80">
+                <span className="text-emerald-600 font-bold text-sm">💳</span>
+                <p className="leading-relaxed text-slate-600">
+                  <strong>How It Works:</strong> Credits are awarded to you <strong className="text-emerald-700 font-semibold">once your friend signs up & makes a payment</strong> on this portal.
+                </p>
               </div>
             </div>
 
@@ -682,7 +629,7 @@ export default function DashboardPage() {
             {/* Social Share Buttons */}
             <div className="grid grid-cols-2 gap-2 pt-1">
               <a
-                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Get 150 Sophi AI Credits to optimize your CV & LinkedIn profile! Sign up using my link: ${typeof window !== 'undefined' ? window.location.origin : 'https://joinsophi.com'}/login?ref=${profile?.referral_code || 'SOPH100'}`)}`}
+                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Get Sophi AI Credits to optimize your CV & LinkedIn profile! Sign up using my link: ${typeof window !== 'undefined' ? window.location.origin : 'https://joinsophi.com'}/login?ref=${profile?.referral_code || 'SOPH100'}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-1.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-sm text-center"
