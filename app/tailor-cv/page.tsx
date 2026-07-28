@@ -98,14 +98,22 @@ export default function TailorCvPage() {
     setTailoring(true)
 
     try {
-      // Deduct 5 Credits for CV Tailoring
-      const { deductCredits } = await import('@/lib/creditService')
-      const deduction = await deductCredits(session.user.id, 'TAILOR_CV', supabase)
+      // Deduct 5 Credits for CV Tailoring via server API
+      const deductRes = await fetch('/api/deduct-credits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ serviceType: 'TAILOR_CV' }),
+      })
+      const deduction = await deductRes.json()
 
-      if (!deduction.success) {
+      if (!deductRes.ok || !deduction.success) {
         toast.error(deduction.error || 'Insufficient credits for CV Tailoring (5 Credits required). Redirecting to refill...')
         router.push('/payment')
         return
+      }
+
+      if (typeof window !== 'undefined' && typeof deduction.remainingCredits === 'number') {
+        window.dispatchEvent(new CustomEvent('creditsUpdated', { detail: deduction.remainingCredits }))
       }
 
       // Call AI to tailor content

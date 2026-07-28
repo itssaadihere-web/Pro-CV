@@ -15,18 +15,24 @@ export async function POST(req: NextRequest) {
     const supabase = getServiceSupabase()
     const { data: job } = await supabase
       .from('cv_jobs')
-      .select('user_id')
+      .select('user_id, pdf_output_path, completed_at, created_at')
       .eq('id', jobId)
       .single()
 
     if (job?.user_id) {
-      const { deductCredits } = await import('@/lib/creditService')
-      const deduction = await deductCredits(job.user_id, 'DOWNLOAD_PDF')
-      if (!deduction.success) {
-        return NextResponse.json(
-          { error: deduction.error || 'Insufficient credits for clean PDF export (2 Credits required).' },
-          { status: 402 }
-        )
+      const jobTime = new Date(job.completed_at || job.created_at || Date.now()).getTime()
+      const isInitialExport = !job.pdf_output_path || (Date.now() - jobTime < 15 * 60 * 1000)
+
+      // Only deduct 2 credits if this is a separate download of an older existing CV (not the initial export of a 30-credit CV creation)
+      if (!isInitialExport) {
+        const { deductCredits } = await import('@/lib/creditService')
+        const deduction = await deductCredits(job.user_id, 'DOWNLOAD_PDF')
+        if (!deduction.success) {
+          return NextResponse.json(
+            { error: deduction.error || 'Insufficient credits for clean PDF export (2 Credits required).' },
+            { status: 402 }
+          )
+        }
       }
     }
 

@@ -95,11 +95,15 @@ export default function ATSCheckerPage() {
       return;
     }
 
-    // Deduct 10 Credits for ATS Evaluation
-    const { deductCredits } = await import('@/lib/creditService');
-    const deduction = await deductCredits(session.user.id, 'ATS_EVALUATION', supabase);
+    // Deduct 10 Credits for ATS Evaluation via server API
+    const res = await fetch('/api/deduct-credits', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ serviceType: 'ATS_EVALUATION' }),
+    });
+    const deduction = await res.json();
 
-    if (!deduction.success) {
+    if (!res.ok || !deduction.success) {
       toast.error(deduction.error || 'Insufficient credits for ATS scan (10 Credits required). Redirecting to refill...');
       router.push('/payment');
       return;
