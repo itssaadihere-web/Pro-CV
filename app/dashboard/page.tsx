@@ -76,6 +76,11 @@ export default function DashboardPage() {
         }
 
         if (finalProf && (!finalProf.cv_credits || finalProf.cv_credits === 0) && activeCredits > 0) {
+          await supabase
+            .from('profiles')
+            .update({ cv_credits: activeCredits })
+            .eq('id', session.user.id)
+
           finalProf = { ...finalProf, cv_credits: activeCredits }
         }
 

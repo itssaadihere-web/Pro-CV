@@ -53,6 +53,23 @@ export default function Header() {
 
     window.addEventListener('creditsUpdated', handleCreditsUpdate)
 
+    // Listen for real-time database updates on profiles table
+    let realtimeChannel: any = null
+    if (user?.id) {
+      realtimeChannel = supabase
+        .channel(`public:profiles:id=eq.${user.id}`)
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` },
+          (payload: any) => {
+            if (payload.new && typeof payload.new.cv_credits === 'number') {
+              setCredits(payload.new.cv_credits)
+            }
+          }
+        )
+        .subscribe()
+    }
+
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user || null)
@@ -64,6 +81,9 @@ export default function Header() {
     })
 
     return () => {
+      if (realtimeChannel) {
+        supabase.removeChannel(realtimeChannel)
+      }
       subscription.unsubscribe()
       window.removeEventListener('creditsUpdated', handleCreditsUpdate)
     }

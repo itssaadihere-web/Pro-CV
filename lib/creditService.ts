@@ -49,9 +49,14 @@ export async function getUserCredits(userId: string, customClient?: any): Promis
   const supabase = getEffectiveSupabaseClient(customClient)
   const { data: profile } = await supabase
     .from('profiles')
-    .select('cv_credits, has_paid')
+    .select('cv_credits, has_paid, email')
     .eq('id', userId)
     .maybeSingle()
+
+  if (profile && (profile.cv_credits === 0 || profile.cv_credits === null || profile.cv_credits === undefined) && !profile.has_paid) {
+    const activeCredits = await initializeWelcomeCredits(userId, customClient, profile.email)
+    return { credits: activeCredits, hasPaid: false }
+  }
 
   return {
     credits: profile?.cv_credits ?? 0,
@@ -63,7 +68,7 @@ export async function initializeWelcomeCredits(userId: string, customClient?: an
   const supabase = getEffectiveSupabaseClient(customClient)
 
   try {
-    // 1. Check if profile exists
+    // 1. Fetch profile from database
     const { data: profile } = await supabase
       .from('profiles')
       .select('*')
@@ -75,7 +80,7 @@ export async function initializeWelcomeCredits(userId: string, customClient?: an
     const { generateReferralCode } = await import('@/lib/referralService')
     const refCode = generateReferralCode(userEmail || profile?.email)
 
-    // 2. If profile doesn't exist at all, create it with welcome credits
+    // 2. If profile doesn't exist at all, create it in database with welcome credits
     if (!profile) {
       const { error: insertErr } = await supabase.from('profiles').upsert({
         id: userId,
@@ -98,45 +103,38 @@ export async function initializeWelcomeCredits(userId: string, customClient?: an
       return bonusAmount
     }
 
-    // 3. If profile exists:
-    const isGranted = Boolean(profile.welcome_bonus_granted)
+    // 3. If profile exists in database:
     const currentCredits = profile.cv_credits ?? 0
 
-    // If already granted and has non-zero credits, return current balance
-    if (isGranted && currentCredits > 0) {
+    // If profile has positive credits, return current credits
+    if (currentCredits > 0) {
       return currentCredits
     }
 
-    // Check if user has any logged credit transactions
-    const { data: txs } = await supabase
-      .from('credit_transactions')
-      .select('id')
-      .eq('user_id', userId)
-      .limit(1)
-
-    const hasNoTx = !txs || txs.length === 0
-
-    // Grant 50 welcome credits if welcome_bonus_granted is false, OR if balance is 0 and user hasn't paid
-    if (!isGranted || (currentCredits === 0 && !profile.has_paid)) {
-      const newBalance = Math.max(currentCredits, bonusAmount)
-      const updateData: any = {
-        cv_credits: newBalance,
-        welcome_bonus_granted: true,
-      }
-      if (!profile.referral_code) {
-        updateData.referral_code = refCode
-      }
-
+    // If user has not paid and has 0 credits (even if welcome_bonus_granted was previously set):
+    if (!profile.has_paid && currentCredits === 0) {
+      // PERSIST TO DATABASE TABLE!
       await supabase
         .from('profiles')
-        .update(updateData)
+        .update({
+          cv_credits: bonusAmount,
+          welcome_bonus_granted: true,
+          referral_code: profile.referral_code || refCode,
+        })
         .eq('id', userId)
 
-      if (hasNoTx) {
-        await logCreditTransaction(userId, SERVICE_NAMES.WELCOME_BONUS, bonusAmount, newBalance, customClient)
+      // Ensure transaction is logged in DB
+      const { data: txs } = await supabase
+        .from('credit_transactions')
+        .select('id')
+        .eq('user_id', userId)
+        .limit(1)
+
+      if (!txs || txs.length === 0) {
+        await logCreditTransaction(userId, SERVICE_NAMES.WELCOME_BONUS, bonusAmount, bonusAmount, customClient)
       }
 
-      return newBalance
+      return bonusAmount
     }
 
     return currentCredits
