@@ -39,7 +39,7 @@ async function refillUserCredits() {
   }
 
   const currentCredits = profile.cv_credits ?? 0
-  const refillAmount = 50
+  const refillAmount = 100
   const newBalance = currentCredits + refillAmount
 
   console.log(`Current Balance: ${currentCredits} Credits`)
@@ -60,7 +60,7 @@ async function refillUserCredits() {
   // 2. Insert transaction entry into credit_transactions table
   const { error: txErr } = await supabase.from('credit_transactions').insert({
     user_id: profile.id,
-    service_name: 'System Credit Refill (+50 Credits)',
+    service_name: 'System Credit Refill (+100 Credits)',
     credits_changed: refillAmount,
     balance_after: newBalance,
     created_at: new Date().toISOString(),

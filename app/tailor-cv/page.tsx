@@ -10,11 +10,16 @@ import {
   CheckCircle2,
   Copy,
   Check,
-  Download,
   ArrowLeft,
   AlertCircle,
   PlusCircle,
   Upload,
+  Sparkles,
+  Zap,
+  Target,
+  Briefcase,
+  ShieldCheck,
+  Award,
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -23,9 +28,25 @@ import { getClientSupabase } from '@/lib/supabase'
 
 interface PortalCv {
   id: string
-  title: string
+  target_industry?: string
   created_at: string
-  cv_data?: any
+  generated_cv?: string
+  cover_letter?: string
+  target_job_description?: string
+  status?: string
+}
+
+interface TailorResult {
+  atsScore: number
+  originalScore?: number
+  targetJobTitle?: string
+  targetIndustry?: string
+  matchedKeywords: string[]
+  missingKeywordsResolved: string[]
+  tailoredSummary: string
+  tailoredBullets: string[]
+  tailoredCoverLetter: string
+  keyAdjustments: string[]
 }
 
 export default function TailorCvPage() {
@@ -40,11 +61,10 @@ export default function TailorCvPage() {
   const [tailoring, setTailoring] = useState(false)
 
   // Results
-  const [tailoredBullets, setTailoredBullets] = useState<string[]>([])
-  const [tailoredCoverLetter, setTailoredCoverLetter] = useState('')
+  const [tailorResult, setTailorResult] = useState<TailorResult | null>(null)
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
 
-  // 1. Fetch user's generated CVs on mount
+  // 1. Fetch user's existing CV jobs on mount
   useEffect(() => {
     async function loadPortalCvs() {
       try {
@@ -55,9 +75,10 @@ export default function TailorCvPage() {
           return
         }
 
+        // Correct column select query matching cv_jobs table schema
         const { data, error } = await supabase
           .from('cv_jobs')
-          .select('id, title, created_at, cv_data')
+          .select('id, target_industry, created_at, generated_cv, cover_letter, target_job_description, status')
           .eq('user_id', session.user.id)
           .order('created_at', { ascending: false })
 
@@ -80,11 +101,11 @@ export default function TailorCvPage() {
   // 2. Submit CV Tailoring (5 Credits)
   const handleTailorSubmit = async () => {
     if (!selectedCvId) {
-      toast.error('Please select a Portal CV to tailor.')
+      toast.error('Please select an existing Portal CV to tailor.')
       return
     }
-    if (jobText.trim().length < 30) {
-      toast.error('Please paste the target job description (at least 30 characters).')
+    if (jobText.trim().length < 20) {
+      toast.error('Please paste the target job description (at least 20 characters).')
       return
     }
 
@@ -96,63 +117,36 @@ export default function TailorCvPage() {
     }
 
     setTailoring(true)
+    setTailorResult(null)
 
     try {
-      // Deduct 5 Credits for CV Tailoring via server API
-      const deductRes = await fetch('/api/deduct-credits', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ serviceType: 'TAILOR_CV' }),
-      })
-      const deduction = await deductRes.json()
-
-      if (!deductRes.ok || !deduction.success) {
-        toast.error(deduction.error || 'Insufficient credits for CV Tailoring (5 Credits required). Redirecting to refill...')
-        router.push('/payment')
-        return
-      }
-
-      if (typeof window !== 'undefined' && typeof deduction.remainingCredits === 'number') {
-        window.dispatchEvent(new CustomEvent('creditsUpdated', { detail: deduction.remainingCredits }))
-      }
-
-      // Call AI to tailor content
-      const selectedCv = portalCvs.find((c) => c.id === selectedCvId)
-      const res = await fetch('/api/chat', {
+      const res = await fetch('/api/tailor-cv', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: [
-            {
-              role: 'user',
-              content: `Tailor this existing CV content strictly for the target job position described below. Maintain the existing structure and do not change template layout. Generate tailored achievement bullet points with quantifiable STAR metrics and a tailored cover letter.
-              
-              EXISTING CV CONTENT:
-              ${JSON.stringify(selectedCv?.cv_data || selectedCv?.title || 'Existing Professional CV')}
-              
-              TARGET JOB DESCRIPTION:
-              ${jobText}`,
-            },
-          ],
+          cvJobId: selectedCvId,
+          jobDescription: jobText,
+          userId: session.user.id,
         }),
       })
 
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed to tailor CV content.')
+      const responseData = await res.json()
 
-      const aiReply = data.reply || data.message || ''
+      if (!res.ok || !responseData.success) {
+        if (res.status === 402) {
+          toast.error(responseData.error || 'Insufficient credits (5 Credits required). Redirecting to refill...')
+          router.push('/payment')
+          return
+        }
+        throw new Error(responseData.error || 'Failed to tailor CV content.')
+      }
 
-      setTailoredBullets([
-        'Restructured core technical & strategic skills to align directly with target job requirements.',
-        'Rewrote achievement bullets with STAR metrics matching key responsibilities in the job posting.',
-        'Optimized keyword density for high ATS semantic relevance score.',
-      ])
-      setTailoredCoverLetter(
-        aiReply ||
-          `Dear Hiring Committee,\n\nI am writing to express my enthusiastic interest in the target role. With my extensive background aligned with your job requirements, I am confident in bringing immediate strategic value to your team.\n\nSincerely,\n[Your Name]`
-      )
+      if (typeof window !== 'undefined' && typeof responseData.remainingCredits === 'number') {
+        window.dispatchEvent(new CustomEvent('creditsUpdated', { detail: responseData.remainingCredits }))
+      }
 
-      toast.success(`5 Credits used for Job CV Tailoring. (${deduction.remainingCredits} Credits remaining)`)
+      setTailorResult(responseData.data)
+      toast.success(`CV Tailored to ${responseData.data.atsScore || 94}% ATS Match Score! (5 Credits used)`)
     } catch (err: any) {
       console.error(err)
       toast.error(err.message || 'Error tailoring CV content.')
@@ -185,17 +179,17 @@ export default function TailorCvPage() {
           <span>Back to Dashboard</span>
         </Link>
 
-        {/* Title */}
+        {/* Header Title */}
         <div className="text-center space-y-3 mb-10">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3.5 py-1 text-xs font-extrabold text-indigo-700 border border-indigo-100 shadow-2xs">
-            <Settings className="h-4 w-4 text-indigo-600" />
+            <Sparkles className="h-4 w-4 text-indigo-600" />
             <span>Standalone Service — 5 Credits</span>
           </div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
             Job-Specific CV Tailor
           </h1>
           <p className="text-sm text-slate-600 max-w-xl mx-auto">
-            Select one of your existing Sophi portal CVs and align its text content & cover letter for a specific job opening without altering the template design.
+            Align your existing Sophi CV text & cover letter for a target job opening to achieve a high <strong className="text-indigo-600">90%+ ATS Score</strong>.
           </p>
         </div>
 
@@ -244,23 +238,21 @@ export default function TailorCvPage() {
             
             {/* Step 1: Select Portal CV */}
             <div className="space-y-2">
-              <label className="block text-xs font-extrabold uppercase tracking-wide text-slate-700">
-                1. Select Portal CV from History
+              <label className="block text-xs font-extrabold uppercase tracking-wide text-slate-700 flex items-center justify-between">
+                <span>1. Select Existing Portal CV</span>
+                <span className="text-indigo-600 text-[11px] normal-case font-bold">Auto-selected latest</span>
               </label>
               <select
                 value={selectedCvId}
                 onChange={(e) => setSelectedCvId(e.target.value)}
-                className="w-full rounded-xl border border-slate-300 bg-slate-50 p-3 text-sm font-semibold text-slate-900 focus:border-indigo-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                className="w-full rounded-xl border border-slate-300 bg-slate-50 p-3.5 text-sm font-semibold text-slate-900 focus:border-indigo-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-600"
               >
-                {portalCvs.map((cv) => (
+                {portalCvs.map((cv, idx) => (
                   <option key={cv.id} value={cv.id}>
-                    📄 {cv.title || 'Untitled Portal CV'} — ({new Date(cv.created_at).toLocaleDateString()})
+                    📄 {cv.target_industry ? `CV (${cv.target_industry})` : `Transformed CV #${portalCvs.length - idx}`} — ({new Date(cv.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})
                   </option>
                 ))}
               </select>
-              <span className="block text-[11px] text-slate-400">
-                Auto-selected your most recently generated Sophi CV.
-              </span>
             </div>
 
             {/* Step 2: Target Job Description */}
@@ -270,7 +262,7 @@ export default function TailorCvPage() {
               </label>
               <textarea
                 rows={7}
-                placeholder="Paste the job title, requirements, and responsibilities for the target job opening..."
+                placeholder="Paste the target job title, key requirements, and responsibilities for the job opening..."
                 value={jobText}
                 onChange={(e) => setJobText(e.target.value)}
                 className="w-full rounded-xl border border-slate-300 bg-slate-50 p-3.5 text-xs text-slate-800 leading-relaxed focus:border-indigo-600 focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-600"
@@ -282,17 +274,17 @@ export default function TailorCvPage() {
               type="button"
               onClick={handleTailorSubmit}
               disabled={tailoring}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 py-3.5 text-sm font-bold text-white shadow-md hover:bg-indigo-700 transition-all disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 py-4 text-sm font-bold text-white shadow-md hover:bg-indigo-700 transition-all disabled:opacity-50"
             >
               {tailoring ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  <span>Tailoring CV Content (5 Credits)...</span>
+                  <span>AI Optimizing & Tailoring for 90%+ ATS Score (5 Credits)...</span>
                 </>
               ) : (
                 <>
-                  <Settings className="h-5 w-5 text-indigo-200" />
-                  <span>Tailor CV Content (5 Cr)</span>
+                  <Zap className="h-5 w-5 text-indigo-200 fill-indigo-200" />
+                  <span>Tailor CV Content & Achieve 90%+ ATS Score (5 Cr)</span>
                 </>
               )}
             </button>
@@ -300,19 +292,113 @@ export default function TailorCvPage() {
         )}
 
         {/* Results */}
-        {tailoredCoverLetter && (
+        {tailorResult && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-8 space-y-6"
+            className="mt-10 space-y-6"
           >
-            <div className="rounded-2xl border border-indigo-200 bg-white p-6 shadow-sm space-y-3">
-              <h3 className="text-sm font-extrabold text-slate-900 border-b border-slate-100 pb-2">
-                Tailored Content Adjustments
+            {/* ATS Score Header Card */}
+            <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 text-white shadow-lg border border-indigo-900 flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="space-y-1.5 text-center sm:text-left">
+                <div className="inline-flex items-center gap-1.5 text-emerald-400 text-xs font-extrabold uppercase tracking-wide">
+                  <ShieldCheck className="h-4 w-4" />
+                  <span>ATS Tailoring Complete</span>
+                </div>
+                <h3 className="text-xl font-black text-white">
+                  {tailorResult.targetJobTitle || 'Tailored Position'}
+                </h3>
+                <p className="text-xs text-slate-300">
+                  Target Industry: <span className="font-bold text-indigo-200">{tailorResult.targetIndustry || 'Professional Services'}</span>
+                </p>
+              </div>
+
+              {/* Score Badge */}
+              <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md px-5 py-3 rounded-2xl border border-white/20">
+                <Target className="h-8 w-8 text-emerald-400 shrink-0" />
+                <div className="text-right">
+                  <span className="block text-2xl font-black text-white">{tailorResult.atsScore}%</span>
+                  <span className="block text-[10px] font-bold text-emerald-300 uppercase tracking-wider">ATS Match Score</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Keyword Match Badges */}
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+              <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                <Award className="h-4 w-4 text-indigo-600" />
+                <span>High-Impact ATS Keywords Integrated</span>
               </h3>
-              <ul className="space-y-2">
-                {tailoredBullets.map((b, i) => (
-                  <li key={i} className="flex items-start gap-2 text-xs text-slate-700">
+              
+              <div className="space-y-3">
+                <div>
+                  <span className="text-[11px] font-bold text-slate-500 block mb-1.5">Matched Keywords:</span>
+                  <div className="flex flex-wrap gap-2">
+                    {tailorResult.matchedKeywords?.map((kw, i) => (
+                      <span key={i} className="inline-flex items-center gap-1 bg-indigo-50 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-lg border border-indigo-100">
+                        <Check className="h-3 w-3 text-indigo-600" />
+                        {kw}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {tailorResult.missingKeywordsResolved?.length > 0 && (
+                  <div>
+                    <span className="text-[11px] font-bold text-emerald-600 block mb-1.5">Resolved Missing Job Keywords:</span>
+                    <div className="flex flex-wrap gap-2">
+                      {tailorResult.missingKeywordsResolved.map((kw, i) => (
+                        <span key={i} className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-lg border border-emerald-100">
+                          <PlusCircle className="h-3 w-3 text-emerald-600" />
+                          {kw}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Tailored Professional Summary */}
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-indigo-600" />
+                  <span>Tailored Professional Summary</span>
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => handleCopy('summary', tailorResult.tailoredSummary)}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2.5 py-1 rounded-lg transition-colors"
+                >
+                  {copiedKey === 'summary' ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                  <span>{copiedKey === 'summary' ? 'Copied' : 'Copy'}</span>
+                </button>
+              </div>
+              <p className="text-xs text-slate-700 leading-relaxed font-medium bg-slate-50 p-4 rounded-xl border border-slate-200">
+                {tailorResult.tailoredSummary}
+              </p>
+            </div>
+
+            {/* Tailored STAR Metric Achievement Bullets */}
+            <div className="rounded-2xl border border-indigo-200 bg-white p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                  <Briefcase className="h-4 w-4 text-indigo-600" />
+                  <span>Tailored STAR-Metric Achievement Bullets</span>
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => handleCopy('bullets', tailorResult.tailoredBullets?.join('\n\n'))}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2.5 py-1 rounded-lg transition-colors"
+                >
+                  {copiedKey === 'bullets' ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                  <span>{copiedKey === 'bullets' ? 'Copied All' : 'Copy All'}</span>
+                </button>
+              </div>
+              <ul className="space-y-3">
+                {tailorResult.tailoredBullets?.map((b, i) => (
+                  <li key={i} className="flex items-start gap-2.5 text-xs text-slate-800 bg-slate-50 p-3.5 rounded-xl border border-slate-200 leading-relaxed">
                     <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
                     <span>{b}</span>
                   </li>
@@ -320,19 +406,24 @@ export default function TailorCvPage() {
               </ul>
             </div>
 
+            {/* Tailored Cover Letter */}
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-3">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                <h3 className="text-sm font-extrabold text-slate-900">Tailored Cover Letter</h3>
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-indigo-600" />
+                  <span>Tailored Cover Letter</span>
+                </h3>
                 <button
                   type="button"
-                  onClick={() => handleCopy('cover', tailoredCoverLetter)}
-                  className="text-slate-400 hover:text-slate-700"
+                  onClick={() => handleCopy('cover', tailorResult.tailoredCoverLetter)}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2.5 py-1 rounded-lg transition-colors"
                 >
-                  {copiedKey === 'cover' ? <Check className="h-4 w-4 text-gold" /> : <Copy className="h-4 w-4" />}
+                  {copiedKey === 'cover' ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                  <span>{copiedKey === 'cover' ? 'Copied' : 'Copy Letter'}</span>
                 </button>
               </div>
               <pre className="text-xs text-slate-800 bg-slate-50 p-4 rounded-xl border border-slate-200 leading-relaxed whitespace-pre-wrap font-sans">
-                {tailoredCoverLetter}
+                {tailorResult.tailoredCoverLetter}
               </pre>
             </div>
           </motion.div>
