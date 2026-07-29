@@ -1,5 +1,4 @@
 import nodemailer from 'nodemailer'
-import { isBetaActive } from './beta'
 
 interface SendEmailParams {
   userEmail: string
@@ -30,25 +29,13 @@ export async function sendCVEmail({
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-  const isBeta = isBetaActive()
-  
   const fromEmail = `Sophi <${user}>`
-  const subject = isBeta
-    ? '🚀 Your Free Beta CV is Ready — Sophi'
-    : '✅ Your AI-Optimized CV is Ready — Sophi'
+  const subject = '✅ Your AI-Optimized CV is Ready — Sophi'
 
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
       <h2 style="color: #2563eb; margin-bottom: 16px;">Your CV Transformation is Complete!</h2>
       <p>Hi ${userName || 'there'},</p>
-      ${isBeta ? `
-        <div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:8px;padding:12px 16px;margin:16px 0;font-size:14px;color:#065f46;">
-          <strong>🙏 Thank you for being a beta tester!</strong><br/>
-          Your feedback helps us build a better product. 
-          Reply to this email with any suggestions.
-        </div>
-      ` : ''}
-
       <p>Your new ATS-optimized CV is attached to this email as a PDF (ATS-Safe layout).</p>
       <p>You can also access it anytime, download other professional layouts, or copy your LinkedIn optimizer profile directly from your dashboard:</p>
       <div style="text-align: center; margin: 24px 0;">
@@ -65,44 +52,30 @@ export async function sendCVEmail({
         <li style="margin-bottom: 8px;"><strong>AI Cover Letter:</strong> Tailored specifically to your industry or job posting.</li>
         <li style="margin-bottom: 8px;"><strong>Gap Analysis:</strong> Actionable suggestions, missing keywords, and certification checklist.</li>
       </ul>
-      <p style="margin-top: 24px; font-size: 14px; color: #64748b;">
-        Need help? Contact our WhatsApp support at +92-XXX-XXXXXXX.
-      </p>
       <p style="margin-top: 16px; font-weight: bold; color: #475569;">— Team Sophi</p>
     </div>
   `
 
-  try {
-    const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465, // true for 465, false for other ports
-      auth: {
-        user,
-        pass,
+  const transporter = nodemailer.createTransport({
+    host,
+    port,
+    secure: port === 465,
+    auth: { user, pass },
+  })
+
+  await transporter.sendMail({
+    from: fromEmail,
+    to: userEmail,
+    subject,
+    html: htmlContent,
+    attachments: [
+      {
+        filename: `Sophi_ATS_Optimized_CV_${userName.replace(/\s+/g, '_')}.pdf`,
+        content: pdfBuffer,
+        contentType: 'application/pdf',
       },
-      tls: {
-        rejectUnauthorized: false // bypass TLS certificate validation errors in dev/prod
-      }
-    })
+    ],
+  })
 
-    await transporter.sendMail({
-      from: fromEmail,
-      to: userEmail,
-      subject,
-      html: htmlContent,
-      attachments: [
-        {
-          filename: 'My-Sophi-Optimized.pdf',
-          content: pdfBuffer,
-          contentType: 'application/pdf',
-        },
-      ],
-    })
-
-    return true
-  } catch (error) {
-    console.error('Error sending email via Titan Mail:', error)
-    return false
-  }
+  return true
 }

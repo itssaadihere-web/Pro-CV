@@ -17,8 +17,6 @@ import {
   Check,
   Lock,
 } from 'lucide-react'
-import { isBetaActive } from '@/lib/beta'
-
 const Linkedin = (props: any) => (
   <svg
     viewBox="0 0 24 24"
@@ -84,12 +82,6 @@ export default function ResultPage() {
     }
   }, [jobData?.template_used])
 
-  // Beta Feedback states
-  const [rating, setRating] = useState<string | null>(null)
-  const [comment, setComment] = useState('')
-  const [submittingFeedback, setSubmittingFeedback] = useState(false)
-  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false)
-
   useEffect(() => {
     async function loadJobDetails() {
       if (!jobId) return
@@ -109,7 +101,7 @@ export default function ResultPage() {
           .eq('id', session.user.id)
           .single()
 
-        if (session.user.email === 'syedsaad.mob@gmail.com' || (profile && (profile.has_paid || profile.cv_credits > 0)) || isBetaActive()) {
+        if (session.user.email === 'syedsaad.mob@gmail.com' || (profile && (profile.has_paid || profile.cv_credits > 0))) {
           setHasPaid(true)
         }
 
@@ -271,35 +263,6 @@ export default function ResultPage() {
       }, 2000)
     } catch (err) {
       toast.error('Failed to copy text.')
-    }
-  }
-
-  const handleSubmitFeedback = async () => {
-    if (!rating) {
-      toast.error('Please select a rating option')
-      return
-    }
-    setSubmittingFeedback(true)
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const { error } = await supabase
-        .from('beta_feedback')
-        .insert({
-          user_id: session?.user?.id || jobData.user_id,
-          job_id: jobId,
-          rating,
-          comment
-        })
-
-      if (error) throw error
-
-      toast.success('Feedback submitted successfully!')
-      setFeedbackSubmitted(true)
-    } catch (err: any) {
-      console.error('Error submitting beta feedback:', err)
-      toast.error(err.message || 'Failed to submit feedback.')
-    } finally {
-      setSubmittingFeedback(false)
     }
   }
 
@@ -582,82 +545,6 @@ export default function ResultPage() {
             ...(jobData.target_industry ? [jobData.target_industry] : [])
           ]}
         />
-
-        {/* Beta Feedback Widget */}
-        {isBetaActive() && (
-          <div className="mb-8 rounded-2xl border border-primary-200 bg-primary-50/20 p-6 shadow-sm">
-            {feedbackSubmitted ? (
-              <div className="flex flex-col items-center justify-center py-6 text-center space-y-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gold-100 text-gold">
-                  <Check className="h-6 w-6" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-slate-900">Thank you for your feedback!</h3>
-                  <p className="text-xs text-slate-500 mt-1">Your insights help us continuously optimize Sophi.</p>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-base font-bold text-primary flex items-center gap-1.5">
-                    💬 You&apos;re a Beta Tester — Your Feedback Matters!
-                  </h3>
-                  <p className="text-xs text-primary-800 mt-1">
-                    Help us refine the CV revamped engine. Takes less than 30 seconds.
-                  </p>
-                </div>
-                
-                {/* Rating selection buttons */}
-                <div className="flex flex-wrap gap-2.5">
-                  {['Loved it ⭐', 'Good 👍', 'Average 😐', 'Needs work 👎'].map((opt) => {
-                    const isSelected = rating === opt
-                    return (
-                      <button
-                        key={opt}
-                        type="button"
-                        onClick={() => setRating(opt)}
-                        className={`rounded-xl px-4 py-2 text-xs font-bold transition-all border ${
-                          isSelected
-                            ? 'bg-blue-600 border-blue-600 text-white shadow-md'
-                            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-350'
-                        }`}
-                      >
-                        {opt}
-                      </button>
-                    )
-                  })}
-                </div>
-
-                <div className="space-y-2">
-                  <textarea
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    placeholder="Tell us more about your experience, suggested features or formatting quality (optional)..."
-                    className="block w-full min-h-[90px] rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-800 placeholder-slate-400 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-                  />
-                </div>
-
-                <div className="flex justify-start">
-                  <button
-                    type="button"
-                    onClick={handleSubmitFeedback}
-                    disabled={submittingFeedback}
-                    className="flex items-center justify-center gap-1.5 rounded-xl bg-primary px-5 py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-primary-800 hover:shadow-md disabled:bg-primary-300"
-                  >
-                    {submittingFeedback ? (
-                      <>
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        <span>Submitting...</span>
-                      </>
-                    ) : (
-                      <span>Submit Feedback</span>
-                    )}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Global sticky bottom download bar */}
         <div className="sticky bottom-6 w-full rounded-2xl border border-slate-250 bg-white p-4.5 shadow-xl shadow-slate-200/40 flex flex-col sm:flex-row justify-between items-center gap-4">

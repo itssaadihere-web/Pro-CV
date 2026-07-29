@@ -6,7 +6,6 @@ import { getClientSupabase } from '@/lib/supabase'
 import { CreditCard, ShieldCheck, Loader2, ArrowLeft, HelpCircle } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
-import { isBetaActive } from '@/lib/beta'
 import DirectPayCheckout from '@/components/DirectPayCheckout'
 import PayfastCheckout from '@/components/PayfastCheckout'
 
@@ -24,10 +23,6 @@ export default function PaymentPage() {
       if (!session) {
         toast.error('Session expired. Please log in again.')
         router.push('/login')
-        return
-      }
-      if (isBetaActive()) {
-        router.push('/upload')
         return
       }
       setEmail(session.user.email || '')

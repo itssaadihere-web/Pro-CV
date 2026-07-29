@@ -6,7 +6,6 @@ import { getClientSupabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
 import { FileText, LogOut, User as UserIcon, CreditCard, PlusCircle, Zap } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { isBetaActive } from '@/lib/beta'
 import Logo from './Logo'
 
 export default function Header() {
@@ -149,7 +148,7 @@ export default function Header() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (isBetaActive() || (credits !== null && credits >= 30)) {
+                    if (credits !== null && credits >= 30) {
                       router.push('/upload')
                     } else {
                       toast.error(`Insufficient Credits! Transform CV requires 30 Credits, but you currently have ${credits ?? 0} Credits. Redirecting to payment...`)

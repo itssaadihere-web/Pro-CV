@@ -23,7 +23,6 @@ import Link from 'next/link'
 import toast from 'react-hot-toast'
 
 import Header from '@/components/Header'
-import { isBetaActive } from '@/lib/beta'
 
 export default function DashboardPage() {
   const router = useRouter()

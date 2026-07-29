@@ -3,7 +3,6 @@
 import React from 'react'
 import Link from 'next/link'
 import { Lock, CreditCard, ChevronRight } from 'lucide-react'
-import { isBetaActive } from '@/lib/beta'
 
 interface PaymentGateProps {
   credits: number | null

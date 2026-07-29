@@ -1,7 +1,6 @@
 import { getMiddlewareSupabase } from '@/lib/supabase-server'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { isBetaActive } from '@/lib/beta'
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
@@ -19,22 +18,22 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
-  // Payment check — SKIPPED entirely in beta mode
-  if (!isBetaActive() && user && req.nextUrl.pathname.startsWith('/upload')) {
+  // Pre-check user credits before allowing upload route access (30 Credits required)
+  if (user && req.nextUrl.pathname.startsWith('/upload')) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('has_paid, cv_credits')
+      .select('has_paid, cv_credits, email')
       .eq('id', user.id)
       .single()
 
-    if (!profile?.has_paid && (profile?.cv_credits ?? 0) < 1) {
+    const isExempt = user.email === 'syedsaad.mob@gmail.com' || user.email?.toLowerCase() === 'test@joinsophi.com'
+    if (!isExempt && !profile?.has_paid && (profile?.cv_credits ?? 0) < 30) {
       return NextResponse.redirect(new URL('/payment', req.url))
     }
   }
 
   return res
 }
-
 
 export const config = {
   // Apply middleware to protect dashboard, upload, and results pages

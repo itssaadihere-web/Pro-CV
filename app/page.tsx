@@ -19,7 +19,6 @@ import {
 } from 'lucide-react'
 import Header from '@/components/Header'
 import FAQAccordion from '@/components/FAQAccordion'
-import { isBetaActive } from '@/lib/beta'
 import Logo from '@/components/Logo'
 import Script from 'next/script'
 import { websiteSchema, softwareSchema, faqSchema } from '@/lib/schema'
@@ -135,28 +134,13 @@ export default function LandingPage() {
                 transition={{ duration: 0.5, delay: 0.3 }}
                 className="flex flex-col sm:flex-row gap-4 items-center"
               >
-                {isBetaActive() ? (
-                  <div className="flex flex-col items-center sm:items-start gap-1">
-                    <Link
-                      href="/login"
-                      className="flex items-center justify-center gap-1.5 rounded-xl bg-primary hover:bg-primary-800 text-white font-bold px-8 py-3.5 text-base transition-all shadow-lg hover:shadow-primary-100"
-                    >
-                      🚀 Try FREE During Beta — Limited Time
-                      <ArrowRight className="h-4 w-4 text-gold" />
-                    </Link>
-                    <p className="text-[11px] text-slate-500 font-medium">
-                      No payment. No credit card. Just upload your CV.
-                    </p>
-                  </div>
-                ) : (
-                  <Link
-                    href="/login"
-                    className="flex items-center justify-center gap-1.5 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-white transition-all hover:bg-primary-800 hover:shadow-lg hover:shadow-primary-100"
-                  >
-                    <span>Transform My CV — 1500 PKR</span>
-                    <ArrowRight className="h-4 w-4 text-gold" />
-                  </Link>
-                )}
+                <Link
+                  href="/login"
+                  className="flex items-center justify-center gap-1.5 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-white transition-all hover:bg-primary-800 hover:shadow-lg hover:shadow-primary-100"
+                >
+                  <span>Transform My CV — 1500 PKR</span>
+                  <ArrowRight className="h-4 w-4 text-gold" />
+                </Link>
                 <a
                   href="#how-it-works"
                   className="flex items-center justify-center rounded-xl border border-slate-205 bg-white px-6 py-3.5 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-50 h-[48px]"
@@ -304,92 +288,47 @@ export default function LandingPage() {
             </p>
           </div>
 
-          {isBetaActive() ? (
-            <div className="mx-auto max-w-md rounded-2xl border-2 border-gold-450 bg-white p-8 shadow-md relative overflow-hidden ring-1 ring-gold-500/5">
-              <div className="absolute top-0 right-0 rounded-bl-lg bg-gold px-3 py-1 text-[10px] font-bold text-white uppercase tracking-wider animate-pulse">
-                Free Beta
-              </div>
-              
-              <span className="block text-xs font-bold text-slate-400 uppercase tracking-widest">Single Revamp</span>
-              <span className="mt-2 block text-4.5xl font-black text-gold">FREE</span>
-              <span className="block text-xs text-slate-400 line-through mt-0.5 font-bold">1,500 PKR</span>
-              
-              <ul className="mt-6 space-y-3.5 text-left border-t border-slate-100 pt-6 text-xs text-slate-655 font-semibold">
-                <li className="flex items-center gap-2">
-                  <span className="text-gold font-bold">✓</span>
-                  <span>AI Revamped CV (ATS-optimized)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-gold font-bold">✓</span>
-                  <span>ATS keyword scoring and formatting audit</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-gold font-bold">✓</span>
-                  <span>LinkedIn headline and bio optimization tags</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-gold font-bold">✓</span>
-                  <span>Job Description targeted Cover Letter</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-gold font-bold">✓</span>
-                  <span>49 Professional CV Templates export</span>
-                </li>
-              </ul>
-
-              <div className="mt-8">
-                <Link
-                  href="/login"
-                  className="flex w-full justify-center items-center gap-1 rounded-xl bg-primary py-3 text-sm font-bold text-white transition-all hover:bg-primary-800 shadow-md shadow-primary-100"
-                >
-                  <span>Get My Free CV Now</span>
-                  <ChevronRight className="h-4 w-4 text-gold" />
-                </Link>
-              </div>
+          <div className="mx-auto max-w-md rounded-2xl border border-primary-200 bg-white p-8 shadow-md relative overflow-hidden ring-1 ring-primary-500/5">
+            <div className="absolute top-0 right-0 rounded-bl-lg bg-primary px-3 py-1 text-[10px] font-bold text-white uppercase tracking-wider">
+              Popular
             </div>
-          ) : (
-            <div className="mx-auto max-w-md rounded-2xl border border-primary-200 bg-white p-8 shadow-md relative overflow-hidden ring-1 ring-primary-500/5">
-              <div className="absolute top-0 right-0 rounded-bl-lg bg-primary px-3 py-1 text-[10px] font-bold text-white uppercase tracking-wider">
-                Popular
-              </div>
-              
-              <span className="block text-xs font-bold text-slate-400 uppercase tracking-widest">Single Revamp</span>
-              <span className="mt-2 block text-4xl font-black text-slate-900">1,500 PKR</span>
-              
-              <ul className="mt-6 space-y-3.5 text-left border-t border-slate-100 pt-6 text-xs text-slate-600 font-semibold">
-                <li className="flex items-center gap-2">
-                  <span className="text-gold font-bold">✓</span>
-                  <span>AI Revamped CV (ATS-optimized)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-gold font-bold">✓</span>
-                  <span>ATS keyword scoring and formatting audit</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-gold font-bold">✓</span>
-                  <span>LinkedIn headline and bio optimization tags</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-gold font-bold">✓</span>
-                  <span>Job Description targeted Cover Letter</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-gold font-bold">✓</span>
-                  <span>49 Professional CV Templates export</span>
-                </li>
-              </ul>
+            
+            <span className="block text-xs font-bold text-slate-400 uppercase tracking-widest">150 Credits Package</span>
+            <span className="mt-2 block text-4xl font-black text-slate-900">1,500 PKR</span>
+            
+            <ul className="mt-6 space-y-3.5 text-left border-t border-slate-100 pt-6 text-xs text-slate-600 font-semibold">
+              <li className="flex items-center gap-2">
+                <span className="text-gold font-bold">✓</span>
+                <span>AI Revamped CV (ATS-optimized)</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-gold font-bold">✓</span>
+                <span>ATS keyword scoring and formatting audit</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-gold font-bold">✓</span>
+                <span>LinkedIn headline and bio optimization tags</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-gold font-bold">✓</span>
+                <span>Job Description targeted Cover Letter</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-gold font-bold">✓</span>
+                <span>49 Professional CV Templates export</span>
+              </li>
+            </ul>
 
-              <div className="mt-8">
-                <Link
-                  href="/login"
-                  className="flex w-full justify-center items-center gap-1 rounded-xl bg-primary py-3 text-sm font-bold text-white transition-all hover:bg-primary-800 shadow-md shadow-primary-100"
-                >
-                  <span>Get Started Now</span>
-                  <ChevronRight className="h-4 w-4 text-gold" />
-                </Link>
-              </div>
+            <div className="mt-8">
+              <Link
+                href="/login"
+                className="flex w-full justify-center items-center gap-1 rounded-xl bg-primary py-3 text-sm font-bold text-white transition-all hover:bg-primary-800 shadow-md shadow-primary-100"
+              >
+                <span>Get Started — 1,500 PKR</span>
+                <ChevronRight className="h-4 w-4 text-gold" />
+              </Link>
             </div>
-          )}
+          </div>
         </div>
       </section>
 

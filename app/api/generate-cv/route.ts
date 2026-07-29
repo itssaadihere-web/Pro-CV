@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { generateKimiCompletion } from '@/lib/kimi'
 import { getServiceSupabase } from '@/lib/supabase-server'
-import { isBetaActive } from '@/lib/beta'
 
 const KIMI_SYSTEM_PROMPT = `You are an elite CV Architect and ATS Optimization Specialist with deep expertise in modern recruitment algorithms, HR psychology, and professional branding for 2025–2026.
 
@@ -79,51 +78,21 @@ export async function POST(req: NextRequest) {
 
     const userId = job.user_id
 
-    // Check rate limits and grant credit if beta is active
-    if (isBetaActive()) {
-      const { count } = await supabase
-        .from('cv_jobs')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', userId)
-        .eq('is_beta_job', true)
+    // Verify user has credits (30 Credits required for CREATE_CV / TRANSFORM_CV)
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('cv_credits, email')
+      .eq('id', userId)
+      .single()
 
-      if ((count ?? 0) >= 2) {
-        return NextResponse.json({
-          error: 'Beta limit reached. Maximum 2 free CVs per user during beta.'
-        }, { status: 429 })
-      }
-
-      // Upsert profile or update to ensure is_beta_user is true and cv_credits is at least 1
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('cv_credits')
-        .eq('id', userId)
-        .single()
-
-      await supabase
-        .from('profiles')
-        .update({
-          is_beta_user: true,
-          cv_credits: Math.max(profile?.cv_credits ?? 0, 1)
-        })
-        .eq('id', userId)
-    } else {
-      // Normal mode: verify user has credits (30 Credits required for CREATE_CV / TRANSFORM_CV)
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('cv_credits, email')
-        .eq('id', userId)
-        .single()
-
-      const userCredits = profile?.cv_credits ?? 0
-      const isExempt = profile?.email === 'syedsaad.mob@gmail.com' || profile?.email?.toLowerCase() === 'test@joinsophi.com'
+    const userCredits = profile?.cv_credits ?? 0
+    const isExempt = profile?.email === 'syedsaad.mob@gmail.com' || profile?.email?.toLowerCase() === 'test@joinsophi.com'
 
       if (!profile || (!isExempt && userCredits < 30)) {
         return NextResponse.json({
           error: `Insufficient credits. Requires 30 Credits, but you have ${userCredits} Credits available. Please purchase credits to continue.`
         }, { status: 403 })
       }
-    }
 
     const userPrompt = `I am uploading my current CV for a complete AI-powered transformation.
 
@@ -160,7 +129,6 @@ Please run the full transformation and output all sections as specified in your 
         cover_letter: sections.coverLetter,
         gap_analysis: sections.gapAnalysisJson,
         completed_at: new Date().toISOString(),
-        is_beta_job: isBetaActive(),
         template_used: templateId
       })
       .eq('id', jobId)
@@ -179,7 +147,6 @@ Please run the full transformation and output all sections as specified in your 
             cover_letter: sections.coverLetter,
             gap_analysis: sections.gapAnalysisJson,
             completed_at: new Date().toISOString(),
-            is_beta_job: isBetaActive()
           })
           .eq('id', jobId)
           
