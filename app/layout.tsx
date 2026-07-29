@@ -53,17 +53,34 @@ export const metadata: Metadata = {
     alternateLocale: ['ur_PK'],
     url: 'https://joinsophi.com',
     siteName: 'Sophi',
-    images: [{
-      url: '/og/home.png',
-      width: 1200,
-      height: 630,
-      alt: 'Sophi AI CV Builder — ATS-Optimized Resumes for Pakistani Professionals'
-    }]
+    title: 'Sophi — AI CV Builder Pakistan | ATS-Optimized Resume in Minutes',
+    description: 'Upload your CV, let advanced AI rewrite it into an ATS-optimized career document. Professional CV, cover letter & LinkedIn optimizer. Just 1500 PKR.',
+    images: [
+      {
+        url: 'https://joinsophi.com/og/home.png',
+        secureUrl: 'https://joinsophi.com/og/home.png',
+        width: 1200,
+        height: 630,
+        type: 'image/png',
+        alt: 'Sophi AI CV Builder — ATS-Optimized Resumes for Pakistani Professionals'
+      },
+      {
+        url: 'https://joinsophi.com/og-image.png',
+        secureUrl: 'https://joinsophi.com/og-image.png',
+        width: 1200,
+        height: 630,
+        type: 'image/png',
+        alt: 'Sophi AI CV Builder'
+      }
+    ]
   },
   twitter: {
     card: 'summary_large_image',
+    title: 'Sophi — AI CV Builder Pakistan | ATS-Optimized Resume in Minutes',
+    description: 'Upload your CV, let advanced AI rewrite it into an ATS-optimized career document. Professional CV, cover letter & LinkedIn optimizer. Just 1500 PKR.',
     site: '@JoinSophi',
-    creator: '@JoinSophi'
+    creator: '@JoinSophi',
+    images: ['https://joinsophi.com/og/home.png']
   },
   alternates: {
     canonical: 'https://joinsophi.com'
