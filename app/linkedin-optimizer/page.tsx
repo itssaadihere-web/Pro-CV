@@ -287,7 +287,7 @@ function LinkedInOptimizerContent() {
             LinkedIn Profile Optimizer
           </h1>
           <p className="text-sm text-slate-600 max-w-xl mx-auto">
-            Audit your profile against target job postings. Generate executive headlines, hook bio summaries, and skill badges.
+            Never lose another opportunity because your achievements were invisible.
           </p>
         </div>
 

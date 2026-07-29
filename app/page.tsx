@@ -48,7 +48,7 @@ const FEATURES = [
   {
     icon: ShieldCheck,
     title: 'LinkedIn Optimizer',
-    description: 'Instantly build custom headers (220 max), hook summaries, and top 10 keywords for professional profiles.',
+    description: 'Never lose another opportunity because your achievements were invisible. Instantly build custom headers, hook summaries, and keywords.',
   },
   {
     icon: FileText,
@@ -123,7 +123,7 @@ export default function LandingPage() {
                   transition={{ duration: 0.5, delay: 0.2 }}
                   className="text-sm sm:text-base leading-relaxed text-slate-600 max-w-xl"
                 >
-                  Upload your old CV and let advanced AI transform it into a recruiter-approved, keyword-optimized career document. 
+                  Never lose another opportunity because your achievements were invisible. Upload your old CV and let advanced AI transform it into a recruiter-approved, keyword-optimized career document.
                   Sophi is the leading AI CV builder in Pakistan for professionals looking to bypass ATS filters.
                 </motion.p>
               </div>

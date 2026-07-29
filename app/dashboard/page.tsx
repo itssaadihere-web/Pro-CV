@@ -348,7 +348,7 @@ export default function DashboardPage() {
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-500 leading-relaxed">
-                      Headline hook, bio summary, & 10 skill badge suggestions.
+                      Never lose another opportunity because your achievements were invisible.
                     </p>
                   </div>
                   <button
