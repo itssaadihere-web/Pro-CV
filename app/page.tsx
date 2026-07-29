@@ -356,7 +356,7 @@ export default function LandingPage() {
           </div>
 
           <p className="text-xs text-slate-400">
-            © {new Date().getFullYear()} JoinSophi.com AI CV Platform. Powered by Moonshot API. All rights reserved.
+            © {new Date().getFullYear()} JoinSophi.com AI CV Platform. All rights reserved.
           </p>
 
 
