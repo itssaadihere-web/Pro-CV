@@ -25,29 +25,42 @@ function LoginContent() {
       setReferralCode(refFromUrl.toUpperCase())
       setIsSignUp(true)
     }
+    const errorFromUrl = searchParams.get('error')
+    if (errorFromUrl) {
+      toast.error(decodeURIComponent(errorFromUrl))
+    }
   }, [searchParams])
 
   const handleLinkedinLogin = async () => {
     try {
       setLoading(true)
+      const redirectUrl = `${window.location.origin}/auth/callback`
+      
+      // Attempt 1: Modern LinkedIn OpenID Connect (linkedin_oidc)
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'linkedin_oidc',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
+          scopes: 'openid profile email',
         },
       })
+
       if (error) {
-        // Fallback attempt with standard linkedin provider key
+        console.warn('LinkedIn OIDC attempt returned error, trying fallback:', error.message)
+        // Attempt 2: Fallback to standard linkedin provider key
         const fallback = await supabase.auth.signInWithOAuth({
           provider: 'linkedin' as any,
           options: {
-            redirectTo: `${window.location.origin}/auth/callback`,
+            redirectTo: redirectUrl,
           },
         })
-        if (fallback.error) throw fallback.error
+        if (fallback.error) {
+          throw new Error(fallback.error.message || error.message)
+        }
       }
     } catch (err: any) {
-      toast.error('LinkedIn OAuth is disabled in Supabase. Please enable LinkedIn under Supabase Auth Providers.')
+      console.error('LinkedIn OAuth Error:', err)
+      toast.error(err.message || 'LinkedIn login failed. Please ensure LinkedIn OAuth is enabled in Supabase.')
       setLoading(false)
     }
   }
