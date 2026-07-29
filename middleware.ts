@@ -14,6 +14,13 @@ export async function middleware(req: NextRequest) {
     req.nextUrl.pathname.startsWith(route)
   )
 
+  // Catch any OAuth code landing outside of /auth/callback (e.g. if Supabase falls back to Site URL)
+  if (req.nextUrl.searchParams.has('code') && !req.nextUrl.pathname.startsWith('/auth/callback')) {
+    const callbackUrl = new URL('/auth/callback', req.url)
+    callbackUrl.search = req.nextUrl.search
+    return NextResponse.redirect(callbackUrl)
+  }
+
   if (isProtected && !user) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
@@ -36,6 +43,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  // Apply middleware to protect dashboard, upload, and results pages
-  matcher: ['/upload/:path*', '/dashboard/:path*', '/result/:path*'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 }
