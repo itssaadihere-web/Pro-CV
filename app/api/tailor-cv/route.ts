@@ -157,8 +157,8 @@ Return ONLY valid JSON. Do not wrap in markdown or backticks if possible.`
         userId,
         'TAILOR_CV',
         `Job-Specific CV Tailor (${result.targetJobTitle || 'Tailored Position'})`,
-        `/tailor-cv`,
-        { cvJobId: selectedJob.id, atsScore: result.atsScore },
+        `/tailor-cv?activityId=ID_PLACEHOLDER`,
+        { cvJobId: selectedJob.id, atsScore: result.atsScore, result },
         serviceSupabase
       )
     }

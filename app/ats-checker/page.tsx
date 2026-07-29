@@ -25,10 +25,17 @@ function ATSCheckerContent() {
   const [loadingSavedReport, setLoadingSavedReport] = useState(false);
   const [reportData, setReportData] = useState<{ overallScore: number; riskLevel: string } | null>(null);
 
-  // Load saved historical report if reportId is present in URL
+  // Load saved historical report if reportId is present, or check credits (10 Cr)
   useEffect(() => {
-    if (reportId) {
-      const loadReport = async () => {
+    const initATSPage = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('Please sign in to access ATS Score Evaluator.');
+        router.push('/login');
+        return;
+      }
+
+      if (reportId) {
         setLoadingSavedReport(true);
         try {
           const { data, error } = await supabase
@@ -46,10 +53,23 @@ function ATSCheckerContent() {
         } finally {
           setLoadingSavedReport(false);
         }
-      };
-      loadReport();
-    }
-  }, [reportId, supabase]);
+      } else {
+        // Pre-mount credit check for new ATS evaluation (10 Credits)
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('cv_credits')
+          .eq('id', session.user.id)
+          .maybeSingle();
+
+        const userCredits = profile?.cv_credits ?? 0;
+        if (userCredits < 10) {
+          toast.error(`Insufficient credits! ATS Score Evaluator requires 10 Credits, but you currently have ${userCredits} Credits. Redirecting to payment...`);
+          router.push('/payment');
+        }
+      }
+    };
+    initATSPage();
+  }, [reportId, supabase, router]);
 
   const handleFileUpload = async (file: File) => {
     if (!file) return;

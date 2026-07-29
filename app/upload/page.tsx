@@ -103,13 +103,15 @@ export default function UploadPage() {
         .eq('id', session.user.id)
         .single()
 
-      if (session.user.email === 'syedsaad.mob@gmail.com') {
-        setCredits(99)
-      } else if (profile) {
-        setCredits(profile.cv_credits)
-      } else {
-        setCredits(0)
+      const userCredits = session.user.email === 'syedsaad.mob@gmail.com' ? 99 : (profile?.cv_credits ?? 0)
+      setCredits(userCredits)
+
+      if (userCredits < 30) {
+        toast.error(`Insufficient credits! Transform CV requires 30 Credits, but you currently have ${userCredits} Credits. Redirecting to payment...`)
+        router.push('/payment')
+        return
       }
+
       setLoadingProfile(false)
     }
 

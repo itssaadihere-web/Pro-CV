@@ -62,10 +62,17 @@ function LinkedInOptimizerContent() {
   const [skills, setSkills] = useState<string[]>([])
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
 
-  // Load saved historical report if reportId is present in URL
+  // Load saved historical report if reportId is present, or check credits (20 Cr)
   useEffect(() => {
-    if (reportId) {
-      const loadReport = async () => {
+    const initLinkedInPage = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        toast.error('Please sign in to access LinkedIn Profile Optimizer.')
+        router.push('/login')
+        return
+      }
+
+      if (reportId) {
         setLoadingSavedReport(true)
         try {
           const { data, error } = await supabase
@@ -85,10 +92,23 @@ function LinkedInOptimizerContent() {
         } finally {
           setLoadingSavedReport(false)
         }
+      } else {
+        // Pre-mount credit check for new LinkedIn Optimization (20 Credits)
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('cv_credits')
+          .eq('id', session.user.id)
+          .maybeSingle()
+
+        const userCredits = profile?.cv_credits ?? 0
+        if (userCredits < 20) {
+          toast.error(`Insufficient credits! LinkedIn Profile Optimizer requires 20 Credits, but you currently have ${userCredits} Credits. Redirecting to payment...`)
+          router.push('/payment')
+        }
       }
-      loadReport()
     }
-  }, [reportId, supabase])
+    initLinkedInPage()
+  }, [reportId, supabase, router])
 
   // 1. Handle Profile PDF Upload
   const handleProfilePdfUpload = async (file: File) => {

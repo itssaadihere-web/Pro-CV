@@ -28,7 +28,13 @@ export default function ChoicePage() {
         .eq('id', session.user.id)
         .single()
 
-      // Upfront payment is no longer required for starting transformation / free previews
+      const userCredits = profile?.cv_credits ?? 0
+      if (userCredits < 30) {
+        toast.error(`Insufficient credits! Create CV requires 30 Credits, but you currently have ${userCredits} Credits. Redirecting to payment...`)
+        router.push('/payment')
+        return
+      }
+
       setLoading(false)
     }
 
