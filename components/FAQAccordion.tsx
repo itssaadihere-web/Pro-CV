@@ -21,14 +21,14 @@ const faqs: FAQItem[] = [
     answer: 'An Applicant Tracking System (ATS) is automated software used by over 90% of employers to filter job applications before recruiters read them. If your CV lacks correct keywords or uses incompatible formatting, it gets auto-rejected. Sophi scores your CV against real ATS criteria and restructures it to ensure it reaches human recruiters.'
   },
   {
-    id: 'pricing-payment',
-    question: 'How much does it cost and what payment methods are supported?',
-    answer: 'Sophi costs a single flat rate of 1,500 PKR with no hidden fees or monthly subscriptions. We support secure local payments in Pakistan via DirectPay, including Bank Transfers, Debit/Credit cards, JazzCash, and EasyPaisa.'
+    id: 'sophi-features',
+    question: 'What features are included in Sophi?',
+    answer: 'Sophi includes complete ATS score auditing, experience gap analysis, job-tailored resume generation, AI cover letter writing, LinkedIn profile optimization, and step-by-step CV creation from scratch or 30-second transformation of existing resumes.'
   },
   {
     id: 'delivery-time',
-    question: 'How long does it take to get my revamped CV?',
-    answer: 'Delivery is instant! As soon as your payment is processed, our AI generates your optimized resume, cover letter, and ATS report directly on screen. You can download your polished documents immediately as PDF files.'
+    question: 'How fast does Sophi generate my CV?',
+    answer: 'Generation is instant! As soon as you upload your resume or enter your details, our AI generates your optimized resume, cover letter, and ATS score report directly on screen in under 30 seconds. You can download your polished documents immediately as PDF files.'
   },
   {
     id: 'formatting-guarantee',

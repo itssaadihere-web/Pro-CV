@@ -40,14 +40,7 @@ export const softwareSchema = {
   "name": "Sophi AI CV Builder",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web Browser",
-  "description": "Upload your existing CV and receive an AI-rewritten, ATS-optimized career document with LinkedIn optimizer, cover letter, and professional PDF export.",
-  "offers": {
-    "@type": "Offer",
-    "price": "1500",
-    "priceCurrency": "PKR",
-    "priceValidUntil": "2026-12-31",
-    "availability": "https://schema.org/InStock"
-  },
+  "description": "Upload your existing CV or build from scratch to receive an AI-rewritten, ATS-optimized career document with LinkedIn optimizer, cover letter, and professional PDF export.",
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "4.8",
@@ -77,7 +70,7 @@ export const faqSchema = {
       "name": "What is Sophi?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Sophi is an AI-powered CV builder for Pakistani professionals. You upload your existing CV, and our AI rewrites it into a fully ATS-optimized career document including a professional summary, achievement-based bullets, LinkedIn optimizer, cover letter, and gap analysis — all for 1500 PKR."
+        "text": "Sophi is an AI-powered CV platform for Pakistani professionals. You can upload an existing CV or build from scratch to get a fully ATS-optimized career document including professional summary, achievement bullets, LinkedIn optimizer, cover letter, and gap analysis."
       }
     },
     {
@@ -98,26 +91,18 @@ export const faqSchema = {
     },
     {
       "@type": "Question",
-      "name": "How much does Sophi cost?",
+      "name": "What features are included in Sophi?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Sophi costs 1500 PKR per CV transformation. This includes the full ATS audit report, AI-rewritten CV, LinkedIn optimizer, cover letter, gap analysis with quick wins, PDF export in 49 professional templates, and email delivery of your finished document."
+        "text": "Sophi includes complete ATS score auditing, experience gap analysis, job-tailored resume generation, AI cover letter writing, LinkedIn profile optimization, and step-by-step CV creation from scratch or 30-second transformation of existing resumes."
       }
     },
     {
       "@type": "Question",
-      "name": "How do I pay for Sophi?",
+      "name": "How fast does Sophi generate my CV?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Sophi accepts payment securely via Safepay — Pakistan's trusted payment gateway. Bank transfer, cards, and mobile wallets supported."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How long does Sophi take to rewrite my CV?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Sophi typically completes your full CV transformation in under 60 seconds. You receive an instant PDF download on the dashboard and a copy delivered to your email."
+        "text": "Sophi typically completes your full CV transformation in under 30 seconds. You receive an instant PDF download on the dashboard and a copy delivered to your email."
       }
     },
     {
@@ -143,18 +128,13 @@ export const howToSchema = {
   "@context": "https://schema.org",
   "@type": "HowTo",
   "name": "How to Transform Your CV with Sophi AI",
-  "description": "Use Sophi's AI to rewrite your CV into an ATS-optimized professional document in 3 steps",
+  "description": "Use Sophi's AI to rewrite or build your CV into an ATS-optimized professional document in 3 steps",
   "totalTime": "PT5M",
-  "estimatedCost": {
-    "@type": "MonetaryAmount",
-    "currency": "PKR",
-    "value": "1500"
-  },
   "step": [
     {
       "@type": "HowToStep",
-      "name": "Pay 1500 PKR via Safepay",
-      "text": "Complete a one-time payment of 1500 PKR securely using Safepay. Your account is instantly unlocked after payment confirmation.",
+      "name": "Upload CV or Start from Scratch",
+      "text": "Upload your existing CV or create a new professional resume using our guided CV builder.",
       "position": 1
     },
     {

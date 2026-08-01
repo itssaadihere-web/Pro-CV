@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     default: 'Sophi — AI CV Builder Pakistan | ATS-Optimized Resume in Minutes',
     template: '%s | Sophi — AI CV Builder'
   },
-  description: 'Upload your CV, let advanced AI rewrite it into an ATS-optimized career document. Professional CV, cover letter & LinkedIn optimizer. Just 1500 PKR.',
+  description: 'Upload or build your CV, let advanced AI rewrite it into an ATS-optimized career document in 30 seconds. Professional CV, gap analysis, job tailoring & LinkedIn optimizer.',
   keywords: [
     'AI CV builder Pakistan', 'ATS resume builder', 'CV maker online Pakistan',
     'professional CV writer', 'ATS optimized resume', 'AI resume writer',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     url: 'https://joinsophi.com',
     siteName: 'Sophi',
     title: 'Sophi — AI CV Builder Pakistan | ATS-Optimized Resume in Minutes',
-    description: 'Upload your CV, let advanced AI rewrite it into an ATS-optimized career document. Professional CV, cover letter & LinkedIn optimizer. Just 1500 PKR.',
+    description: 'Upload or build your CV, let advanced AI rewrite it into an ATS-optimized career document in 30 seconds. Professional CV, gap analysis, job tailoring & LinkedIn optimizer.',
     images: [
       {
         url: 'https://joinsophi.com/og/home.png',
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Sophi — AI CV Builder Pakistan | ATS-Optimized Resume in Minutes',
-    description: 'Upload your CV, let advanced AI rewrite it into an ATS-optimized career document. Professional CV, cover letter & LinkedIn optimizer. Just 1500 PKR.',
+    description: 'Upload or build your CV, let advanced AI rewrite it into an ATS-optimized career document in 30 seconds. Professional CV, gap analysis, job tailoring & LinkedIn optimizer.',
     site: '@JoinSophi',
     creator: '@JoinSophi',
     images: ['https://joinsophi.com/og/home.png']

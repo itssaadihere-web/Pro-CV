@@ -13,57 +13,91 @@ import {
   Download,
   Languages,
   ArrowRight,
-  MessageSquare,
-  BadgeAlert,
   ChevronRight,
+  BarChart3,
+  FilePlus,
+  CheckCircle2,
+  Check,
 } from 'lucide-react'
 import Header from '@/components/Header'
 import FAQAccordion from '@/components/FAQAccordion'
 import Logo from '@/components/Logo'
 import Script from 'next/script'
 import { websiteSchema, softwareSchema, faqSchema } from '@/lib/schema'
-import { QuickAnswer } from '@/components/QuickAnswer'
 
-const FEATURES = [
+const CORE_HIGHLIGHTS = [
   {
     icon: Target,
-    title: 'ATS Scoring Engine',
-    description: 'Score compliance across 5 dimensions: keywords, formatting, semantic match, experience metrics, and readability.',
+    badge: 'ATS Audit Engine',
+    title: 'ATS Score & Compliance Check',
+    description: 'Evaluate your CV compliance across 5 dimensions: keyword density, formatting safety, semantic relevance, experience metrics, and section structure.',
+    badgeBg: 'bg-blue-50 text-blue-700 border-blue-200',
+    iconBg: 'bg-blue-600 text-white',
+  },
+  {
+    icon: BarChart3,
+    badge: 'Gap Intelligence',
+    title: 'Career & Skill Gap Analysis',
+    description: 'Instantly uncover missing keywords, work experience gaps, and critical qualifications required to outrank rival candidates in recruiter filters.',
+    badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
+    iconBg: 'bg-amber-600 text-white',
   },
   {
     icon: Sparkles,
-    title: 'Keyword Intelligence',
-    description: 'Tailored with high-performance keywords across 12 sectors, customized specifically to scan-pass recruitment bots.',
+    badge: 'Targeted Matching',
+    title: 'Job-Specific CV Tailoring',
+    description: 'Paste any job description to automatically adjust your bullet points, skills, and summary to align with specific role requirements.',
+    badgeBg: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+    iconBg: 'bg-indigo-600 text-white',
+  },
+  {
+    icon: FilePlus,
+    badge: 'Wizard Assistant',
+    title: 'Build CV from Scratch',
+    description: 'No existing resume? Easily generate a fresh, professional, ATS-approved CV from scratch using our step-by-step guided builder.',
+    badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    iconBg: 'bg-emerald-600 text-white',
   },
   {
     icon: Zap,
+    badge: '30-Sec AI Revamp',
+    title: 'Transform CV in 30 Seconds',
+    description: 'Upload your current PDF or Word document and let advanced AI restructure and optimize it into an interview-winning CV in 30 seconds.',
+    badgeBg: 'bg-purple-50 text-purple-700 border-purple-200',
+    iconBg: 'bg-purple-600 text-white',
+  },
+]
+
+const ADDITIONAL_FEATURES = [
+  {
+    icon: Zap,
     title: 'STAR-Metric Bullets',
-    description: 'Converts simple descriptors into quantifiable accomplishments: Action (Power Verb) + Context + Metric Result.',
+    description: 'Converts descriptors into quantifiable accomplishments: Action (Power Verb) + Context + Metric Result.',
   },
   {
     icon: Award,
-    title: '2026 Summary Format',
+    title: '2026 Executive Summary',
     description: 'A 3-line structural hook summarizing total years of experience, top value statements, and key proof figures.',
   },
   {
     icon: ShieldCheck,
-    title: 'LinkedIn Optimizer',
-    description: 'Never lose another opportunity because your achievements were invisible. Instantly build custom headers, hook summaries, and keywords.',
+    title: 'LinkedIn Profile Optimizer',
+    description: 'Build custom headers, hook summaries, and keywords so recruiters discover your profile easily.',
   },
   {
     icon: FileText,
-    title: 'AI Cover Letter',
-    description: 'Fully personalized, achievement-driven introductory letters customized against target industry postings.',
+    title: 'AI Cover Letter Generator',
+    description: 'Fully personalized, achievement-driven introductory letters customized against target job descriptions.',
   },
   {
     icon: Download,
-    title: '3 PDF Templates',
-    description: 'One-click downloads supporting ATS-Safe formatting, Modern spacing, and clean Minimalist templates.',
+    title: '49 PDF Templates Export',
+    description: 'One-click downloads supporting ATS-Safe formatting, Modern spacing, and clean Minimalist layouts.',
   },
   {
     icon: Languages,
     title: 'Multi-Language Support',
-    description: 'Optimize CVs in English (EN), Arabic (AR with RTL format), French (FR), or Spanish (ES) depending on target markets.',
+    description: 'Optimize CVs in English (EN), Arabic (AR with RTL format), French (FR), or Spanish (ES).',
   },
 ]
 
@@ -99,10 +133,10 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-3.5 py-1.5 text-xs font-extrabold text-primary"
+                className="inline-flex items-center gap-2 rounded-full bg-primary-50 px-4 py-1.5 text-xs font-extrabold text-primary border border-primary-100"
               >
-                <Sparkles className="h-3.5 w-3.5 text-gold" />
-                <span>AI-Powered CV Revamping v2.5</span>
+                <Sparkles className="h-4 w-4 text-gold" />
+                <span>Next-Gen AI CV Platform v2.5</span>
               </motion.div>
 
               <div className="space-y-4">
@@ -112,9 +146,9 @@ export default function LandingPage() {
                   transition={{ duration: 0.5, delay: 0.1 }}
                   className="text-4xl font-black tracking-tight text-slate-950 sm:text-5xl lg:text-6xl leading-[1.1]"
                 >
-                  Transform Your CV with AI. <br />
+                  Build & Transform CVs with AI. <br />
                   <span className="bg-gradient-to-r from-primary via-primary-800 to-gold bg-clip-text text-transparent">
-                    ATS-Optimized in 60 Seconds.
+                    ATS-Optimized in 30 Seconds.
                   </span>
                 </motion.h1>
                 <motion.p
@@ -123,8 +157,7 @@ export default function LandingPage() {
                   transition={{ duration: 0.5, delay: 0.2 }}
                   className="text-sm sm:text-base leading-relaxed text-slate-600 max-w-xl"
                 >
-                  Never lose another opportunity because your achievements were invisible. Upload your old CV and let advanced AI transform it into a recruiter-approved, keyword-optimized career document.
-                  Sophi is the leading AI CV builder in Pakistan for professionals looking to bypass ATS filters.
+                  Check your ATS score, analyze career gaps, tailor your CV for specific job roles, build a new resume from scratch, or transform your existing CV into a recruiter-approved document in 30 seconds.
                 </motion.p>
               </div>
 
@@ -136,16 +169,16 @@ export default function LandingPage() {
               >
                 <Link
                   href="/login"
-                  className="flex items-center justify-center gap-1.5 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-white transition-all hover:bg-primary-800 hover:shadow-lg hover:shadow-primary-100"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-primary px-7 py-3.5 text-sm font-bold text-white transition-all hover:bg-primary-800 hover:shadow-xl hover:shadow-primary-100"
                 >
-                  <span>Transform My CV — 1500 PKR</span>
+                  <span>Build & Revamp CV Now</span>
                   <ArrowRight className="h-4 w-4 text-gold" />
                 </Link>
                 <a
-                  href="#how-it-works"
+                  href="#features"
                   className="flex items-center justify-center rounded-xl border border-slate-205 bg-white px-6 py-3.5 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-50 h-[48px]"
                 >
-                  <span>See How It Works</span>
+                  <span>Explore Features</span>
                 </a>
               </motion.div>
 
@@ -153,23 +186,23 @@ export default function LandingPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.45 }}
-                className="pt-6 border-t border-slate-100 grid grid-cols-2 gap-4 text-xs font-bold text-slate-400 uppercase tracking-wider"
+                className="pt-6 border-t border-slate-100 grid grid-cols-2 gap-4 text-xs font-bold text-slate-500 uppercase tracking-wider"
               >
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-4.5 w-4.5 text-gold shrink-0" />
-                  <span>ATS-Safe Layout</span>
+                  <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500 shrink-0" />
+                  <span>ATS Score Audit</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Sparkles className="h-4.5 w-4.5 text-gold shrink-0" />
-                  <span>AI Powered</span>
+                  <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500 shrink-0" />
+                  <span>Gap Analysis</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Download className="h-4.5 w-4.5 text-gold shrink-0" />
-                  <span>Instant PDF downloads</span>
+                  <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500 shrink-0" />
+                  <span>Job Description Tailoring</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <FileText className="h-4.5 w-4.5 text-gold shrink-0" />
-                  <span>Email Delivery</span>
+                  <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500 shrink-0" />
+                  <span>Build from Scratch</span>
                 </div>
               </motion.div>
             </div>
@@ -206,69 +239,127 @@ export default function LandingPage() {
               How Sophi Works
             </h2>
             <p className="text-sm text-slate-500 max-w-md mx-auto">
-              Get an interview-ready job profile package in under 60 seconds.
+              Get an interview-ready professional profile package in 3 quick steps.
             </p>
           </div>
 
           <div className="grid gap-8 md:grid-cols-3 relative">
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col items-center text-center space-y-4">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col items-center text-center space-y-4 hover:shadow-md transition-shadow">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-primary font-bold text-base">
                 01
               </div>
-              <h3 className="text-base font-bold text-slate-850">Pay 1500 PKR</h3>
+              <h3 className="text-base font-bold text-slate-850">Upload or Start from Scratch</h3>
               <p className="text-xs leading-relaxed text-slate-550">
-                Unlock full access securely via Safepay or DirectPay. Simple 150 credits package activation.
+                Upload your existing PDF/Word CV for an instant revamp, or build a new ATS-compliant resume from scratch with our step-by-step guide.
               </p>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col items-center text-center space-y-4">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col items-center text-center space-y-4 hover:shadow-md transition-shadow">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-primary font-bold text-base">
                 02
               </div>
-              <h3 className="text-base font-bold text-slate-850">Upload Original CV</h3>
+              <h3 className="text-base font-bold text-slate-850">AI Audit & Job Tailoring</h3>
               <p className="text-xs leading-relaxed text-slate-550">
-                Upload your PDF or Word document. Choose target sector preferences and insert job descriptions to customize.
+                Our AI checks your ATS score, analyzes career gaps, and tailors your profile with high-impact keywords for target job descriptions.
               </p>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col items-center text-center space-y-4">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col items-center text-center space-y-4 hover:shadow-md transition-shadow">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-primary font-bold text-base">
                 03
               </div>
-              <h3 className="text-base font-bold text-slate-850">Download in 60s</h3>
+              <h3 className="text-base font-bold text-slate-850">Download in 30 Seconds</h3>
               <p className="text-xs leading-relaxed text-slate-550">
-                Instantly retrieve your rewritten CV, score analysis, matching tags, cover letter, and LinkedIn headline card.
+                Instantly retrieve your rewritten CV, detailed ATS score analysis, cover letter, and LinkedIn headline card in professional templates.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Grid */}
-      <section className="py-20 bg-white">
+      {/* Core Platform Highlights Showcase Section */}
+      <section id="features" className="py-20 bg-white border-b border-slate-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-16">
+          <div className="text-center space-y-3 max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700 border border-blue-100">
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>Core Capabilities</span>
+            </div>
+            <h2 className="text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
+              Everything You Need to Beat ATS & Land Interviews
+            </h2>
+            <p className="text-sm text-slate-600">
+              Sophi combines AI resume engineering, gap detection, and job-tailored keyword matching into one seamless platform.
+            </p>
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {CORE_HIGHLIGHTS.map((item, index) => {
+              const Icon = item.icon
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-xl hover:border-slate-300 transition-all flex flex-col justify-between group"
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className={`p-3 rounded-xl ${item.iconBg} shadow-sm group-hover:scale-110 transition-transform`}>
+                        <Icon className="h-6 w-6" />
+                      </div>
+                      <span className={`text-[11px] font-extrabold px-2.5 py-1 rounded-full border ${item.badgeBg}`}>
+                        {item.badge}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-primary transition-colors">
+                      {item.title}
+                    </h3>
+                    
+                    <p className="text-xs leading-relaxed text-slate-600">
+                      {item.description}
+                    </p>
+                  </div>
+
+                  <div className="pt-6 mt-6 border-t border-slate-100 flex items-center gap-1 text-xs font-bold text-primary group-hover:translate-x-1 transition-transform">
+                    <span>Explore Feature</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Additional Features Grid */}
+      <section className="py-20 bg-slate-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-16">
           <div className="text-center space-y-2">
             <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-              What You Get with Sophi
+              Complete AI Career Toolkit
             </h2>
             <p className="text-sm text-slate-500 max-w-md mx-auto">
               Our AI optimization pipeline leverages industry-standard recruitment benchmarks.
             </p>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {FEATURES.map((feat, i) => {
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {ADDITIONAL_FEATURES.map((feat, i) => {
               const Icon = feat.icon
               return (
                 <div
                   key={i}
-                  className="rounded-2xl border border-slate-150 bg-white p-5 shadow-sm space-y-4 hover:shadow-md hover:border-slate-300 transition-all group"
+                  className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4 hover:shadow-md hover:border-slate-300 transition-all group"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-50 text-primary group-hover:scale-105 transition-transform">
                     <Icon className="h-5 w-5" />
                   </div>
                   <h3 className="text-sm font-bold text-slate-800">{feat.title}</h3>
-                  <p className="text-[11.5px] leading-relaxed text-slate-500">{feat.description}</p>
+                  <p className="text-[12px] leading-relaxed text-slate-500">{feat.description}</p>
                 </div>
               )
             })}
@@ -276,63 +367,56 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section className="py-20 bg-slate-50 border-t border-slate-200">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center space-y-8">
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-              Pricing — 1500 PKR, Everything Included
-            </h2>
-            <p className="text-sm text-slate-500">
-              No subscription fees. Pay only for what you revamp.
-            </p>
+      {/* Call to Action Showcase Section */}
+      <section className="py-20 bg-gradient-to-br from-slate-900 via-primary-950 to-slate-950 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,theme(colors.blue.900/30),transparent)]" />
+        
+        <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-8">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-extrabold text-amber-400 backdrop-blur-md border border-white/10">
+            <Sparkles className="h-4 w-4" />
+            <span>Ready for Next Step?</span>
           </div>
 
-          <div className="mx-auto max-w-md rounded-2xl border border-primary-200 bg-white p-8 shadow-md relative overflow-hidden ring-1 ring-primary-500/5">
-            <div className="absolute top-0 right-0 rounded-bl-lg bg-primary px-3 py-1 text-[10px] font-bold text-white uppercase tracking-wider">
-              Popular
-            </div>
-            
-            <span className="block text-xs font-bold text-slate-400 uppercase tracking-widest">150 Credits Package</span>
-            <span className="mt-2 block text-4xl font-black text-slate-900">1,500 PKR</span>
-            
-            <ul className="mt-6 space-y-3.5 text-left border-t border-slate-100 pt-6 text-xs text-slate-600 font-semibold">
-              <li className="flex items-center gap-2">
-                <span className="text-gold font-bold">✓</span>
-                <span>AI Revamped CV (ATS-optimized)</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-gold font-bold">✓</span>
-                <span>ATS keyword scoring and formatting audit</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-gold font-bold">✓</span>
-                <span>LinkedIn headline and bio optimization tags</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-gold font-bold">✓</span>
-                <span>Job Description targeted Cover Letter</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-gold font-bold">✓</span>
-                <span>49 Professional CV Templates export</span>
-              </li>
-            </ul>
+          <h2 className="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl leading-tight">
+            Elevate Your Job Applications with Sophi AI
+          </h2>
 
-            <div className="mt-8">
-              <Link
-                href="/login"
-                className="flex w-full justify-center items-center gap-1 rounded-xl bg-primary py-3 text-sm font-bold text-white transition-all hover:bg-primary-800 shadow-md shadow-primary-100"
-              >
-                <span>Get Started — 1,500 PKR</span>
-                <ChevronRight className="h-4 w-4 text-gold" />
-              </Link>
+          <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+            Get real-time ATS scoring, uncover experience gaps, build job-tailored resumes, or start fresh with our AI-guided builder.
+          </p>
+
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto text-left py-4">
+            <div className="flex items-center gap-2.5 text-xs font-semibold text-slate-200 bg-white/5 p-3 rounded-xl border border-white/10">
+              <Check className="h-4 w-4 text-emerald-400 shrink-0" />
+              <span>ATS Score Audit</span>
             </div>
+            <div className="flex items-center gap-2.5 text-xs font-semibold text-slate-200 bg-white/5 p-3 rounded-xl border border-white/10">
+              <Check className="h-4 w-4 text-emerald-400 shrink-0" />
+              <span>Gap Analysis Report</span>
+            </div>
+            <div className="flex items-center gap-2.5 text-xs font-semibold text-slate-200 bg-white/5 p-3 rounded-xl border border-white/10">
+              <Check className="h-4 w-4 text-emerald-400 shrink-0" />
+              <span>Job-Specific Tailoring</span>
+            </div>
+            <div className="flex items-center gap-2.5 text-xs font-semibold text-slate-200 bg-white/5 p-3 rounded-xl border border-white/10">
+              <Check className="h-4 w-4 text-emerald-400 shrink-0" />
+              <span>Build or Revamp in 30s</span>
+            </div>
+          </div>
+
+          <div className="pt-4 flex justify-center">
+            <Link
+              href="/login"
+              className="flex items-center justify-center gap-2 rounded-xl bg-gold px-8 py-4 text-sm font-black text-slate-950 hover:bg-amber-400 transition-all hover:shadow-xl hover:shadow-gold/20"
+            >
+              <span>Get Started Now</span>
+              <ChevronRight className="h-4 w-4 text-slate-950" />
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* FAQ Section with Golden Answer Format */}
+      {/* FAQ Section */}
       <section className="py-20 bg-white border-t border-slate-200">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="text-center space-y-2">
@@ -340,7 +424,7 @@ export default function LandingPage() {
               Frequently Asked Questions
             </h2>
             <p className="text-sm text-slate-500 max-w-md mx-auto">
-              Everything you need to know about our AI CV builder.
+              Everything you need to know about our AI CV platform.
             </p>
           </div>
 
@@ -358,8 +442,6 @@ export default function LandingPage() {
           <p className="text-xs text-slate-400">
             © {new Date().getFullYear()} JoinSophi.com AI CV Platform. All rights reserved.
           </p>
-
-
         </div>
       </footer>
     </div>
