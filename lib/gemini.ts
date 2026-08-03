@@ -159,38 +159,45 @@ ${(kimiData.core_competencies || []).join(' | ')}
 
 WORK EXPERIENCE:
 ${(kimiData.experience || []).map((exp: any) => `
-ROLE: ${exp.job_title}
+JOB TITLE: ${exp.job_title}
 COMPANY: ${exp.company}
 LOCATION: ${exp.location || ''}
-DATES: ${exp.start_date} to ${exp.end_date}
-ACHIEVEMENTS:
+DATES: ${exp.start_date} – ${exp.end_date}
+BULLETS:
 ${(exp.bullets || []).map((b: string) => `- ${b}`).join('\n')}
 `).join('\n---\n')}
+
+${kimiData.publications && kimiData.publications.length > 0 ? `
+RESEARCH PUBLICATIONS:
+${kimiData.publications.map((pub: any) => `- ${pub.authors} (${pub.year}). "${pub.title}." ${pub.journal}${pub.indexing_tier ? ' [' + pub.indexing_tier + ']' : ''}.`).join('\n')}
+` : ''}
+
+${kimiData.conference_presentations && kimiData.conference_presentations.length > 0 ? `
+CONFERENCE PRESENTATIONS:
+${kimiData.conference_presentations.map((conf: any) => `- ${conf.authors} (${conf.year}). "${conf.title}." Presented at: ${conf.conference}.`).join('\n')}
+` : ''}
+
+${kimiData.research_supervision && kimiData.research_supervision.length > 0 ? `
+RESEARCH SUPERVISION TRACK RECORD:
+${kimiData.research_supervision.map((sup: string) => `- ${sup}`).join('\n')}
+` : ''}
+
+${kimiData.executive_trainings_delivered && kimiData.executive_trainings_delivered.length > 0 ? `
+EXECUTIVE TRAININGS & WORKSHOPS FACILITATED:
+${kimiData.executive_trainings_delivered.map((trn: string) => `- ${trn}`).join('\n')}
+` : ''}
 
 KEY ACHIEVEMENTS:
 ${(kimiData.key_achievements || []).join('\n')}
 
 EDUCATION:
-${(kimiData.education || []).map((edu: any) =>
-  `${edu.degree} | ${edu.institution} | ${edu.graduation_year}${edu.distinction ? ' | ' + edu.distinction : ''}`
-).join('\n')}
+${(kimiData.education || []).map((edu: any) => `${edu.degree} | ${edu.institution} | ${edu.graduation_year}${edu.distinction ? ' | ' + edu.distinction : ''}`).join('\n')}
 
 CERTIFICATIONS:
-${kimiData.certifications && kimiData.certifications.length > 0
-  ? kimiData.certifications.map((c: any) => `${c.name} — ${c.issuer} (${c.year})`).join('\n')
-  : 'None'
-}
+${(kimiData.certifications || []).map((cert: any) => `${cert.name} — ${cert.issuer} (${cert.year})`).join('\n')}
 
 TECHNICAL SKILLS:
-${Object.entries(kimiData.technical_skills || {}).map(([cat, skills]) =>
-  `${cat}: ${Array.isArray(skills) ? skills.join(', ') : skills}`
-).join('\n')}
-
-LANGUAGES:
-${Array.isArray(kimiData.technical_skills?.Languages)
-  ? kimiData.technical_skills.Languages.join(', ')
-  : 'English'
-}
+${Object.entries(kimiData.technical_skills || {}).map(([cat, skills]) => `${cat}: ${Array.isArray(skills) ? skills.join(', ') : skills}`).join('\n')}
 `.trim()
     }
   } catch (e) {

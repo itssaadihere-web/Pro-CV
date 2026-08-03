@@ -39,12 +39,78 @@ export interface CVData {
 
   technicalSkills: Record<string, string[]> // { "Software": ["Excel", "SAP"], ... }
   languages: Array<{ language: string; level: string }>
+  publications?: Array<{
+    authors: string
+    year: string
+    title: string
+    journal: string
+    indexing_tier?: string
+  }>
+  conferencePresentations?: Array<{
+    authors: string
+    year: string
+    title: string
+    conference: string
+  }>
+  researchSupervision?: string[]
+  executiveTrainings?: string[]
   interests?: string[]
   volunteerWork?: Array<{ role: string; org: string; period: string; description: string }>
   references?: Array<{ name: string; title: string; contact: string }>
 }
 
 export function parseKimiCV(kimiOutput: string): CVData {
+  let jsonObj: any = null
+  try {
+    const cleaned = kimiOutput.trim().replace(/^```json/i, '').replace(/^```/, '').replace(/```$/, '').trim()
+    jsonObj = JSON.parse(cleaned)
+  } catch (e) {
+    // Not raw JSON, proceed with text regex parsing
+  }
+
+  if (jsonObj && jsonObj.personal) {
+    return {
+      fullName: jsonObj.personal.full_name || '',
+      jobTitle: jsonObj.personal.job_title || '',
+      email: jsonObj.personal.email || '',
+      phone: jsonObj.personal.phone || '',
+      location: jsonObj.personal.location || '',
+      linkedin: jsonObj.personal.linkedin || '',
+      website: jsonObj.personal.website || '',
+      summary: jsonObj.summary || '',
+      coreCompetencies: jsonObj.core_competencies || [],
+      experience: (jsonObj.experience || []).map((exp: any) => ({
+        title: exp.job_title || '',
+        company: exp.company || '',
+        location: exp.location || '',
+        startDate: exp.start_date || '',
+        endDate: exp.end_date || '',
+        bullets: exp.bullets || []
+      })),
+      keyAchievements: jsonObj.key_achievements || [],
+      education: (jsonObj.education || []).map((edu: any) => ({
+        degree: edu.degree || '',
+        institution: edu.institution || '',
+        startYear: '',
+        endYear: edu.graduation_year || '',
+        distinction: edu.distinction || ''
+      })),
+      certifications: (jsonObj.certifications || []).map((c: any) => ({
+        name: c.name || '',
+        issuer: c.issuer || '',
+        year: c.year || ''
+      })),
+      publications: jsonObj.publications || [],
+      conferencePresentations: jsonObj.conference_presentations || [],
+      researchSupervision: jsonObj.research_supervision || [],
+      executiveTrainings: jsonObj.executive_trainings_delivered || [],
+      technicalSkills: jsonObj.technical_skills || {},
+      languages: Array.isArray(jsonObj.technical_skills?.Languages)
+        ? jsonObj.technical_skills.Languages.map((l: string) => ({ language: l, level: 'Native/Professional' }))
+        : []
+    }
+  }
+
   // Extract the REVAMPED CV section
   const cvSection = kimiOutput
     .match(/---REVAMPED CV---([\s\S]*?)---LINKEDIN OPTIMIZER---/)?.[1]?.trim() ?? kimiOutput

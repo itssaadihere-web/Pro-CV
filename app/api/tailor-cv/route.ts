@@ -81,26 +81,12 @@ export async function POST(req: NextRequest) {
     const prompt = `You are Sophi's elite AI CV Tailor and ATS Optimization Engine.
 
 YOUR MISSION:
-Tailor the candidate's existing CV to maximize alignment with the target job description. Your ultimate goal is to architect, adjust, and weave keywords so expertly into the document that the post-tailoring ATS score is driven into an elite tier of 80% or higher. Every decision you make — rewriting a bullet, injecting a keyword, restructuring the summary — must serve this measurable optimization goal.
+Tailor the candidate's existing CV to maximize alignment with the target job description. Your ultimate goal is to optimize syntax, highlight domain expertise, and integrate relevant industry terms so perfectly that the final calculated post-tailoring ATS score realistically lands above 80%.
 
-DYNAMIC ACCURATE SCORING:
-You must perform an honest, dynamic comparison — not return fixed dummy numbers.
-- Calculate originalScore: the exact percentage of the job description's requirements met by the UNREVISED CV content. Be strict. If the original CV only mentions 4 of 12 required skills, the score should reflect that honestly (e.g. 38).
-- Calculate atsScore: based strictly on your final tailored payload. The increase must reflect genuine optimization via targeted keyword insertion, STAR-metric bullets, and structural alignment. The improvement should be realistic — typically 20–35 points higher than originalScore, driven by the quality of your work, never by fabrication.
-
-ATS SCORING RUBRIC FOR THIS AGENT:
-
-originalScore calculation:
-  Count how many of the JD's top 10 required terms/skills appear in the original CV text.
-  Score = (matched_terms / 10) × 100, then apply qualitative adjustment for relevance.
-
-atsScore calculation after tailoring:
-  Keyword injection quality: up to +30 points
-  STAR-metric bullet quality: up to +20 points
-  Summary alignment to JD title and requirements: up to +15 points
-  Skills section completeness vs JD: up to +15 points
-  Overall structure and format: up to +10 points (if any formatting issues fixed) + up to +10 points for cover letter relevance
-  Cap: never exceed 97. Never inflate artificially.
+DYNAMIC REAL-TIME SCORING DIRECTIVE:
+You must perform a genuine analytical comparison. 
+- Calculate originalScore as a true mathematical reflection of the percentage of requirements met by the candidate's raw, unrevised document.
+- Calculate atsScore dynamically based strictly on the quality and contextual alignment of your final tailored output payload. Do not return static, hardcoded dummy numbers.
 
 EXISTING CV CONTENT:
 ${existingCvContent}
@@ -108,60 +94,74 @@ ${existingCvContent}
 TARGET JOB DESCRIPTION:
 ${jobDescription}
 
-TAILORING RULES:
-1. Deeply analyze the job description — extract the target job title, top 10 hard skills, top 5 soft skills, key responsibilities, industry-specific terminology, and required certifications.
-2. Rewrite the professional summary to directly mirror the job title and top 3 requirements from the JD.
-3. Rewrite achievement bullets using the STAR-Metric formula. Each bullet: strong power verb + task matching a JD responsibility + quantified result. If original CV has no numbers, use realistic estimates marked "(est.)".
-4. PRESERVE all original employer names, job titles, universities, and dates exactly as they appear in the original CV. Never invent or change these.
-5. Inject missing high-value ATS keywords from the JD naturally into bullets and skills — do not keyword-stuff.
-6. Write a personalized cover letter (180–220 words) referencing specific details from the JD and the candidate's strongest matching achievements.
+TAILORING & PROFESSORIAL PACKING RULES:
+1. DEEP JD ANALYSIS: Thoroughly inspect the job description to map out core tracks, target job designations, primary competencies, operational duties, and requested domain certifications.
+2. PRESERVE LONG-FORM TRACKS: If the profile contains senior components (Publications, Academic Chair appointments, Research projects, Masterclasses, PhD Thesis references), you are strictly required to preserve them entirely. Do not drop, omit, or collapse academic assets to enforce an arbitrary corporate page layout. Tailor their descriptions to emphasize systemic impact.
+3. BULLET RESTYLING: Rewrite professional experience entries using the STAR-Metric structure (Strong action verb + specific task + quantified output). If the original records contain no direct metrics, supply accurate industry approximations labeled with "(est.)".
+4. STRUCTURAL INTEGRITY: Retain original institutional names, corporate titles, university titles, and employment/graduation timelines completely unchanged. Never generate fictional employers or change true employment boundaries.
 
 CRITICAL: Return ONLY a single valid JSON object. No markdown. No text before or after. Start with { end with }.
 
-OUTPUT SCHEMA — all score fields must be dynamically computed integers, not placeholders:
-
+OUTPUT SCHEMA — return exactly this structure, all fields required:
 {
   "originalScore": 45,
   "atsScore": 88,
-  "targetJobTitle": "Exact job title as stated in JD",
+  "targetJobTitle": "Exact target job title extracted from the JD",
   "targetIndustry": "${selectedJob.target_industry || 'Professional Services'}",
-  "matchedKeywords": [
-    "Top 5 keywords already present in original CV that match the JD"
-  ],
-  "missingKeywordsResolved": [
-    "Keyword A — was missing, now injected into tailored bullets",
-    "Keyword B — was missing, now injected",
-    "Keyword C — was missing, now injected"
-  ],
+  "matchedKeywords": ["Keyword 1", "Keyword 2", "Keyword 3", "Keyword 4"],
+  "missingKeywordsResolved": ["Added Keyword A", "Added Keyword B", "Added Keyword C"],
 
-  "tailoredSummary": "Three sentences. Mirrors JD job title exactly. Sentence 1: Title + years + industry. Sentence 2: Two JD-specific value propositions using JD language. Sentence 3: Quantified proof point most relevant to JD requirements. No first-person pronouns.",
+  "tailoredSummary": "Three-sentence tailored summary matching the target job title and top requirements from the JD. No first-person pronouns. Concludes with a quantified impact or scholarly benchmark statement.",
 
   "tailoredExperiences": [
     {
-      "company": "EXACT original company name — do not alter",
-      "position": "EXACT original position title — do not alter",
-      "startDate": "EXACT original start date — do not alter",
-      "endDate": "EXACT original end date — do not alter",
+      "company": "Original company/university name — DO NOT REWRITE OR CHANGE",
+      "position": "Original professional role title — DO NOT REWRITE OR CHANGE",
+      "startDate": "Original start timeline — DO NOT CHANGE",
+      "endDate": "Original end timeline — DO NOT CHANGE",
       "tailoredBullets": [
-        "Power verb + [JD responsibility task] resulting in [quantified metric].",
-        "Power verb + [JD priority area] achieving [quantified result].",
-        "Power verb + [JD requirement] delivering [specific measurable outcome].",
-        "Power verb + [JD skill application] reducing/improving [metric] by [amount]."
+        "Spearheaded [action matching a primary JD responsibility] resulting in [quantified outcome].",
+        "Architected [strategic element] which delivered [quantified metrics matching institutional target goals].",
+        "Optimized [departmental domain area] reducing [metric/timeline] by [count/%] in direct alignment with JD parameters."
       ]
     }
   ],
 
-  "tailoredSkills": [
-    "Top 10 skills — combination of strongest original skills + highest-priority missing JD keywords now added"
+  "tailoredPublications": [
+    {
+      "authors": "APA Authors list verbatim",
+      "year": "Year",
+      "title": "Verbatim title of research paper",
+      "journal": "Verbatim journal name",
+      "indexing_tier": "Verified tier status or empty string"
+    }
   ],
+
+  "tailoredConferencePresentations": [
+    {
+      "authors": "Verbatim authors list",
+      "year": "Year",
+      "title": "Verbatim presentation title",
+      "conference": "Verbatim conference name and setting"
+    }
+  ],
+
+  "tailoredResearchSupervision": [
+    "Tailored tracking statements highlighting mentorship scale matching research requirements of the JD"
+  ],
+
+  "tailoredExecutiveTrainings": [
+    "Tailored descriptions of workshops or corporate sessions delivered highlighting transferable leadership/training competencies"
+  ],
+
+  "tailoredSkills": ["Top comprehensive skills matrix matching original assets with missing JD keywords"],
 
   "keyAdjustments": [
-    "Precise description of optimization 1 — what changed, which JD requirement it addresses, why it improves the score",
-    "Precise description of optimization 2",
-    "Precise description of optimization 3"
+    "Actionable optimization 1 detailing exactly what syntax/keyword asset was aligned and why",
+    "Actionable optimization 2 detailing exactly what syntax/keyword asset was aligned and why"
   ],
 
-  "tailoredCoverLetter": "180–220 words exactly. Paragraph 1 (2–3 sentences): Hook referencing a specific JD detail or company name + why this candidate is the right fit. Paragraph 2 (3–4 sentences): Two specific achievements from the candidate's CV with exact numbers that directly address JD responsibilities. Paragraph 3 (2 sentences): Confident call to action with contact invitation. No first-person pronoun as opening word."
+  "tailoredCoverLetter": "180–220 word cover letter. Paragraph 1: Intent, targeted designation, and specific hook showing understanding of the hiring institution. Paragraph 2: Core quantified achievements directly addressing the core needs stated in the JD. Paragraph 3: Strategic sign-off and call to action."
 }`
 
     const response = await ai.models.generateContent({
