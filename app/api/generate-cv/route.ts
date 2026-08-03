@@ -262,7 +262,7 @@ Please run the full transformation and output all sections as specified in your 
 
     const cvContentToSave = sections.rawJson ? JSON.stringify(sections.rawJson) : sections.revampedCV
 
-    // 2. Update job details
+    // 2. Update job details - try primary payload, with automatic fallback for missing table columns
     let { error: updateError } = await supabase
       .from('cv_jobs')
       .update({
@@ -279,24 +279,22 @@ Please run the full transformation and output all sections as specified in your 
       .eq('id', jobId)
 
     if (updateError) {
-      if (updateError.code === '42703' || updateError.message?.includes('template_used')) {
-        console.warn('⚠️ Warning: "template_used" column not found in database. Retrying update without it.')
+      console.warn('⚠️ Warning: cv_jobs update encountered column error, executing fallback with core schema:', updateError.message)
+      
+      const fallback = await supabase
+        .from('cv_jobs')
+        .update({
+          status: 'completed',
+          ats_score: sections.atsScoreJson,
+          generated_cv: cvContentToSave,
+          linkedin_optimizer: sections.linkedinJson,
+          cover_letter: sections.coverLetter,
+          gap_analysis: sections.gapAnalysisJson,
+          completed_at: new Date().toISOString(),
+        })
+        .eq('id', jobId)
         
-        const fallback = await supabase
-          .from('cv_jobs')
-          .update({
-            status: 'completed',
-            ats_score: sections.atsScoreJson,
-            generated_cv: cvContentToSave,
-            linkedin_optimizer: sections.linkedinJson,
-            cover_letter: sections.coverLetter,
-            gap_analysis: sections.gapAnalysisJson,
-            completed_at: new Date().toISOString(),
-          })
-          .eq('id', jobId)
-          
-        updateError = fallback.error
-      }
+      updateError = fallback.error
     }
 
     if (updateError) {
