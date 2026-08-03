@@ -40,10 +40,42 @@ Hold these counts as INVENTORY_TARGETS. These are a HARD FLOOR, not a suggestion
 COMPLETENESS IS UNCONDITIONAL — this applies to every candidate, not only detected Academics or Executives. A retail manager with 12 past roles gets 12 experience objects. A professor with 19 publications gets 19 publication objects. Tiering (below) affects formatting density and bullet depth, never record count.
 
 ═══════════════════════════════════════
-CANDIDATE TIER DETECTION (affects formatting density, not record count)
+CANDIDATE TIER DETECTION & DYNAMIC SECTION ORDERING MANDATE
 ═══════════════════════════════════════
-1. DETECT CANDIDATE TIER: Analyze the candidate's background. If the candidate is an Academic (Ph.D., Professor/Lecturer, extensive research background) or an Executive (C-Suite, VP, Director), bypass corporate single-page density assumptions — these profiles are EXPECTED to produce multi-page output. A dense, exhaustive multi-page CV is the correct and default result for such candidates, not an exception to justify.
-2. ACADEMIC COMPLIANCE: Academic CVs must be deeply exhaustive. Do not compress, summarize, or omit institutional experience, visiting faculty tracks, course codes, or publications to fit a standard one-page corporate template.
+1. DETECT CANDIDATE TIER: Analyze the candidate's background and classify into one of three distinct profile tiers:
+
+   • TIER 1 — FRESH GRADUATE / ENTRY-LEVEL (0–2 years experience):
+     - Profile: Fresh candidate, intern, or entry-level applicant with limited work experience.
+     - DYNAMIC CONTENT ORDER:
+       1. Personal Header & Professional Summary
+       2. Core Competencies & Technical Skills
+       3. EDUCATION (Placed HIGH UP immediately after Skills/Summary)
+       4. Certifications & Projects
+       5. Work Experience / Internships (Placed after Education)
+
+   • TIER 2 — MID-LEVEL PROFESSIONAL (3–10 years experience):
+     - Profile: Experienced specialist, manager, or corporate professional with solid track record.
+     - DYNAMIC CONTENT ORDER:
+       1. Personal Header & Professional Summary
+       2. Core Competencies & Key Areas of Expertise
+       3. PROFESSIONAL EXPERIENCE (Primary highlight — placed FIRST)
+       4. Key Achievements & Projects
+       5. Education
+       6. Certifications & Technical Skills
+
+   • TIER 3 — SENIOR EXECUTIVE / ACADEMIC / INDUSTRY EXPERT (10+ years experience, C-Suite, VP, Director, PhD, Professor):
+     - Profile: Senior leader, C-suite executive, industry expert, or academic researcher with extensive industry associations, leadership roles, and research contributions.
+     - DYNAMIC CONTENT ORDER:
+       1. Personal Header & Executive Leadership Profile
+       2. Core Competencies & Strategic Industry Expertise
+       3. Executive Leadership Roles & Professional Experience
+       4. Industry Associations, Advisory Roles & Key Achievements
+       5. Research Publications, Conference Presentations & Supervision (if applicable)
+       6. Executive Trainings & Professional Certifications
+       7. EDUCATION (MUST BE PLACED AT THE VERY END OF THE CV)
+       * Note: For Senior Experts & Executives, education is not the primary focus; leadership track record, industry insights, associations, and executive impact take priority over degree listings.
+
+2. ACADEMIC & EXECUTIVE COMPLIANCE: Academic and Senior Executive CVs must be deeply exhaustive. Do not compress, summarize, or omit institutional experience, visiting faculty tracks, course codes, or publications to fit a standard one-page corporate template.
 3. DATA RETENTION MANDATE: Parse and return EVERY publication, research project, conference presentation, doctoral/master's supervision, and corporate workshop present in the raw input. Cross-check against INVENTORY_TARGETS from Step 0.
 4. ARRAY MAPPING: Every array in the schema below represents a repeatable object template. Loop through and create one object per record found in the source — repeat the object structure as many times as INVENTORY_TARGETS requires. Never drop historical records to shorten output.
 
