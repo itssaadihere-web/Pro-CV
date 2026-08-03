@@ -270,9 +270,9 @@ export default function CVPreview({
                 <VisualCV cvText={displayCVText} template={selectedTemplate} colorTheme={selectedColor} isWatermarked={isWatermarked} />
               </div>
             ) : (
-              <pre className="flex-1 overflow-auto max-h-[600px] p-6 text-left font-mono text-[11.5px] leading-relaxed text-slate-800 bg-white whitespace-pre-wrap select-all font-jetbrains">
-                {revampedText || 'Optimized CV text is loading or empty.'}
-              </pre>
+              <div className="flex-1 overflow-auto max-h-[600px] bg-white">
+                <RawCVTextFormatter cvText={revampedText} />
+              </div>
             )}
           </div>
         </div>
@@ -298,11 +298,15 @@ export default function CVPreview({
               <VisualCV cvText={displayCVText} template={selectedTemplate} colorTheme={selectedColor} isWatermarked={isWatermarked} />
             </div>
           ) : (
-            <pre className={`overflow-auto max-h-[650px] p-6 text-left font-mono text-[11.5px] leading-relaxed whitespace-pre-wrap font-jetbrains ${
-              activeTab === 'after' ? 'text-slate-800 bg-white' : 'text-slate-500 bg-slate-50/25'
-            }`}>
-              {activeTab === 'after' ? revampedText : originalText}
-            </pre>
+            <div className="overflow-auto max-h-[650px] bg-white">
+              {activeTab === 'after' ? (
+                <RawCVTextFormatter cvText={revampedText} />
+              ) : (
+                <pre className="p-6 text-left font-mono text-[11.5px] leading-relaxed text-slate-500 bg-slate-50/25 whitespace-pre-wrap font-jetbrains">
+                  {originalText}
+                </pre>
+              )}
+            </div>
           )}
         </div>
       )}
@@ -341,6 +345,207 @@ function VisualCV({
       <div style={{ transform: 'scale(0.6)', transformOrigin: 'top center', height: '674px', overflow: 'hidden' }}>
         <TemplateComponent data={cvData} scale={0.6} colorTheme={colorTheme} />
       </div>
+    </div>
+  )
+}
+
+function RawCVTextFormatter({ cvText }: { cvText: string }) {
+  const cvData = parseKimiCV(cvText)
+
+  return (
+    <div className="p-6 md:p-8 space-y-6 text-slate-800 font-sans leading-relaxed text-sm select-all">
+      {/* Header */}
+      <div className="border-b border-slate-200 pb-4">
+        <h1 className="text-xl font-bold text-slate-900 uppercase tracking-wide">{cvData.fullName}</h1>
+        <p className="text-sm font-semibold text-blue-600 mt-0.5">{cvData.jobTitle}</p>
+        <p className="text-xs text-slate-500 mt-1 flex flex-wrap gap-3 font-mono">
+          {cvData.email && <span>✉ {cvData.email}</span>}
+          {cvData.phone && <span>☎ {cvData.phone}</span>}
+          {cvData.location && <span>📍 {cvData.location}</span>}
+          {cvData.linkedin && <span>🔗 {cvData.linkedin}</span>}
+        </p>
+      </div>
+
+      {/* Professional Summary */}
+      {cvData.summary && (
+        <div className="space-y-1.5">
+          <h2 className="text-xs font-extrabold uppercase tracking-wider text-blue-600 border-b border-slate-200 pb-1">
+            Professional Summary
+          </h2>
+          <p className="text-sm text-slate-700 leading-relaxed text-justify">{cvData.summary}</p>
+        </div>
+      )}
+
+      {/* Core Competencies */}
+      {cvData.coreCompetencies && cvData.coreCompetencies.length > 0 && (
+        <div className="space-y-2">
+          <h2 className="text-xs font-extrabold uppercase tracking-wider text-blue-600 border-b border-slate-200 pb-1">
+            Core Competencies
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {cvData.coreCompetencies.map((comp, i) => (
+              <span key={i} className="bg-slate-100 border border-slate-200 text-slate-800 text-xs px-2.5 py-1 rounded-md font-medium">
+                ▸ {comp}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Experience */}
+      {cvData.experience && cvData.experience.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-xs font-extrabold uppercase tracking-wider text-blue-600 border-b border-slate-200 pb-1">
+            Professional Experience
+          </h2>
+          <div className="space-y-4">
+            {cvData.experience.map((exp, i) => (
+              <div key={i} className="space-y-1.5 border-l-2 border-blue-100 pl-3">
+                <div className="flex justify-between items-baseline flex-wrap gap-1">
+                  <h3 className="font-bold text-slate-900 text-sm">{exp.title} — <span className="text-blue-600 font-semibold">{exp.company}</span></h3>
+                  <span className="text-xs text-slate-500 font-semibold">{exp.startDate} – {exp.endDate}</span>
+                </div>
+                <ul className="list-disc pl-5 text-xs text-slate-700 space-y-1">
+                  {exp.bullets.map((bullet, idx) => (
+                    <li key={idx} className="leading-relaxed">{bullet}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Research Publications */}
+      {cvData.publications && cvData.publications.length > 0 && (
+        <div className="space-y-2">
+          <h2 className="text-xs font-extrabold uppercase tracking-wider text-blue-600 border-b border-slate-200 pb-1">
+            Research Publications
+          </h2>
+          <ul className="space-y-2 text-xs text-slate-700">
+            {cvData.publications.map((pub, i) => (
+              <li key={i} className="leading-relaxed border-l-2 border-amber-200 pl-3">
+                • <strong>{pub.authors}</strong> ({pub.year}). "{pub.title}." <em>{pub.journal}</em>
+                {pub.indexing_tier && <span className="text-blue-600 font-semibold"> [{pub.indexing_tier}]</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Conference Presentations */}
+      {cvData.conferencePresentations && cvData.conferencePresentations.length > 0 && (
+        <div className="space-y-2">
+          <h2 className="text-xs font-extrabold uppercase tracking-wider text-blue-600 border-b border-slate-200 pb-1">
+            Conference Presentations
+          </h2>
+          <ul className="space-y-2 text-xs text-slate-700">
+            {cvData.conferencePresentations.map((conf, i) => (
+              <li key={i} className="leading-relaxed border-l-2 border-emerald-200 pl-3">
+                • <strong>{conf.authors}</strong> ({conf.year}). "{conf.title}." Presented at: <em>{conf.conference}</em>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Research Supervision */}
+      {cvData.researchSupervision && cvData.researchSupervision.length > 0 && (
+        <div className="space-y-2">
+          <h2 className="text-xs font-extrabold uppercase tracking-wider text-blue-600 border-b border-slate-200 pb-1">
+            Research Supervision
+          </h2>
+          <ul className="list-disc pl-5 text-xs text-slate-700 space-y-1">
+            {cvData.researchSupervision.map((sup, i) => (
+              <li key={i} className="leading-relaxed">{sup}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Executive Trainings */}
+      {cvData.executiveTrainings && cvData.executiveTrainings.length > 0 && (
+        <div className="space-y-2">
+          <h2 className="text-xs font-extrabold uppercase tracking-wider text-blue-600 border-b border-slate-200 pb-1">
+            Executive Trainings & Workshops
+          </h2>
+          <ul className="list-disc pl-5 text-xs text-slate-700 space-y-1">
+            {cvData.executiveTrainings.map((trn, i) => (
+              <li key={i} className="leading-relaxed">{trn}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Key Achievements */}
+      {cvData.keyAchievements && cvData.keyAchievements.length > 0 && (
+        <div className="space-y-2">
+          <h2 className="text-xs font-extrabold uppercase tracking-wider text-blue-600 border-b border-slate-200 pb-1">
+            Key Achievements
+          </h2>
+          <ul className="space-y-1.5 text-xs text-slate-700">
+            {cvData.keyAchievements.map((ach, i) => (
+              <li key={i} className="flex gap-2">
+                <span className="text-amber-500 font-bold">★</span>
+                <span>{ach}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Education */}
+      {cvData.education && cvData.education.length > 0 && (
+        <div className="space-y-2">
+          <h2 className="text-xs font-extrabold uppercase tracking-wider text-blue-600 border-b border-slate-200 pb-1">
+            Education
+          </h2>
+          <div className="space-y-2 text-xs text-slate-700">
+            {cvData.education.map((edu, i) => (
+              <div key={i} className="flex justify-between items-baseline flex-wrap gap-1">
+                <div>
+                  <strong className="text-slate-900 font-bold">{edu.degree}</strong> — {edu.institution}
+                  {edu.distinction && <span className="block text-slate-500 italic mt-0.5">{edu.distinction}</span>}
+                </div>
+                <span className="text-slate-500 font-semibold">{edu.endYear}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Certifications */}
+      {cvData.certifications && cvData.certifications.length > 0 && (
+        <div className="space-y-2">
+          <h2 className="text-xs font-extrabold uppercase tracking-wider text-blue-600 border-b border-slate-200 pb-1">
+            Certifications
+          </h2>
+          <div className="space-y-1.5 text-xs text-slate-700">
+            {cvData.certifications.map((cert, i) => (
+              <div key={i} className="flex justify-between items-baseline flex-wrap gap-1">
+                <span>✔ <strong>{cert.name}</strong> — {cert.issuer}</span>
+                <span className="text-slate-500 font-semibold">{cert.year}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Technical Skills */}
+      {Object.keys(cvData.technicalSkills).length > 0 && (
+        <div className="space-y-2">
+          <h2 className="text-xs font-extrabold uppercase tracking-wider text-blue-600 border-b border-slate-200 pb-1">
+            Technical Skills
+          </h2>
+          <div className="space-y-1.5 text-xs text-slate-700">
+            {Object.entries(cvData.technicalSkills).map(([cat, skills], i) => (
+              <div key={i}>
+                <strong className="text-slate-900">{cat}:</strong> {Array.isArray(skills) ? skills.join(', ') : skills}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
