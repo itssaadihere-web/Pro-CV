@@ -71,18 +71,22 @@ export default async function CVRenderPage({
             footer, .footer, footer * {
               display: none !important;
             }
-            /* 10mm Text-Only Top Margin for 2nd Page Onwards */
-            section, article, .section-block {
-              break-inside: auto;
-              page-break-inside: auto;
+            /* 25% Content Block & Connected Item Page-Break Integrity */
+            section, article, .section-block, .cv-job-block, .cv-item-block {
+              break-inside: avoid-page !important;
+              page-break-inside: avoid !important;
               margin-top: 10mm;
             }
-            section:first-of-type, article:first-of-type, .section-block:first-of-type {
+            section:first-of-type, article:first-of-type, .section-block:first-of-type, .cv-job-block:first-of-type {
               margin-top: 0mm !important;
             }
-            h1, h2, h3, h4, .section-title {
+            h1, h2, h3, h4, .section-title, .job-title-header {
               break-after: avoid !important;
               page-break-after: avoid !important;
+            }
+            li, tr {
+              break-inside: avoid !important;
+              page-break-inside: avoid !important;
             }
           }
           .watermark-overlay {
