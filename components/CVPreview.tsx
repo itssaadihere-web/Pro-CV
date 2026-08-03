@@ -237,8 +237,8 @@ function VisualCV({
           >
             <style>{`
               .cv-preview-canvas section, .cv-preview-canvas article, .cv-preview-canvas .section-block, .cv-preview-canvas .cv-job-block, .cv-preview-canvas .cv-item-block {
-                margin-top: 38px;
-                margin-bottom: 19px !important;
+                margin-top: 113px;
+                margin-bottom: 76px !important;
                 break-inside: auto;
                 page-break-inside: auto;
               }

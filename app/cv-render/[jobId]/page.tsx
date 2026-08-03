@@ -71,12 +71,12 @@ export default async function CVRenderPage({
             footer, .footer, footer * {
               display: none !important;
             }
-            /* Clean Natural Flow: 5mm Bottom Margin (Page 1 Onwards) & 10mm Text Top Margin (Page 2 Onwards) */
+            /* 30mm Text Top Margin (Page 2 Onwards) & 20mm Bottom Margin (Page 1 Onwards) */
             section, article, .section-block, .cv-job-block, .cv-item-block {
               break-inside: auto;
               page-break-inside: auto;
-              margin-top: 10mm;
-              margin-bottom: 5mm !important;
+              margin-top: 30mm;
+              margin-bottom: 20mm !important;
             }
             section:first-of-type, article:first-of-type, .section-block:first-of-type, .cv-job-block:first-of-type {
               margin-top: 0mm !important;
