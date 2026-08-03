@@ -24,7 +24,8 @@ const supabase = createClient(supabaseUrl, serviceKey, {
 })
 
 async function refillUserCredits() {
-  const targetEmail = 'binmusharrafsyedsaad@gmail.com'
+  const targetEmail = process.argv[2] || 'test@joinsophi.com'
+  const refillAmount = parseInt(process.argv[3] || '1000', 10)
   console.log(`Searching for user: ${targetEmail}...`)
 
   const { data: profile, error: profErr } = await supabase
@@ -39,7 +40,6 @@ async function refillUserCredits() {
   }
 
   const currentCredits = profile.cv_credits ?? 0
-  const refillAmount = 100
   const newBalance = currentCredits + refillAmount
 
   console.log(`Current Balance: ${currentCredits} Credits`)

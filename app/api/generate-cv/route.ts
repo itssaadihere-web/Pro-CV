@@ -219,13 +219,15 @@ Please run the full transformation and output all sections as specified in your 
     const rotation = new TemplateRotationEngine()
     const templateId = await rotation.getNextTemplate(userId, stylePreference)
 
+    const cvContentToSave = sections.rawJson ? JSON.stringify(sections.rawJson) : sections.revampedCV
+
     // 2. Update job details
     let { error: updateError } = await supabase
       .from('cv_jobs')
       .update({
         status: 'completed',
         ats_score: sections.atsScoreJson,
-        generated_cv: sections.revampedCV,
+        generated_cv: cvContentToSave,
         linkedin_optimizer: sections.linkedinJson,
         cover_letter: sections.coverLetter,
         gap_analysis: sections.gapAnalysisJson,
@@ -243,7 +245,7 @@ Please run the full transformation and output all sections as specified in your 
           .update({
             status: 'completed',
             ats_score: sections.atsScoreJson,
-            generated_cv: sections.revampedCV,
+            generated_cv: cvContentToSave,
             linkedin_optimizer: sections.linkedinJson,
             cover_letter: sections.coverLetter,
             gap_analysis: sections.gapAnalysisJson,

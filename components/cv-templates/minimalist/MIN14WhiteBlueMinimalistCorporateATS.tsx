@@ -85,6 +85,59 @@ export default function MIN14WhiteBlueMinimalistCorporateATS({ data, scale = 1 }
       </section>
     )}
 
+    {/* Research Publications */}
+    {data.publications && data.publications.length > 0 && (
+      <section style={{ marginBottom: s(16) }}>
+        <SectionHeader label="Research Publications" scale={scale} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: s(8) }}>
+          {data.publications.map((pub, i) => (
+            <div key={i} style={{ fontSize: s(9.5), color: '#374151', lineHeight: '1.4' }}>
+              • <strong>{pub.authors}</strong> ({pub.year}). "{pub.title}." <em>{pub.journal}</em>
+              {pub.indexing_tier && <span style={{ color: '#2563eb', fontWeight: 600 }}> [{pub.indexing_tier}]</span>}
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {/* Conference Presentations */}
+    {data.conferencePresentations && data.conferencePresentations.length > 0 && (
+      <section style={{ marginBottom: s(16) }}>
+        <SectionHeader label="Conference Presentations" scale={scale} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: s(8) }}>
+          {data.conferencePresentations.map((conf, i) => (
+            <div key={i} style={{ fontSize: s(9.5), color: '#374151', lineHeight: '1.4' }}>
+              • <strong>{conf.authors}</strong> ({conf.year}). "{conf.title}." Presented at: <em>{conf.conference}</em>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {/* Research Supervision */}
+    {data.researchSupervision && data.researchSupervision.length > 0 && (
+      <section style={{ marginBottom: s(16) }}>
+        <SectionHeader label="Research Supervision" scale={scale} />
+        <ul style={{ margin: 0, paddingLeft: s(14), fontSize: s(9.5), color: '#374151', listStyleType: 'disc' }}>
+          {data.researchSupervision.map((sup, i) => (
+            <li key={i} style={{ marginBottom: s(2), lineHeight: '1.4' }}>{sup}</li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {/* Executive Trainings & Workshops */}
+    {data.executiveTrainings && data.executiveTrainings.length > 0 && (
+      <section style={{ marginBottom: s(16) }}>
+        <SectionHeader label="Executive Trainings & Workshops" scale={scale} />
+        <ul style={{ margin: 0, paddingLeft: s(14), fontSize: s(9.5), color: '#374151', listStyleType: 'disc' }}>
+          {data.executiveTrainings.map((trn, i) => (
+            <li key={i} style={{ marginBottom: s(2), lineHeight: '1.4' }}>{trn}</li>
+          ))}
+        </ul>
+      </section>
+    )}
+
     {/* Achievements */}
     {data.keyAchievements.length > 0 && (
       <section style={{ marginBottom: s(16) }}>
