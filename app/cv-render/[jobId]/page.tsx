@@ -71,10 +71,10 @@ export default async function CVRenderPage({
             footer, .footer, footer * {
               display: none !important;
             }
-            /* 5mm Bottom Margin Starting from Page 1 & 10mm Text Top Margin Starting from Page 2 Onwards */
+            /* Clean Natural Flow: 5mm Bottom Margin (Page 1 Onwards) & 10mm Text Top Margin (Page 2 Onwards) */
             section, article, .section-block, .cv-job-block, .cv-item-block {
-              break-inside: avoid-page !important;
-              page-break-inside: avoid !important;
+              break-inside: auto;
+              page-break-inside: auto;
               margin-top: 10mm;
               margin-bottom: 5mm !important;
             }
@@ -84,10 +84,6 @@ export default async function CVRenderPage({
             h1, h2, h3, h4, .section-title, .job-title-header {
               break-after: avoid !important;
               page-break-after: avoid !important;
-            }
-            li, tr {
-              break-inside: avoid !important;
-              page-break-inside: avoid !important;
             }
           }
           .watermark-overlay {

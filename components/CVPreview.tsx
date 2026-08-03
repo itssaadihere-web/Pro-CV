@@ -239,8 +239,8 @@ function VisualCV({
               .cv-preview-canvas section, .cv-preview-canvas article, .cv-preview-canvas .section-block, .cv-preview-canvas .cv-job-block, .cv-preview-canvas .cv-item-block {
                 margin-top: 38px;
                 margin-bottom: 19px !important;
-                break-inside: avoid-page !important;
-                page-break-inside: avoid !important;
+                break-inside: auto;
+                page-break-inside: auto;
               }
               .cv-preview-canvas section:first-of-type, .cv-preview-canvas article:first-of-type, .cv-preview-canvas .section-block:first-of-type, .cv-preview-canvas .cv-job-block:first-of-type {
                 margin-top: 0px !important;
@@ -248,10 +248,6 @@ function VisualCV({
               .cv-preview-canvas h1, .cv-preview-canvas h2, .cv-preview-canvas h3, .cv-preview-canvas h4, .cv-preview-canvas .section-title, .cv-preview-canvas .job-title-header {
                 break-after: avoid !important;
                 page-break-after: avoid !important;
-              }
-              .cv-preview-canvas li, .cv-preview-canvas tr {
-                break-inside: avoid !important;
-                page-break-inside: avoid !important;
               }
             `}</style>
             <TemplateComponent data={cvData} scale={1} colorTheme={colorTheme} />

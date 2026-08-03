@@ -259,6 +259,8 @@ export default function UploadPage() {
           },
           body: JSON.stringify({
             jobId,
+            template: generateData?.templateId,
+            color: 'classic'
           }),
         })
       } catch (emailErr) {

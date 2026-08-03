@@ -298,6 +298,7 @@ Please run the full transformation and output all sections as specified in your 
           cover_letter: sections.coverLetter,
           gap_analysis: sections.gapAnalysisJson,
           completed_at: new Date().toISOString(),
+          template_used: templateId
         })
         .eq('id', jobId)
         

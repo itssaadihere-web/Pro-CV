@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Render exact Puppeteer PDF (matches Download PDF button 100%)
-    const templateId = job.template_used || template || 'min-14-white-blue-minimalist-corporate-ats'
+    const templateId = template || job.template_used || 'sophi-executive-sapphire'
     const host = req.headers.get('host') || 'localhost:3000'
     const protocol = host.includes('localhost') ? 'http' : 'https'
     const appUrl = `${protocol}://${host}`
