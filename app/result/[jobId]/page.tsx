@@ -337,14 +337,12 @@ export default function ResultPage() {
           </div>
         </div>
 
-        {/* MAIN WORKSPACE GRID: Left Control Sidebar + Right Single Window A4 Workspace */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* MAIN WORKSPACE GRID: 3-Column Parallel Layout (Left Tabs + Center CV Preview + Right CV Display Controls) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
           
-          {/* LEFT SIDEBAR: Report Tabs + CV Controls + Swatches */}
-          <div className="lg:col-span-4 xl:col-span-3 flex flex-col gap-4">
-            
-            {/* Left Panel 1: Vertical Report Navigation Tabs */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-sm">
+          {/* COLUMN 1 (LEFT): Report Navigation Tabs */}
+          <div className="lg:col-span-3 xl:col-span-2.5 flex flex-col gap-4">
+            <div className="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-sm sticky top-6">
               <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 px-2 block mb-2">
                 Report Section Tabs
               </span>
@@ -374,9 +372,145 @@ export default function ResultPage() {
                 })}
               </nav>
             </div>
+          </div>
 
-            {/* Left Panel 2: Document Controls & Swatches (Only when activeTab === 'cv') */}
+          {/* COLUMN 2 (CENTER): Main Document Workspace / Single A4 Window */}
+          <div className={`${activeTab === 'cv' ? 'lg:col-span-6 xl:col-span-7' : 'lg:col-span-9 xl:col-span-9'} min-h-[500px]`}>
+            
+            {/* Panel 1: ATS Report */}
+            {activeTab === 'ats' && (
+              <div className="animate-fade-in">
+                <ATSScoreCard scoreData={ats} />
+              </div>
+            )}
+
+            {/* Panel 2: Revamped CV (Single A4 Window View with Book Page Flip) */}
             {activeTab === 'cv' && (
+              <div className="animate-fade-in">
+                <CVPreview
+                  originalText={originalText}
+                  revampedText={jobData.generated_cv || ''}
+                  selectedTemplate={selectedTemplate}
+                  setSelectedTemplate={setSelectedTemplate}
+                  selectedColor={selectedColor}
+                  setSelectedColor={setSelectedColor}
+                  displayCVText={displayCVText}
+                  formatting={formatting}
+                  isWatermarked={!hasPaid}
+                  activeTabState={activeCVTab}
+                  setActiveTabState={setActiveCVTab}
+                  viewModeState={activeViewMode}
+                  setViewModeState={setActiveViewMode}
+                />
+              </div>
+            )}
+
+            {/* Panel 3: Cover Letter */}
+            {activeTab === 'cover' && (
+              <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden animate-fade-in">
+                <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/60 px-6 py-4">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-800">Tailored Professional Cover Letter</h3>
+                    <p className="text-[11px] text-slate-500 mt-0.5">Optimized against your uploaded requirements</p>
+                  </div>
+                  <button
+                    onClick={() => handleCopySection('coverLetter', jobData.cover_letter || '')}
+                    className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+                  >
+                    {copiedText['coverLetter'] ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                    <span>Copy Letter</span>
+                  </button>
+                </div>
+                <div className="p-6 md:p-8">
+                  <pre className="text-sm leading-relaxed text-slate-850 whitespace-pre-wrap font-sans text-justify">
+                    {jobData.cover_letter || 'Cover letter details not generated.'}
+                  </pre>
+                </div>
+              </div>
+            )}
+
+            {/* Panel 4: Gap Analysis */}
+            {activeTab === 'gap' && (
+              <div className="grid gap-6 md:grid-cols-3 animate-fade-in">
+                {/* Missing Keywords */}
+                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+                  <h3 className="text-base font-bold text-slate-800 border-b border-slate-100 pb-3">
+                    Missing Target Keywords
+                  </h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    These keywords were found in the job description but are absent or weak in your original CV.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {missingKeywords.length > 0 ? (
+                      missingKeywords.map((kw: string, i: number) => (
+                        <span
+                          key={i}
+                          className="rounded-lg bg-red-50 border border-red-100 px-2.5 py-1.5 text-xs font-semibold text-red-700"
+                        >
+                          {kw}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-xs text-slate-400 italic">No missing keywords found</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Certifications Check */}
+                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+                  <h3 className="text-base font-bold text-slate-800 border-b border-slate-100 pb-3">
+                    Recommended Certifications
+                  </h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    Earn these professional credentials to boost your hiring chances by up to 30%.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {certifications.length > 0 ? (
+                      certifications.map((cert: string, i: number) => (
+                        <span
+                          key={i}
+                          className="rounded-lg bg-amber-50 border border-amber-100 px-2.5 py-1.5 text-xs font-semibold text-amber-800"
+                        >
+                          {cert}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-xs text-slate-400 italic font-medium">All key certifications present</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Quick Wins (48-Hour Roadmap) */}
+                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+                  <h3 className="text-base font-bold text-slate-800 border-b border-slate-100 pb-3">
+                    Quick Wins (48-Hour Roadmap)
+                  </h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    High-impact adjustments you can make to your career presentation immediately.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {quickWins.length > 0 ? (
+                      quickWins.map((win: string, i: number) => (
+                        <span
+                          key={i}
+                          className="rounded-lg bg-emerald-50 border border-emerald-100 px-2.5 py-1.5 text-xs font-semibold text-emerald-800"
+                        >
+                          {win}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-xs text-slate-400 italic">Profile analysis complete</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+          </div>
+
+          {/* COLUMN 3 (RIGHT): CV Display Controls & Swatches (Parallel to CV Preview) */}
+          {activeTab === 'cv' && (
+            <div className="lg:col-span-3 xl:col-span-2.5 flex flex-col gap-4 sticky top-6">
               <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-4 animate-fade-in">
                 <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block border-b border-slate-100 pb-2">
                   CV Display Controls
@@ -475,141 +609,8 @@ export default function ResultPage() {
                 )}
 
               </div>
-            )}
-
-          </div>
-
-          {/* RIGHT MAIN WORKSPACE WINDOW: Displays Single A4 Window or Selected Report Tab */}
-          <div className="lg:col-span-8 xl:col-span-9 min-h-[500px]">
-            
-            {/* Panel 1: ATS Report */}
-            {activeTab === 'ats' && (
-              <div className="animate-fade-in">
-                <ATSScoreCard scoreData={ats} />
-              </div>
-            )}
-
-            {/* Panel 2: Revamped CV (Single A4 Window View with Book Page Flip) */}
-            {activeTab === 'cv' && (
-              <div className="animate-fade-in">
-                <CVPreview
-                  originalText={originalText}
-                  revampedText={jobData.generated_cv || ''}
-                  selectedTemplate={selectedTemplate}
-                  setSelectedTemplate={setSelectedTemplate}
-                  selectedColor={selectedColor}
-                  setSelectedColor={setSelectedColor}
-                  displayCVText={displayCVText}
-                  formatting={formatting}
-                  isWatermarked={!hasPaid}
-                  activeTabState={activeCVTab}
-                  setActiveTabState={setActiveCVTab}
-                  viewModeState={activeViewMode}
-                  setViewModeState={setActiveViewMode}
-                />
-              </div>
-            )}
-
-            {/* Panel 3: Cover Letter */}
-            {activeTab === 'cover' && (
-              <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden animate-fade-in">
-                <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/60 px-6 py-4">
-                  <div>
-                    <h3 className="text-base font-bold text-slate-800">Tailored Professional Cover Letter</h3>
-                    <p className="text-[11px] text-slate-500 mt-0.5">Optimized against your uploaded requirements</p>
-                  </div>
-                  <button
-                    onClick={() => handleCopySection('coverLetter', jobData.cover_letter || '')}
-                    className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
-                  >
-                    {copiedText['coverLetter'] ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
-                    <span>Copy Letter</span>
-                  </button>
-                </div>
-                <div className="p-6 md:p-8">
-                  <pre className="text-sm leading-relaxed text-slate-850 whitespace-pre-wrap font-sans text-justify">
-                    {jobData.cover_letter || 'Cover letter details not generated.'}
-                  </pre>
-                </div>
-              </div>
-            )}
-
-            {/* Panel 4: Gap Analysis */}
-            {activeTab === 'gap' && (
-              <div className="grid gap-6 md:grid-cols-3 animate-fade-in">
-                {/* Missing Keywords */}
-                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
-                  <h3 className="text-base font-bold text-slate-800 border-b border-slate-100 pb-3">
-                    Missing Target Keywords
-                  </h3>
-                  <p className="text-xs text-slate-500 leading-relaxed">
-                    These keywords were found in the job description but are absent or weak in your original CV.
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {missingKeywords.length > 0 ? (
-                      missingKeywords.map((kw: string, i: number) => (
-                        <span
-                          key={i}
-                          className="rounded-lg bg-red-50 border border-red-100 px-2.5 py-1.5 text-xs font-semibold text-red-700"
-                        >
-                          {kw}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-xs text-slate-400 italic">No missing keywords found</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Certifications Check */}
-                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
-                  <h3 className="text-base font-bold text-slate-800 border-b border-slate-100 pb-3">
-                    Recommended Certifications
-                  </h3>
-                  <p className="text-xs text-slate-500 leading-relaxed">
-                    Earn these professional credentials to boost your hiring chances by up to 30%.
-                  </p>
-                  <ul className="space-y-3">
-                    {certifications.length > 0 ? (
-                      certifications.map((cert: string, i: number) => (
-                        <li key={i} className="flex items-start gap-2 text-xs font-medium text-slate-700">
-                          <span className="text-blue-500 font-bold shrink-0 mt-0.5">☐</span>
-                          <span>{cert}</span>
-                        </li>
-                      ))
-                    ) : (
-                      <li className="text-xs text-slate-400 italic">No credentials recommended</li>
-                    )}
-                  </ul>
-                </div>
-
-                {/* Quick Wins */}
-                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
-                  <h3 className="text-base font-bold text-slate-800 border-b border-slate-100 pb-3">
-                    Quick Wins (48-Hour Roadmap)
-                  </h3>
-                  <p className="text-xs text-slate-500 leading-relaxed">
-                    High-impact adjustments you can make to your career presentation immediately.
-                  </p>
-                  <ol className="space-y-3">
-                    {quickWins.length > 0 ? (
-                      quickWins.map((win: string, i: number) => (
-                        <li key={i} className="flex items-start gap-2.5 text-xs font-semibold text-slate-700">
-                          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 text-[10px] text-blue-700">
-                            {i + 1}
-                          </span>
-                          <span className="mt-0.5">{win}</span>
-                        </li>
-                      ))
-                    ) : (
-                      <li className="text-xs text-slate-400 italic">No action items suggested</li>
-                    )}
-                  </ol>
-                </div>
-              </div>
-            )}
-
-          </div>
+            </div>
+          )}
 
         </div>
 
