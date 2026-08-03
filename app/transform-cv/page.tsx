@@ -186,9 +186,9 @@ export default function UploadPage() {
           body: formData,
         })
 
-        const parseData = await parseRes.json()
-        if (!parseRes.ok || !parseData.text) {
-          throw new Error(parseData.error || 'Failed to extract text from your CV document.')
+        const parseData = await parseRes.json().catch(() => null)
+        if (!parseRes.ok || !parseData?.text) {
+          throw new Error(parseData?.error || `Failed to extract text from CV (HTTP ${parseRes.status})`)
         }
 
         cvText = parseData.text
@@ -213,9 +213,9 @@ export default function UploadPage() {
         }),
       })
 
-      const generateData = await generateRes.json()
-      if (!generateRes.ok || !generateData.success) {
-        throw new Error(generateData.error || 'AI optimization failed.')
+      const generateData = await generateRes.json().catch(() => null)
+      if (!generateRes.ok || !generateData?.success) {
+        throw new Error(generateData?.error || `AI transformation engine failed (HTTP ${generateRes.status})`)
       }
 
       // Clear scratch state from sessionStorage upon successful submission
