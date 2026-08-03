@@ -47,6 +47,11 @@ export default function CVPreview({
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
+  // Automatically reset to Page 1 when changing templates (Do NOT reset when changing color palettes)
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [selectedTemplate])
+
   const activeTab = activeTabState || internalActiveTab
   const setActiveTab = setActiveTabState || setInternalActiveTab
   const viewMode = viewModeState || internalViewMode
