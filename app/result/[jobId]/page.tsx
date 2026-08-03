@@ -141,34 +141,32 @@ export default function ResultPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jobId, templateId: targetTemplate, color: selectedColor })
       })
-      const data = await res.json().catch(() => null)
+
       if (!res.ok) {
-        throw new Error(data?.error || 'Failed to generate PDF download')
+        const errorData = await res.json().catch(() => null)
+        throw new Error(errorData?.error || 'Failed to generate PDF download')
       }
       
-      if (!templateToDownload) {
+      const blob = await res.blob()
+      const blobUrl = URL.createObjectURL(blob)
+
+      const pdfUrlHeader = res.headers.get('X-Pdf-Url')
+      if (pdfUrlHeader && !templateToDownload) {
         setJobData((prev: any) => ({
           ...prev,
-          pdf_output_path: data.pdfUrl
+          pdf_output_path: pdfUrlHeader
         }))
       }
-      
-      const pdfRes = await fetch(data.pdfUrl)
-      if (!pdfRes.ok) {
-        throw new Error('Failed to fetch generated PDF file')
-      }
-      const blob = await pdfRes.blob()
-      const blobUrl = URL.createObjectURL(blob)
 
       const a = document.createElement('a')
       a.href = blobUrl
-      a.download = `ProCV-${targetTemplate}-${jobId.substring(0, 8)}.pdf`
+      a.download = `ProCV-${targetTemplate}-${selectedColor || 'default'}-${jobId.substring(0, 8)}.pdf`
       document.body.appendChild(a)
       a.click()
       a.remove()
 
       setTimeout(() => URL.revokeObjectURL(blobUrl), 10000)
-      toast.success('Successfully downloaded PDF!')
+      toast.success('Successfully downloaded your exact active preview PDF!')
     } catch (err: any) {
       console.error(err)
       toast.error(err.message || 'Error generating PDF.')

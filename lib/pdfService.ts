@@ -18,7 +18,14 @@ export async function getBrowserInstance() {
     }
 
     return await puppeteerCore.launch({
-      args: chromium.args,
+      args: [
+        ...chromium.args,
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--single-process'
+      ],
       defaultViewport: chromium.defaultViewport,
       executablePath: executablePath,
       headless: chromium.headless,
@@ -41,12 +48,15 @@ export async function generateAndUploadPdf(jobId: string, templateId: string, co
   const browser = await getBrowserInstance()
   const page = await browser.newPage()
 
-  const renderUrl = `${appUrl}/cv-render/${jobId}?template=${templateId}${color ? `&color=${color}` : ''}`
+  // Ensure exact template and color scheme selected in the preview UI are passed to the render engine
+  const colorParam = color ? `&color=${encodeURIComponent(color)}` : ''
+  const renderUrl = `${appUrl}/cv-render/${jobId}?template=${encodeURIComponent(templateId)}${colorParam}`
   console.log('Puppeteer navigating to render URL:', renderUrl)
   
-  await page.goto(renderUrl, { waitUntil: 'domcontentloaded', timeout: 20000 })
+  // Fast page navigation
+  await page.goto(renderUrl, { waitUntil: 'domcontentloaded', timeout: 15000 })
 
-  // Export A4 PDF
+  // Export exact A4 PDF
   const pdfBuffer = await page.pdf({
     format: 'A4',
     printBackground: true,
@@ -55,9 +65,10 @@ export async function generateAndUploadPdf(jobId: string, templateId: string, co
 
   await browser.close()
 
-  // Upload PDF to Supabase Storage
+  // Upload PDF to Supabase Storage with color-unique filename to bypass CDN caching
   const supabase = getServiceSupabase()
-  const filePath = `cv-outputs/${jobId}/${templateId}.pdf`
+  const colorSlug = color ? `_${color}` : ''
+  const filePath = `cv-outputs/${jobId}/${templateId}${colorSlug}_${Date.now()}.pdf`
   
   let uploadRes = await supabase.storage
     .from('cv-outputs')
@@ -79,40 +90,31 @@ export async function generateAndUploadPdf(jobId: string, templateId: string, co
       })
       
       if (!createError) {
-        console.log('Successfully created cv-outputs bucket. Retrying upload...')
         uploadRes = await supabase.storage
           .from('cv-outputs')
           .upload(filePath, pdfBuffer, {
             contentType: 'application/pdf',
             upsert: true
           })
-      } else {
-        console.error('Failed to create bucket cv-outputs:', createError)
       }
     }
   }
 
-  if (uploadRes.error) {
-    console.error('Supabase upload error:', uploadRes.error)
-    throw new Error('Failed to upload PDF to storage: ' + uploadRes.error.message)
-  }
+  let publicUrl = ''
+  if (!uploadRes.error) {
+    const { data } = supabase.storage
+      .from('cv-outputs')
+      .getPublicUrl(filePath)
+    publicUrl = data.publicUrl
 
-  const { data: { publicUrl } } = supabase.storage
-    .from('cv-outputs')
-    .getPublicUrl(filePath)
-
-  // Update job details in Supabase
-  const { error: updateError } = await supabase
-    .from('cv_jobs')
-    .update({
-      pdf_output_path: publicUrl,
-      template_used: templateId
-    })
-    .eq('id', jobId)
-
-  if (updateError) {
-    console.error('Supabase update job error:', updateError)
-    throw new Error('Failed to update job record: ' + updateError.message)
+    // Background job update
+    await supabase
+      .from('cv_jobs')
+      .update({
+        pdf_output_path: publicUrl,
+        template_used: templateId
+      })
+      .eq('id', jobId)
   }
 
   return { publicUrl, pdfBuffer }

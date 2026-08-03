@@ -40,9 +40,17 @@ export async function POST(req: NextRequest) {
     const protocol = host.includes('localhost') ? 'http' : 'https'
     const appUrl = `${protocol}://${host}`
 
-    const { publicUrl } = await generateAndUploadPdf(jobId, templateId, color, appUrl)
+    const { publicUrl, pdfBuffer } = await generateAndUploadPdf(jobId, templateId, color, appUrl)
 
-    return NextResponse.json({ pdfUrl: publicUrl })
+    // Stream PDF binary array directly for instant, 1-step download with zero CDN caching delay
+    return new NextResponse(new Uint8Array(pdfBuffer), {
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="ProCV-${templateId}-${color || 'custom'}.pdf"`,
+        'X-Pdf-Url': publicUrl || '',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+      },
+    })
   } catch (error: any) {
     console.error('Error in export-pdf POST:', error)
     return NextResponse.json(
@@ -87,52 +95,18 @@ export async function GET(req: NextRequest) {
       templateId = await rotation.getNextTemplate(job.user_id, 'random')
     }
 
-    // Generate the PDF
-    const browser = await getBrowserInstance()
-    const page = await browser.newPage()
-
     const host = req.headers.get('host') || 'localhost:3000'
     const protocol = host.includes('localhost') ? 'http' : 'https'
     const appUrl = `${protocol}://${host}`
 
-    const renderUrl = `${appUrl}/cv-render/${jobId}?template=${templateId}${color ? `&color=${color}` : ''}`
-    await page.goto(renderUrl, { waitUntil: 'domcontentloaded', timeout: 20000 })
-
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: { top: '0', right: '0', bottom: '0', left: '0' }
-    })
-
-    await browser.close()
-
-    // Upload to Supabase Storage
-    const filePath = `cv-outputs/${jobId}/${templateId}.pdf`
-    await supabase.storage
-      .from('cv-outputs')
-      .upload(filePath, pdfBuffer, {
-        contentType: 'application/pdf',
-        upsert: true
-      })
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('cv-outputs')
-      .getPublicUrl(filePath)
-
-    // Update job details in Supabase
-    await supabase
-      .from('cv_jobs')
-      .update({
-        pdf_output_path: publicUrl,
-        template_used: templateId
-      })
-      .eq('id', jobId)
+    const { pdfBuffer } = await generateAndUploadPdf(jobId, templateId, color, appUrl)
 
     // Return the PDF buffer directly for download
     return new NextResponse(new Uint8Array(pdfBuffer), {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="ProCV-${templateId}-${jobId.substring(0, 8)}.pdf"`,
+        'Content-Disposition': `attachment; filename="ProCV-${templateId}-${color || 'custom'}.pdf"`,
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
       },
     })
   } catch (error: any) {
