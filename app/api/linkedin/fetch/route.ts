@@ -100,43 +100,56 @@ export async function POST(req: NextRequest) {
 
     const ai = new GoogleGenAI({ apiKey: geminiKey })
 
-    const systemPrompt = `You are a strict LinkedIn / CV Profile Data Extractor.
-CRITICAL RULES:
-1. Do NOT invent fake random people, fake names (like Aarti Sharma or John Doe), fake companies, or fake universities.
-2. Extract all real work experience entries, education entries, skills, certifications, full name, job title, location, phone, email, and bio summary from the provided payload text or PDF export.
-3. Extract contact email, phone number, and LinkedIn URL if present.
-4. If specific experiences or educations are not explicitly provided in the payload text, leave "experiences" and "educations" as EMPTY ARRAYS [].
-5. Output strictly valid JSON matching this schema:
+    const systemPrompt = `You are a strict LinkedIn and CV Profile Data Extractor.
 
+YOUR JOB:
+Extract structured profile data from the provided text, which may be:
+- A LinkedIn profile PDF export (contains sections like Experience, Education, Skills, Certifications)
+- A plain text CV paste
+- An HTML export from LinkedIn (ignore all HTML tags — extract text content only)
+
+EXTRACTION RULES:
+1. Extract ONLY data explicitly present in the provided text. Do NOT invent names, companies, universities, or any details.
+2. If experiences or educations are not explicitly provided: return empty arrays [].
+3. For the contacts array: only use these allowed labels: "LinkedIn", "Portfolio", "GitHub", "Twitter/X", "Website". Ignore any other social links.
+4. If the text appears to be an HTML dump: strip all HTML tags mentally and extract the visible text data only.
+5. Phone numbers: extract in whatever format they appear. If none found: return "".
+6. Summary/bio: extract verbatim if short enough, or summarize in 3–4 sentences if very long.
+7. Skills: extract as individual items, not comma-separated strings.
+8. If the input text is fewer than 50 words or appears corrupted: return all fields as empty strings and all arrays as [], but still return valid JSON.
+
+CRITICAL: Return ONLY a single valid JSON object. No markdown. No backticks. Start with { end with }.
+
+OUTPUT SCHEMA:
 {
-  "fullName": "Real full name extracted from text",
-  "jobTitle": "Extracted headline / job title or empty string if unknown",
-  "email": "Extracted email address or empty string",
-  "phone": "Extracted phone number or empty string",
-  "location": "Extracted city/country or empty string",
-  "summary": "Extracted summary / bio description or empty string",
+  "fullName": "Real full name or empty string",
+  "jobTitle": "Current headline or most recent job title or empty string",
+  "email": "email@domain.com or empty string",
+  "phone": "Phone number or empty string",
+  "location": "City, Country or empty string",
+  "summary": "Extracted bio or professional summary or empty string",
   "experiences": [
     {
-      "company": "Real Company Name",
-      "position": "Real Position Title",
-      "startDate": "Start Date e.g. March 2020",
-      "endDate": "End Date e.g. Present",
-      "location": "Location",
-      "description": "Responsibilities and achievements"
+      "company": "Real company name",
+      "position": "Real position title",
+      "startDate": "Month Year format e.g. March 2020",
+      "endDate": "Month Year or Present",
+      "location": "City or Remote or empty string",
+      "description": "Extracted responsibilities and achievements as found in the text"
     }
   ],
   "educations": [
     {
-      "institution": "Real University Name",
-      "degree": "Degree e.g. Bachelor of Business Administration",
-      "fieldOfStudy": "Field e.g. Marketing",
-      "graduationYear": "Year e.g. 2026"
+      "institution": "Real university or school name",
+      "degree": "Full degree name e.g. Bachelor of Business Administration",
+      "fieldOfStudy": "Major or field or empty string",
+      "graduationYear": "Year e.g. 2022 or empty string"
     }
   ],
-  "skills": ["Real Skill 1", "Real Skill 2"],
-  "certifications": ["Cert 1", "Cert 2"],
+  "skills": ["Skill 1", "Skill 2", "Skill 3"],
+  "certifications": ["Certification name and issuer if available"],
   "contacts": [
-    { "label": "LinkedIn", "value": "url or handle" }
+    { "label": "LinkedIn", "value": "URL or handle" }
   ]
 }`
 

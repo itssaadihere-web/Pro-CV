@@ -67,28 +67,68 @@ export async function POST(req: NextRequest) {
         const about = idealProfile?.about || 'Results-oriented professional with proven track record of driving operational excellence.'
         const skills = idealProfile?.skills?.join(', ') || 'Leadership, Strategic Planning, Operations, Team Management'
 
-        const prompt = `You are a LinkedIn Optimization Expert.
-Compare the user's CURRENT profile data against an IDEAL benchmark layout:
+        const prompt = `You are a senior LinkedIn Optimization Expert and personal branding specialist.
 
-IDEAL BENCHMARK:
-Headline: ${headline}
-Summary/About: ${about}
-Top Skills: ${skills}
+YOUR JOB:
+Analyze the user's current LinkedIn profile data and generate a clear, actionable optimization report comparing it to an ideal benchmark.
+
+IDEAL BENCHMARK FOR THIS CANDIDATE:
+Headline benchmark: ${headline}
+About section benchmark: ${about}
+Top Skills benchmark: ${skills}
 
 CURRENT PROFILE DATA:
 ${currentProfileText}
 
-Please generate a clean, high-impact LinkedIn Contrast & Optimization Report.
-CRITICAL FORMATTING INSTRUCTION: Do NOT output any markdown headers (like #, ##, ###) or asterisk formatting (like ** or *). Use clean plain text with bullet points (•) and numbered sections.
+FORMATTING RULES — STRICTLY ENFORCED:
+- Do NOT use any markdown formatting: no #, ##, ###, no **, no *, no backticks.
+- Use only plain text, numbered sections, and bullet points with the • symbol.
+- Section titles are written in PLAIN TEXT like: "1. HEADLINE ANALYSIS:"
+- This output renders directly to users — markdown symbols will show as broken characters.
 
-Include:
-1. 🎯 HEADLINE CONTRAST & COPY-PASTE SUGGESTIONS
-2. 📝 ABOUT SECTION CONTRAST & REWRITTEN BIO
-3. ⚡ TOP 10 SKILLS TO FEATURE ON LINKEDIN
-4. 🚀 PROFILE VISIBILITY & RECRUITER SEARCH OPTIMIZATION TIPS`
+WORD COUNT LIMITS — STRICTLY ENFORCED:
+- Rewritten Headline: Maximum 220 characters. Count every character including spaces.
+- Rewritten About section (first 3 lines only): Maximum 60 words total. This is LinkedIn's preview limit — anything beyond 3 lines is cut off.
+- Skills list: Exactly 10 skills. Not 9, not 11. Exactly 10.
+- Total report length: Maximum 450 words. Be concise and actionable — no padding.
+
+OUTPUT STRUCTURE — use this exact plain text format:
+
+1. HEADLINE ANALYSIS:
+
+Current: [paste user's current headline or write "Not provided" if missing]
+Problem: [One sentence identifying the specific weakness]
+Rewritten Headline (copy-paste ready, max 220 characters):
+[Your rewritten headline here]
+
+2. ABOUT SECTION — First 3 Lines (LinkedIn Preview):
+
+Current opening: [paste user's current first 3 lines or write "Not provided" if missing]
+Problem: [One sentence identifying the specific weakness]
+Rewritten opening (max 60 words — copy-paste ready):
+[Your rewritten 3 lines here]
+
+3. TOP 10 SKILLS TO ADD ON LINKEDIN:
+
+• [Skill 1]
+• [Skill 2]
+• [Skill 3]
+• [Skill 4]
+• [Skill 5]
+• [Skill 6]
+• [Skill 7]
+• [Skill 8]
+• [Skill 9]
+• [Skill 10]
+
+4. THREE QUICK WINS (implement today):
+
+• [Specific action — name the exact field to change and what to change it to]
+• [Specific action — name the exact field to change and what to change it to]
+• [Specific action — name the exact field to change and what to change it to]`
 
         const result = await ai.models.generateContent({
-          model: 'gemini-1.5-flash',
+          model: 'gemini-2.5-flash',
           contents: prompt,
         })
         rawReport = result.text || ''
