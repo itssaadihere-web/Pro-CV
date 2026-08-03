@@ -7,7 +7,7 @@ export default function SophiATSMasterCorporate({ data, scale = 1, colorTheme }:
 
   let primaryColor = '#0f172a'
   let accentColor = '#2563eb'
-  let lineBorder = '#cbd5e1'
+  const lineBorder = '#cbd5e1'
 
   if (colorTheme === 'navy' || colorTheme === 'blue') {
     primaryColor = '#1e3a8a'

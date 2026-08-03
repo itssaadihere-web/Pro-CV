@@ -8,8 +8,8 @@ export default function SophiExecutiveSapphire({ data, scale = 1, colorTheme }: 
   let primaryColor = '#1e3a8a'
   let accentColor = '#2563eb'
   let badgeBg = '#eff6ff'
-  let secondaryBg = '#f8fafc'
-  let cardBorder = '#e2e8f0'
+  const secondaryBg = '#f8fafc'
+  const cardBorder = '#e2e8f0'
 
   if (colorTheme === 'emerald' || colorTheme === 'green') {
     primaryColor = '#065f46'
