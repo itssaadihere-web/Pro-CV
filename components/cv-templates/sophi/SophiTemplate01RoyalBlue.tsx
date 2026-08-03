@@ -13,7 +13,7 @@ export default function SophiTemplate01RoyalBlue({ data, scale = 1, colorTheme }
     sidebarBg = '#eab308'
     primaryColor = '#854d0e'
     accentColor = '#ca8a04'
-  } else if (colorTheme === 'emerald' || colorTheme === 'green') {
+  } else  if (colorTheme === 'emerald' || colorTheme === 'green') {
     sidebarBg = '#047857'
     primaryColor = '#065f46'
     accentColor = '#059669'
@@ -21,14 +21,14 @@ export default function SophiTemplate01RoyalBlue({ data, scale = 1, colorTheme }
     sidebarBg = '#6d28d9'
     primaryColor = '#581c87'
     accentColor = '#7c3aed'
-  } else if (colorTheme === 'coral' || colorTheme === 'red') {
-    sidebarBg = '#be123c'
+  } else if (colorTheme === 'burgundy' || colorTheme === 'coral' || colorTheme === 'red') {
+    sidebarBg = '#9f1239'
     primaryColor = '#881337'
-    accentColor = '#e11d48'
+    accentColor = '#be123c'
   } else if (colorTheme === 'charcoal' || colorTheme === 'classic') {
-    sidebarBg = '#27272a'
-    primaryColor = '#18181b'
-    accentColor = '#3f3f46'
+    sidebarBg = '#1e293b'
+    primaryColor = '#0f172a'
+    accentColor = '#3b82f6'
   }
 
   return (

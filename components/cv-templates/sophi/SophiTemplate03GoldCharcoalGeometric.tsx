@@ -21,10 +21,14 @@ export default function SophiTemplate03GoldCharcoalGeometric({ data, scale = 1, 
     goldAccent = '#059669'
     darkSidebar = '#064e3b'
     primaryColor = '#064e3b'
-  } else if (colorTheme === 'coral' || colorTheme === 'red') {
+  } else if (colorTheme === 'ruby' || colorTheme === 'coral' || colorTheme === 'red') {
     goldAccent = '#e11d48'
-    darkSidebar = '#881337'
+    darkSidebar = '#18181b'
     primaryColor = '#881337'
+  } else if (colorTheme === 'bronze' || colorTheme === 'copper') {
+    goldAccent = '#b45309'
+    darkSidebar = '#1c1917'
+    primaryColor = '#292524'
   } else if (colorTheme === 'charcoal' || colorTheme === 'classic') {
     goldAccent = '#3f3f46'
     darkSidebar = '#18181b'

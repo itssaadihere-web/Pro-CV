@@ -9,7 +9,15 @@ export default function SophiTemplate04CurvedGoldWave({ data, scale = 1, colorTh
   let darkSidebar = '#1e293b' // Slate / Charcoal
   let primaryColor = '#0f172a'
 
-  if (colorTheme === 'blue' || colorTheme === 'navy' || colorTheme === 'royal') {
+  if (colorTheme === 'teal' || colorTheme === 'cyan') {
+    goldAccent = '#0d9488'
+    darkSidebar = '#0f172a'
+    primaryColor = '#0f172a'
+  } else if (colorTheme === 'indigo' || colorTheme === 'purple' || colorTheme === 'violet') {
+    goldAccent = '#6366f1'
+    darkSidebar = '#1e1b4b'
+    primaryColor = '#1e1b4b'
+  } else if (colorTheme === 'blue' || colorTheme === 'navy' || colorTheme === 'royal') {
     goldAccent = '#2563eb'
     darkSidebar = '#0f172a'
     primaryColor = '#1e293b'

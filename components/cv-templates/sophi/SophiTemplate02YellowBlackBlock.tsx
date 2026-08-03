@@ -12,7 +12,14 @@ export default function SophiTemplate02YellowBlackBlock({ data, scale = 1, color
   let skillBadgeBg = '#18181b'
   let skillBadgeText = '#ffffff'
 
-  if (colorTheme === 'blue' || colorTheme === 'navy' || colorTheme === 'royal') {
+  if (colorTheme === 'cyan' || colorTheme === 'teal') {
+    yellowBg = '#06b6d4'
+    darkHeaderBg = '#0f172a'
+    primaryColor = '#0f172a'
+    sidebarTextColor = '#ffffff'
+    skillBadgeBg = '#ffffff'
+    skillBadgeText = '#0f172a'
+  } else if (colorTheme === 'blue' || colorTheme === 'navy' || colorTheme === 'royal') {
     yellowBg = '#2563eb'
     darkHeaderBg = '#0f172a'
     primaryColor = '#0f172a'

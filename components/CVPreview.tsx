@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import { parseCVText } from '@/lib/pdf-export'
 import { getTemplate } from '@/components/cv-templates'
 import { parseKimiCV } from '@/lib/cvParser'
+import { getTemplateColorPalettes } from '@/lib/templatePalettes'
 import Logo from './Logo'
 
 interface CVPreviewProps {
@@ -144,13 +145,8 @@ export default function CVPreview({
           {/* Color Switcher */}
           {viewMode === 'visual' && activeTab === 'after' && (
             (() => {
-              const category = selectedTemplate === 'ats' 
-                ? 'ats' 
-                : (selectedTemplate === 'minimalist' || selectedTemplate.startsWith('min-')) 
-                  ? (selectedTemplate.includes('ats') ? 'ats' : 'minimalist') 
-                  : 'modern';
-              const activeColors = colorOptions[category];
-              if (!activeColors) return null;
+              const activeColors = getTemplateColorPalettes(selectedTemplate);
+              if (!activeColors || activeColors.length === 0) return null;
               return (
                 <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm">
                   <span className="text-slate-500">Color Palette:</span>
