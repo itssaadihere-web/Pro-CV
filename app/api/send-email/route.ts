@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase } from '@/lib/supabase-server'
-import { generateCVBuffer } from '@/lib/pdf-export'
-import { formatCVWithGemini } from '@/lib/gemini'
 import { sendCVEmail } from '@/lib/email'
+import { generateAndUploadPdf } from '@/lib/pdfService'
 
 export async function POST(req: NextRequest) {
   try {
-    const { jobId, template = 'ats', color = 'classic', cvText } = await req.json()
+    const { jobId, template, color } = await req.json()
 
     if (!jobId) {
       return NextResponse.json({ error: 'Missing jobId parameter' }, { status: 400 })
@@ -40,51 +39,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Associated user profile or email not found' }, { status: 404 })
     }
 
-    // 2. Retrieve the pre-rendered PDF from Supabase storage
+    // 2. Render exact Puppeteer PDF (matches Download PDF button 100%)
     const templateId = job.template_used || template || 'min-14-white-blue-minimalist-corporate-ats'
-    const filePath = `cv-outputs/${jobId}/${templateId}.pdf`
-    
-    let pdfBuffer: Buffer
-    
-    const { data: fileData, error: downloadError } = await supabase.storage
-      .from('cv-outputs')
-      .download(filePath)
+    const host = req.headers.get('host') || 'localhost:3000'
+    const protocol = host.includes('localhost') ? 'http' : 'https'
+    const appUrl = `${protocol}://${host}`
 
-    if (downloadError || !fileData) {
-      console.warn('Pre-rendered PDF not found in storage. Rendering on-demand in email dispatch...', downloadError)
-      try {
-        const host = req.headers.get('host') || 'localhost:3000'
-        const protocol = host.includes('localhost') ? 'http' : 'https'
-        const appUrl = `${protocol}://${host}`
-        
-        const { generateAndUploadPdf } = await import('@/lib/pdfService')
-        await generateAndUploadPdf(jobId, templateId, null, appUrl)
-        
-        const { data: retryData } = await supabase.storage
-          .from('cv-outputs')
-          .download(filePath)
-          
-        if (!retryData) throw new Error('Failed to download fallback PDF')
-        pdfBuffer = Buffer.from(await retryData.arrayBuffer())
-      } catch (err) {
-        console.error('Fallback generation error:', err)
-        pdfBuffer = await generateCVBuffer(cvText || job.generated_cv, 'ats', 'classic')
-      }
-    } else {
-      pdfBuffer = Buffer.from(await fileData.arrayBuffer())
-    }
+    const { pdfBuffer } = await generateAndUploadPdf(jobId, templateId, color, appUrl)
 
-    // 3. Send email
+    // 3. Send email with exact high-performance PDF attachment
     const emailSent = await sendCVEmail({
       userEmail: profile.email,
       userName: profile.full_name || '',
       jobId,
-      pdfBuffer,
+      pdfBuffer: Buffer.from(pdfBuffer),
     })
 
     if (!emailSent) {
       return NextResponse.json(
-        { error: 'Failed to send email via Titan Mail. Ensure your SMTP credentials are configured correctly in your .env.local file, or check server logs.' },
+        { error: 'Failed to send email via SMTP server. Check server logs.' },
         { status: 500 }
       )
     }
