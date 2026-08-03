@@ -341,7 +341,7 @@ export default function ResultPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
           
           {/* COLUMN 1 (LEFT): Report Navigation Tabs */}
-          <div className="lg:col-span-3 xl:col-span-2.5 flex flex-col gap-4">
+          <div className={`${activeTab === 'cv' ? 'lg:col-span-3 xl:col-span-2' : 'lg:col-span-3 xl:col-span-3'} flex flex-col gap-4`}>
             <div className="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-sm sticky top-6">
               <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 px-2 block mb-2">
                 Report Section Tabs
@@ -510,7 +510,7 @@ export default function ResultPage() {
 
           {/* COLUMN 3 (TOP RIGHT): CV Display Controls & Swatches (Parallel to Top of CV Preview) */}
           {activeTab === 'cv' && (
-            <div className="lg:col-span-3 xl:col-span-2.5 flex flex-col gap-4 sticky top-6 self-start">
+            <div className="lg:col-span-3 xl:col-span-3 flex flex-col gap-4 sticky top-6 self-start">
               <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-4 animate-fade-in">
                 <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block border-b border-slate-100 pb-2">
                   CV Display Controls
