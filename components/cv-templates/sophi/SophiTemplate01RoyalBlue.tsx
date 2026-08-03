@@ -9,7 +9,11 @@ export default function SophiTemplate01RoyalBlue({ data, scale = 1, colorTheme }
   let primaryColor = '#1e3a8a'
   let accentColor = '#2563eb'
 
-  if (colorTheme === 'emerald' || colorTheme === 'green') {
+  if (colorTheme === 'gold' || colorTheme === 'yellow' || colorTheme === 'warm') {
+    sidebarBg = '#eab308'
+    primaryColor = '#854d0e'
+    accentColor = '#ca8a04'
+  } else if (colorTheme === 'emerald' || colorTheme === 'green') {
     sidebarBg = '#047857'
     primaryColor = '#065f46'
     accentColor = '#059669'
@@ -21,6 +25,10 @@ export default function SophiTemplate01RoyalBlue({ data, scale = 1, colorTheme }
     sidebarBg = '#be123c'
     primaryColor = '#881337'
     accentColor = '#e11d48'
+  } else if (colorTheme === 'charcoal' || colorTheme === 'classic') {
+    sidebarBg = '#27272a'
+    primaryColor = '#18181b'
+    accentColor = '#3f3f46'
   }
 
   return (

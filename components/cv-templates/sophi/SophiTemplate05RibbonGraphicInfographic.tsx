@@ -2,12 +2,34 @@ import React from 'react'
 import { CVTemplateProps } from '@/types/cv'
 import { AcademicSections } from '../AcademicSections'
 
-export default function SophiTemplate05RibbonGraphicInfographic({ data, scale = 1 }: CVTemplateProps) {
+export default function SophiTemplate05RibbonGraphicInfographic({ data, scale = 1, colorTheme }: CVTemplateProps) {
   const s = (n: number) => `${n * scale}px`
 
-  const yellowBanner = '#f59e0b' // Amber Gold Ribbon
-  const blackHeader = '#000000'
-  const darkSidebar = '#111827'
+  let yellowBanner = '#f59e0b' // Amber Gold Ribbon
+  let blackHeader = '#000000'
+  let darkSidebar = '#111827'
+
+  if (colorTheme === 'blue' || colorTheme === 'navy' || colorTheme === 'royal') {
+    yellowBanner = '#3b82f6'
+    blackHeader = '#0f172a'
+    darkSidebar = '#1e293b'
+  } else if (colorTheme === 'purple' || colorTheme === 'violet') {
+    yellowBanner = '#a855f7'
+    blackHeader = '#1e1b4b'
+    darkSidebar = '#2e1065'
+  } else if (colorTheme === 'emerald' || colorTheme === 'green') {
+    yellowBanner = '#10b981'
+    blackHeader = '#064e3b'
+    darkSidebar = '#022c22'
+  } else if (colorTheme === 'coral' || colorTheme === 'red') {
+    yellowBanner = '#f43f5e'
+    blackHeader = '#881337'
+    darkSidebar = '#4c0519'
+  } else if (colorTheme === 'charcoal' || colorTheme === 'classic') {
+    yellowBanner = '#71717a'
+    blackHeader = '#18181b'
+    darkSidebar = '#27272a'
+  }
 
   return (
     <div style={{

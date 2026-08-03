@@ -2,12 +2,34 @@ import React from 'react'
 import { CVTemplateProps } from '@/types/cv'
 import { AcademicSections } from '../AcademicSections'
 
-export default function SophiTemplate04CurvedGoldWave({ data, scale = 1 }: CVTemplateProps) {
+export default function SophiTemplate04CurvedGoldWave({ data, scale = 1, colorTheme }: CVTemplateProps) {
   const s = (n: number) => `${n * scale}px`
 
-  const goldAccent = '#d97706' // Warm Amber Gold
-  const darkSidebar = '#1e293b' // Slate / Charcoal
-  const primaryColor = '#0f172a'
+  let goldAccent = '#d97706' // Warm Amber Gold
+  let darkSidebar = '#1e293b' // Slate / Charcoal
+  let primaryColor = '#0f172a'
+
+  if (colorTheme === 'blue' || colorTheme === 'navy' || colorTheme === 'royal') {
+    goldAccent = '#2563eb'
+    darkSidebar = '#0f172a'
+    primaryColor = '#1e293b'
+  } else if (colorTheme === 'purple' || colorTheme === 'violet') {
+    goldAccent = '#7c3aed'
+    darkSidebar = '#1e1b4b'
+    primaryColor = '#1e1b4b'
+  } else if (colorTheme === 'emerald' || colorTheme === 'green') {
+    goldAccent = '#059669'
+    darkSidebar = '#064e3b'
+    primaryColor = '#064e3b'
+  } else if (colorTheme === 'coral' || colorTheme === 'red') {
+    goldAccent = '#e11d48'
+    darkSidebar = '#881337'
+    primaryColor = '#881337'
+  } else if (colorTheme === 'charcoal' || colorTheme === 'classic') {
+    goldAccent = '#52525b'
+    darkSidebar = '#18181b'
+    primaryColor = '#18181b'
+  }
 
   return (
     <div style={{
