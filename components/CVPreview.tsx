@@ -227,9 +227,23 @@ function VisualCV({
           {/* Shifted Document Canvas (Y-translated by exact page height) */}
           <div 
             ref={contentRef} 
-            className="w-full transition-transform duration-300 ease-in-out"
+            className="w-full transition-transform duration-300 ease-in-out cv-preview-canvas"
             style={{ transform: `translateY(-${(currentPage - 1) * A4_HEIGHT}px)` }}
           >
+            <style>{`
+              .cv-preview-canvas section, .cv-preview-canvas article, .cv-preview-canvas .section-block {
+                margin-top: 38px;
+                break-inside: auto;
+                page-break-inside: auto;
+              }
+              .cv-preview-canvas section:first-of-type, .cv-preview-canvas article:first-of-type, .cv-preview-canvas .section-block:first-of-type {
+                margin-top: 0px !important;
+              }
+              .cv-preview-canvas h1, .cv-preview-canvas h2, .cv-preview-canvas h3, .cv-preview-canvas h4, .cv-preview-canvas .section-title {
+                break-after: avoid;
+                page-break-after: avoid;
+              }
+            `}</style>
             <TemplateComponent data={cvData} scale={1} colorTheme={colorTheme} />
           </div>
         </div>

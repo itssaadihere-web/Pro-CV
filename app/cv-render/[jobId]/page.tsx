@@ -71,13 +71,18 @@ export default async function CVRenderPage({
             footer, .footer, footer * {
               display: none !important;
             }
-            section, div[style*="borderLeft"], .section-block {
-              page-break-inside: avoid;
-              break-inside: avoid;
+            /* 10mm Text-Only Top Margin for 2nd Page Onwards */
+            section, article, .section-block {
+              break-inside: auto;
+              page-break-inside: auto;
+              margin-top: 10mm;
             }
-            h1, h2, h3 {
-              page-break-after: avoid;
-              break-after: avoid;
+            section:first-of-type, article:first-of-type, .section-block:first-of-type {
+              margin-top: 0mm !important;
+            }
+            h1, h2, h3, h4, .section-title {
+              break-after: avoid !important;
+              page-break-after: avoid !important;
             }
           }
           .watermark-overlay {
