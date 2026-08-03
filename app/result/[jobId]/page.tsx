@@ -305,7 +305,7 @@ export default function ResultPage() {
     <div className="min-h-screen bg-slate-50 pb-20">
       <Header />
 
-      <main className="mx-auto max-w-[1550px] px-4 py-6 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-[1720px] px-4 py-6 sm:px-6 lg:px-8">
         <Link
           href="/dashboard"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 transition-colors hover:text-slate-800 mb-4"
@@ -607,6 +607,15 @@ export default function ResultPage() {
                     </div>
                   </div>
                 )}
+
+                {/* Quick Copy Action */}
+                <button
+                  onClick={() => handleCopySection('activeCV', displayCVText)}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-100 hover:text-slate-900 cursor-pointer mt-2"
+                >
+                  {copiedText['activeCV'] ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
+                  <span>Copy Active CV Text</span>
+                </button>
 
               </div>
             </div>
