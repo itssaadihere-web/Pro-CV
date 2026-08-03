@@ -238,6 +238,7 @@ function VisualCV({
             <style>{`
               .cv-preview-canvas section, .cv-preview-canvas article, .cv-preview-canvas .section-block, .cv-preview-canvas .cv-job-block, .cv-preview-canvas .cv-item-block {
                 margin-top: 38px;
+                margin-bottom: 19px !important;
                 break-inside: avoid-page !important;
                 page-break-inside: avoid !important;
               }

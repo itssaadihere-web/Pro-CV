@@ -71,11 +71,12 @@ export default async function CVRenderPage({
             footer, .footer, footer * {
               display: none !important;
             }
-            /* 25% Content Block & Connected Item Page-Break Integrity */
+            /* 5mm Bottom Margin Starting from Page 1 & 10mm Text Top Margin Starting from Page 2 Onwards */
             section, article, .section-block, .cv-job-block, .cv-item-block {
               break-inside: avoid-page !important;
               page-break-inside: avoid !important;
               margin-top: 10mm;
+              margin-bottom: 5mm !important;
             }
             section:first-of-type, article:first-of-type, .section-block:first-of-type, .cv-job-block:first-of-type {
               margin-top: 0mm !important;
