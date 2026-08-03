@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Copy, Check, Eye, Columns, Loader2 } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Copy, Check, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { parseCVText } from '@/lib/pdf-export'
 import { getTemplate } from '@/components/cv-templates'
 import { parseKimiCV } from '@/lib/cvParser'
 import { getTemplateColorPalettes } from '@/lib/templatePalettes'
@@ -21,24 +20,6 @@ interface CVPreviewProps {
   isWatermarked?: boolean
 }
 
-const colorOptions: Record<string, { id: string; name: string; hex: string }[]> = {
-  ats: [
-    { id: 'classic', name: 'Classic Black', hex: '#000000' },
-    { id: 'navy', name: 'Navy Blue', hex: '#0f172a' },
-    { id: 'charcoal', name: 'Charcoal', hex: '#27272a' },
-  ],
-  modern: [
-    { id: 'blue', name: 'Royal Blue', hex: '#2563eb' },
-    { id: 'gold', name: 'Gold', hex: '#c5a059' },
-    { id: 'purple', name: 'Deep Violet', hex: '#7c3aed' },
-  ],
-  minimalist: [
-    { id: 'charcoal', name: 'Sleek Zinc', hex: '#52525b' },
-    { id: 'warm', name: 'Warm Amber', hex: '#d97706' },
-    { id: 'gold', name: 'Gold Accent', hex: '#c5a059' },
-  ],
-}
-
 export default function CVPreview({ 
   originalText, 
   revampedText,
@@ -51,15 +32,8 @@ export default function CVPreview({
   isWatermarked = true
 }: CVPreviewProps) {
   const [activeTab, setActiveTab] = useState<'after' | 'before'>('after')
-  const [layoutMode, setLayoutMode] = useState<'split' | 'single'>('split')
   const [copied, setCopied] = useState(false)
   const [viewMode, setViewMode] = useState<'visual' | 'text'>('visual')
-
-  const handleTemplateChange = (t: 'ats' | 'modern' | 'minimalist') => {
-    setSelectedTemplate(t)
-    const defaultColor = colorOptions[t]?.[0]?.id || 'classic'
-    setSelectedColor(defaultColor)
-  }
 
   const handleCopy = async () => {
     try {
@@ -73,83 +47,80 @@ export default function CVPreview({
     }
   }
 
-  const handleCopyText = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      toast.success('CV text copied!')
-    } catch (err) {
-      toast.error('Failed to copy text.')
-    }
-  }
-
   return (
-    <div className="flex flex-col gap-4">
-      {/* Controls Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200 shadow-sm">
+    <div className="flex flex-col gap-4 w-full">
+      {/* Streamlined Controls Header */}
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
         <div className="flex flex-wrap items-center gap-3">
-          {/* Active Tab: Before vs After */}
-          <div className="flex rounded-lg border border-slate-200 bg-white p-1">
+          
+          {/* Primary Segmented Toggle: Original CV vs Revamped CV */}
+          <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-1 shadow-inner">
             <button
               onClick={() => setActiveTab('after')}
-              className={`rounded-md px-3 py-1.5 text-xs font-bold transition-all ${
+              className={`rounded-md px-4 py-2 text-xs font-extrabold transition-all ${
                 activeTab === 'after'
-                  ? 'bg-primary text-white shadow-sm'
-                  : 'text-slate-650 hover:bg-slate-50'
+                  ? 'bg-primary text-white shadow-md scale-[1.02]'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
               }`}
             >
-              Optimized CV (After)
+              Revamped CV (After)
             </button>
             <button
               onClick={() => setActiveTab('before')}
-              className={`rounded-md px-3 py-1.5 text-xs font-bold transition-all ${
+              className={`rounded-md px-4 py-2 text-xs font-extrabold transition-all ${
                 activeTab === 'before'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-slate-600 hover:bg-slate-50'
+                  ? 'bg-slate-800 text-white shadow-md scale-[1.02]'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
               }`}
             >
               Original CV (Before)
             </button>
           </div>
 
-          {/* View Mode Toggle: Visual vs Raw Text */}
-          <div className="flex rounded-lg border border-slate-200 bg-white p-1">
-            <button
-              onClick={() => setViewMode('visual')}
-              className={`rounded-md px-3 py-1.5 text-xs font-bold transition-all flex items-center gap-1.5 ${
-                viewMode === 'visual'
-                  ? 'bg-primary text-white shadow-sm'
-                  : 'text-slate-650 hover:bg-slate-50'
-              }`}
-            >
-              <span>Visual Preview 🎨</span>
-            </button>
-            <button
-              onClick={() => setViewMode('text')}
-              className={`rounded-md px-3 py-1.5 text-xs font-bold transition-all flex items-center gap-1.5 ${
-                viewMode === 'text'
-                  ? 'bg-gold text-white shadow-sm'
-                  : 'text-slate-655 hover:bg-slate-50'
-              }`}
-            >
-              <span>Raw Text 📝</span>
-            </button>
-          </div>
-
-          {/* Template label */}
-          {viewMode === 'visual' && activeTab === 'after' && (
-            <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-inner">
-              <span>Active Style: <strong className="font-mono text-blue-600 uppercase">{selectedTemplate.replace(/^m-|^min-/, '').replace(/-/g, ' ')}</strong></span>
+          {/* Secondary View Mode Toggle (Visual vs Raw Text) - Enabled when viewing Revamped CV */}
+          {activeTab === 'after' && (
+            <div className="flex rounded-lg border border-slate-200 bg-slate-50 p-1">
+              <button
+                onClick={() => setViewMode('visual')}
+                className={`rounded-md px-3 py-1.5 text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  viewMode === 'visual'
+                    ? 'bg-white text-slate-900 shadow-sm border border-slate-200'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <span>Visual Preview 🎨</span>
+              </button>
+              <button
+                onClick={() => setViewMode('text')}
+                className={`rounded-md px-3 py-1.5 text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  viewMode === 'text'
+                    ? 'bg-white text-slate-900 shadow-sm border border-slate-200'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <span>Raw Text 📝</span>
+              </button>
             </div>
           )}
 
-          {/* Color Switcher */}
-          {viewMode === 'visual' && activeTab === 'after' && (
+          {/* Active Style Label (Visual Preview Mode Only) */}
+          {activeTab === 'after' && viewMode === 'visual' && (
+            <div className="hidden lg:flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700">
+              <span className="text-slate-500 font-normal">Active Style:</span>
+              <strong className="font-mono text-primary uppercase">
+                {selectedTemplate.replace(/^sophi-|^m-|^min-/, '').replace(/-/g, ' ')}
+              </strong>
+            </div>
+          )}
+
+          {/* CONDITIONAL COLOR PALETTE SELECTOR — Shown ONLY when viewing Visual Preview of Revamped CV */}
+          {activeTab === 'after' && viewMode === 'visual' && (
             (() => {
-              const activeColors = getTemplateColorPalettes(selectedTemplate);
-              if (!activeColors || activeColors.length === 0) return null;
+              const activeColors = getTemplateColorPalettes(selectedTemplate)
+              if (!activeColors || activeColors.length === 0) return null
               return (
                 <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm">
-                  <span className="text-slate-500">Color Palette:</span>
+                  <span className="text-slate-500 font-normal">Color Palette:</span>
                   <div className="flex items-center gap-1.5">
                     {activeColors.map((color) => (
                       <button
@@ -170,142 +141,68 @@ export default function CVPreview({
                     ))}
                   </div>
                 </div>
-              );
+              )
             })()
           )}
 
-          {/* Layout split trigger for desktop */}
-          <div className="hidden rounded-lg border border-slate-200 bg-white p-1 md:flex">
-            <button
-              onClick={() => setLayoutMode('split')}
-              className={`rounded-md p-1.5 transition-colors ${
-                layoutMode === 'split' ? 'bg-slate-100 text-blue-600' : 'text-slate-500 hover:bg-slate-50'
-              }`}
-              title="Split View"
-            >
-              <Columns className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => setLayoutMode('single')}
-              className={`rounded-md p-1.5 transition-colors ${
-                layoutMode === 'single' ? 'bg-slate-100 text-blue-600' : 'text-slate-500 hover:bg-slate-50'
-              }`}
-              title="Single View"
-            >
-              <Eye className="h-4 w-4" />
-            </button>
-          </div>
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-          {viewMode === 'visual' && activeTab === 'after' && (
-            <div className="flex items-center gap-1.5 rounded-full bg-primary-50 border border-primary-100 px-2.5 py-1 text-[10px] font-bold text-primary shadow-sm animate-fade-in" title="Optimized using AI">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-              <span>AI Layout Active</span>
-            </div>
-          )}
+        {/* Copy Button */}
+        <div className="flex items-center gap-2">
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-900"
+            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-900"
           >
-            {copied ? <Check className="h-3.5 w-3.5 text-gold" /> : <Copy className="h-3.5 w-3.5" />}
-            <span>Copy Active Tab</span>
+            {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+            <span>Copy Text</span>
           </button>
         </div>
       </div>
 
-      {/* CV Render Board */}
-      {layoutMode === 'split' ? (
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Original CV */}
-          <div className="flex flex-col rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
-            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-3">
-              <span className="text-xs font-bold text-slate-600 uppercase">Original (Parsed Text)</span>
-              <button
-                onClick={() => handleCopyText(originalText)}
-                className="text-slate-400 hover:text-slate-600"
-                title="Copy Original"
-              >
-                <Copy className="h-3.5 w-3.5" />
-              </button>
-            </div>
-            <pre className="flex-1 overflow-auto max-h-[600px] p-6 text-left font-mono text-[11px] leading-relaxed text-slate-500 bg-slate-50/20 whitespace-pre-wrap select-all font-jetbrains">
-              {originalText || 'Original CV text could not be loaded.'}
-            </pre>
-          </div>
-
-          {/* Revamped CV */}
-          <div className="flex flex-col rounded-2xl border border-blue-200 overflow-hidden bg-white shadow-md ring-1 ring-blue-500/10">
-            <div className="flex items-center justify-between border-b border-blue-100 bg-blue-50/50 px-4 py-3">
-              <span className="text-xs font-bold text-blue-800 uppercase flex items-center gap-1">
-                {viewMode === 'visual' ? (
-                  <>
-                    <span className="inline-block h-2 w-2 rounded-full bg-primary animate-pulse" />
-                    <span>Visual Preview: {selectedTemplate} layout</span>
-                  </>
-                ) : (
-                  <span>Optimized by AI</span>
-                )}
-              </span>
-              <button
-                onClick={() => handleCopyText(revampedText)}
-                className="text-blue-500 hover:text-blue-700"
-                title="Copy Revamped"
-              >
-                <Copy className="h-3.5 w-3.5" />
-              </button>
-            </div>
-            {viewMode === 'visual' ? (
-              <div className="relative flex-1 flex flex-col min-h-[500px]">
-                {formatting && (
-                  <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center gap-2 rounded-2xl animate-fade-in">
-                    <Loader2 className="h-7 w-7 text-primary animate-spin" />
-                    <span className="text-[11px] font-bold text-slate-500">AI is structuring layout...</span>
-                  </div>
-                )}
-                <VisualCV cvText={displayCVText} template={selectedTemplate} colorTheme={selectedColor} isWatermarked={isWatermarked} />
-              </div>
-            ) : (
-              <div className="flex-1 overflow-auto max-h-[600px] bg-white">
-                <RawCVTextFormatter cvText={revampedText} />
-              </div>
-            )}
-          </div>
-        </div>
-      ) : (
-        /* Single/Mobile View */
-        <div className="flex flex-col rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm">
-          <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-3">
-            <span className="text-xs font-bold text-slate-600 uppercase">
+      {/* SINGLE VIEW PREVIEW CONTAINER */}
+      <div className="w-full flex flex-col rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-md">
+        
+        {/* Container Header Banner */}
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-5 py-3">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-xs font-black text-slate-700 uppercase tracking-wider">
               {activeTab === 'after'
-                ? (viewMode === 'visual' ? `Visual Preview: ${selectedTemplate} layout` : 'Optimized CV (After)')
-                : 'Original CV (Before)'}
+                ? (viewMode === 'visual' ? `Visual Preview: ${selectedTemplate.replace(/^sophi-|^m-|^min-/, '').replace(/-/g, ' ')} Layout` : 'Optimized CV (Raw Text View)')
+                : 'Original Parsed CV Text (Before Optimization)'}
             </span>
-            {viewMode === 'text' && <span className="text-xs text-slate-400">JetBrains Mono</span>}
           </div>
-          {activeTab === 'after' && viewMode === 'visual' ? (
-            <div className="relative flex-1 flex flex-col min-h-[500px]">
+          <span className="text-xs font-mono font-semibold text-slate-400">
+            {activeTab === 'after' ? (viewMode === 'visual' ? 'A4 Document Canvas' : 'Formatted Text') : 'Source Text'}
+          </span>
+        </div>
+
+        {/* Canvas Body */}
+        {activeTab === 'after' ? (
+          viewMode === 'visual' ? (
+            <div className="relative w-full min-h-[600px]">
               {formatting && (
-                <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center gap-2 rounded-2xl animate-fade-in">
-                  <Loader2 className="h-7 w-7 text-emerald-600 animate-spin" />
-                  <span className="text-[11px] font-bold text-slate-500">AI is structuring layout...</span>
+                <div className="absolute inset-0 bg-white/70 backdrop-blur-[2px] z-40 flex flex-col items-center justify-center gap-2 rounded-2xl animate-fade-in">
+                  <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                  <span className="text-xs font-bold text-slate-600">AI is structuring multi-page layout...</span>
                 </div>
               )}
               <VisualCV cvText={displayCVText} template={selectedTemplate} colorTheme={selectedColor} isWatermarked={isWatermarked} />
             </div>
           ) : (
-            <div className="overflow-auto max-h-[650px] bg-white">
-              {activeTab === 'after' ? (
-                <RawCVTextFormatter cvText={revampedText} />
-              ) : (
-                <pre className="p-6 text-left font-mono text-[11.5px] leading-relaxed text-slate-500 bg-slate-50/25 whitespace-pre-wrap font-jetbrains">
-                  {originalText}
-                </pre>
-              )}
+            <div className="overflow-auto max-h-[750px] bg-white">
+              <RawCVTextFormatter cvText={revampedText} />
             </div>
-          )}
-        </div>
-      )}
+          )
+        ) : (
+          /* Original CV Text View */
+          <div className="overflow-auto max-h-[750px] bg-slate-50/30 p-6 md:p-8">
+            <pre className="font-mono text-xs leading-relaxed text-slate-600 whitespace-pre-wrap select-all font-jetbrains">
+              {originalText || 'Original CV text could not be loaded.'}
+            </pre>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -323,23 +220,112 @@ function VisualCV({
 }) {
   const cvData = parseKimiCV(cvText)
   const TemplateComponent = getTemplate(template)
-  
+  const containerRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+
+  // Measure content height & calculate total A4 pages (1 A4 page = 1123px at 794px width)
+  useEffect(() => {
+    if (!contentRef.current) return
+    const updatePages = () => {
+      if (contentRef.current) {
+        const height = contentRef.current.scrollHeight
+        const calculatedPages = Math.max(1, Math.ceil(height / 1100))
+        setTotalPages(calculatedPages)
+      }
+    }
+    updatePages()
+    const observer = new ResizeObserver(updatePages)
+    observer.observe(contentRef.current)
+    return () => observer.disconnect()
+  }, [cvText, template, colorTheme])
+
+  const scrollToPage = (pageNum: number) => {
+    if (!containerRef.current) return
+    const targetPage = Math.max(1, Math.min(totalPages, pageNum))
+    const targetScroll = (targetPage - 1) * 1123
+    containerRef.current.scrollTo({ top: targetScroll, behavior: 'smooth' })
+    setCurrentPage(targetPage)
+  }
+
+  const handleScroll = () => {
+    if (!containerRef.current) return
+    const scrollTop = containerRef.current.scrollTop
+    const page = Math.min(totalPages, Math.max(1, Math.floor(scrollTop / 1050) + 1))
+    setCurrentPage(page)
+  }
+
   return (
-    <div className="relative w-full overflow-y-auto max-h-[600px] flex justify-center bg-slate-100 p-4 border border-slate-200 rounded-b-2xl">
-      {isWatermarked && (
-        <div className="absolute inset-0 pointer-events-none z-20 flex flex-col justify-around items-center overflow-hidden opacity-20 select-none py-12">
-          <div className="transform -rotate-12 flex flex-col items-center justify-center gap-1 bg-white/40 p-4 rounded-3xl shadow-sm border border-slate-300">
-            <Logo width={120} height={120} showTagline={false} />
-            <span className="text-3xl font-black tracking-widest text-slate-900 uppercase">SOPHI PREVIEW</span>
-          </div>
-          <div className="transform -rotate-12 flex flex-col items-center justify-center gap-1 bg-white/40 p-4 rounded-3xl shadow-sm border border-slate-300">
-            <Logo width={120} height={120} showTagline={false} />
-            <span className="text-3xl font-black tracking-widest text-slate-900 uppercase">SOPHI PREVIEW</span>
+    <div className="relative flex flex-col items-center w-full bg-slate-100/70 border-0 rounded-b-2xl overflow-hidden">
+      
+      {/* Document Viewport Canvas (Centered & Scaled at 100% / 794px width) */}
+      <div 
+        ref={containerRef}
+        onScroll={handleScroll}
+        className="w-full overflow-y-auto max-h-[780px] p-4 sm:p-8 flex justify-center custom-scrollbar scroll-smooth"
+      >
+        {/* A4 Paper Card Canvas */}
+        <div className="relative w-full max-w-[794px] bg-white shadow-2xl rounded-sm border border-slate-200/80 transition-all">
+          
+          {/* SOPHI 5% Centered Tilted Watermark Overlay (Visual Preview Only) */}
+          {isWatermarked && (
+            <div 
+              className="absolute inset-0 pointer-events-none z-30 flex items-center justify-center overflow-hidden select-none"
+              style={{ opacity: 0.05 }}
+            >
+              <div className="flex flex-col items-center justify-center gap-3 transform -rotate-45">
+                <Logo width={220} height={220} showTagline={false} />
+                <span className="text-5xl font-black tracking-widest text-slate-900 uppercase">SOPHI AI CV</span>
+              </div>
+            </div>
+          )}
+
+          {/* Template Content */}
+          <div ref={contentRef} className="w-full min-h-[1123px]">
+            <TemplateComponent data={cvData} scale={1} colorTheme={colorTheme} />
           </div>
         </div>
-      )}
-      <div style={{ transform: 'scale(0.6)', transformOrigin: 'top center', height: '674px', overflow: 'hidden' }}>
-        <TemplateComponent data={cvData} scale={0.6} colorTheme={colorTheme} />
+      </div>
+
+      {/* Multi-Page Pagination Control Bar */}
+      <div className="w-full bg-white border-t border-slate-200 px-5 py-3 flex items-center justify-between shadow-sm z-20">
+        <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
+          <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+          <span>Multi-Page A4 Canvas</span>
+          <span className="text-slate-300 font-normal">|</span>
+          <span className="text-slate-500 font-mono">794px × 1123px</span>
+        </div>
+
+        {/* Pagination Left / Right Controls & Counter */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => scrollToPage(currentPage - 1)}
+            disabled={currentPage <= 1}
+            className="flex items-center gap-1 px-3.5 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors shadow-sm"
+            title="Previous Page"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            <span>Previous</span>
+          </button>
+
+          <div className="flex items-center gap-1 text-xs font-black text-slate-800 bg-slate-100 px-3.5 py-1.5 rounded-lg border border-slate-200 shadow-inner">
+            <span>Page</span>
+            <span className="text-primary font-mono text-sm">{currentPage}</span>
+            <span>of</span>
+            <span className="font-mono text-sm">{totalPages}</span>
+          </div>
+
+          <button
+            onClick={() => scrollToPage(currentPage + 1)}
+            disabled={currentPage >= totalPages}
+            className="flex items-center gap-1 px-3.5 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors shadow-sm"
+            title="Next Page"
+          >
+            <span>Next</span>
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
       </div>
     </div>
   )
