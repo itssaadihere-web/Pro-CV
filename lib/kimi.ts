@@ -9,7 +9,8 @@ export async function generateKimiCompletion(
   const apiKey = process.env.MOONSHOT_API_KEY || process.env.KIMI_API_KEY
   const apiBase = process.env.KIMI_API_BASE || 'https://api.moonshot.ai/v1'
   const model = options?.model || process.env.KIMI_MODEL || 'kimi-k3'
-  const reasoningEffort = options?.reasoningEffort || 'max'
+  // Use 'low' reasoning effort by default for fast, low-latency structured CV generation
+  const reasoningEffort = options?.reasoningEffort || 'low'
 
   if (!apiKey) {
     throw new Error('MOONSHOT_API_KEY or KIMI_API_KEY is not configured in .env.local')

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { generateKimiCompletion } from '@/lib/kimi'
 import { getServiceSupabase } from '@/lib/supabase-server'
 
+export const maxDuration = 60 // Allow 60s for full multi-page AI completion
+
 const KIMI_SYSTEM_PROMPT = `You are an elite CV Architect, Academic Profiling Expert, and ATS Optimization Specialist with deep expertise in global recruitment algorithms, higher education standards, and professional branding for 2025–2026.
 
 ROLE & MISSION:
