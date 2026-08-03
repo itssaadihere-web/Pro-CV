@@ -17,28 +17,13 @@ import {
   Check,
   Lock,
 } from 'lucide-react'
-const Linkedin = (props: any) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={props.className || "h-4.5 w-4.5"}
-    {...props}
-  >
-    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-    <rect x="2" y="9" width="4" height="12" />
-    <circle cx="4" cy="4" r="2" />
-  </svg>
-)
 import toast from 'react-hot-toast'
 
 import Header from '@/components/Header'
 import ATSScoreCard from '@/components/ATSScoreCard'
 import CVPreview from '@/components/CVPreview'
 import JobRecommendationsWidget from '@/components/JobRecommendationsWidget'
+import { getTemplateColorPalettes } from '@/lib/templatePalettes'
 
 type TabType = 'ats' | 'cv' | 'cover' | 'gap'
 
@@ -50,14 +35,17 @@ export default function ResultPage() {
 
   const [loading, setLoading] = useState(true)
   const [jobData, setJobData] = useState<any>(null)
-  const [activeTab, setActiveTab] = useState<TabType>('ats')
+  const [activeTab, setActiveTab] = useState<TabType>('cv')
   const [originalText, setOriginalText] = useState('')
   const [sendingEmail, setSendingEmail] = useState(false)
   const [copiedText, setCopiedText] = useState<Record<string, boolean>>({})
 
+  // CV Preview Control States (for Left Side Control Panel)
+  const [activeCVTab, setActiveCVTab] = useState<'after' | 'before'>('after')
+  const [activeViewMode, setActiveViewMode] = useState<'visual' | 'text'>('visual')
+
   // Payment and preview states
   const [hasPaid, setHasPaid] = useState<boolean>(false)
-  const [previewCount, setPreviewCount] = useState<number>(1)
   const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false)
 
   // Template and Color Selection states
@@ -69,11 +57,6 @@ export default function ResultPage() {
   const [formatting, setFormatting] = useState(false)
   const [downloadingPDF, setDownloadingPDF] = useState(false)
   const [rotatingTemplate, setRotatingTemplate] = useState(false)
-
-  // LinkedIn Optimizer states
-  const [linkedinUrl, setLinkedinUrl] = useState('')
-  const [fetchingLinkedin, setFetchingLinkedin] = useState(false)
-  const [contrastReport, setContrastReport] = useState('')
 
   // Initialize template from job details on mount
   useEffect(() => {
@@ -170,8 +153,6 @@ export default function ResultPage() {
         }))
       }
       
-      // Fetch the PDF file as a blob so the browser handles it as a local same-origin file download
-      // instead of navigating away to cross-origin Supabase URL.
       const pdfRes = await fetch(data.pdfUrl)
       if (!pdfRes.ok) {
         throw new Error('Failed to fetch generated PDF file')
@@ -282,44 +263,6 @@ export default function ResultPage() {
     }
   }
 
-  const handleFetchLinkedin = async () => {
-    if (!linkedinUrl.trim()) {
-      toast.error('Please enter a LinkedIn URL')
-      return
-    }
-    setFetchingLinkedin(true)
-    try {
-      const res = await fetch('/api/linkedin/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          url: linkedinUrl,
-          idealProfile: jobData.linkedin_optimizer || {}
-        })
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
-      setContrastReport(data.contrastReport)
-      toast.success('Contrast report generated!')
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to analyze LinkedIn profile')
-    } finally {
-      setFetchingLinkedin(false)
-    }
-  }
-
-  const exportContrastReport = () => {
-    if (!contrastReport) return
-    const element = document.createElement("a");
-    const file = new Blob([contrastReport], {type: 'text/plain'});
-    element.href = URL.createObjectURL(file);
-    element.download = "LinkedIn-Optimization-Report.txt";
-    document.body.appendChild(element); // Required for this to work in FireFox
-    element.click();
-    element.remove();
-    toast.success('Exported successfully!')
-  }
-
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50">
@@ -333,12 +276,6 @@ export default function ResultPage() {
   }
 
   if (!jobData) return null
-
-  // Format LinkedIn data
-  const linkedin = jobData.linkedin_optimizer || {}
-  const headline = linkedin.headline || 'N/A'
-  const summary = linkedin.about || 'N/A'
-  const skills = linkedin.skills || []
 
   // Format Gap Analysis data
   const gap = jobData.gap_analysis || {}
@@ -358,212 +295,340 @@ export default function ResultPage() {
   }
 
   const tabItems = [
-    { id: 'ats', label: 'ATS Score Report', icon: TrendingUp },
-    { id: 'cv', label: 'Revamped CV', icon: FileText },
-    { id: 'cover', label: 'Cover Letter', icon: MailOpen },
-    { id: 'gap', label: 'Gap Analysis', icon: Compass },
+    { id: 'cv', label: 'Revamped CV', icon: FileText, desc: 'A4 Visual & Raw Text View' },
+    { id: 'ats', label: 'ATS Score Report', icon: TrendingUp, desc: 'Parsing & keyword analysis' },
+    { id: 'cover', label: 'Cover Letter', icon: MailOpen, desc: 'Tailored application letter' },
+    { id: 'gap', label: 'Gap Analysis', icon: Compass, desc: 'Roadmap & skill recommendations' },
   ]
+
+  const activeColors = getTemplateColorPalettes(selectedTemplate)
 
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
       <Header />
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-[1550px] px-4 py-6 sm:px-6 lg:px-8">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 transition-colors hover:text-slate-800 mb-6"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 transition-colors hover:text-slate-800 mb-4"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           <span>Back to Dashboard</span>
         </Link>
 
-        {/* Dashboard Title & Meta */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
+        {/* Dashboard Title & Meta Banner */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Transformation Report</h1>
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900">Transformation Report</h1>
             <p className="text-xs text-slate-500 mt-1">
               Target Industry: <strong className="text-slate-700">{jobData.target_industry}</strong> | 
               Language: <strong className="text-slate-700">{jobData.output_language}</strong>
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
+            <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${
               jobData.status === 'completed'
                 ? 'bg-gold-50 text-gold-700'
-                : 'bg-amber-55 bg-amber-50 text-amber-700'
+                : 'bg-amber-50 text-amber-700'
             }`}>
-              <span className={`h-1.5 w-1.5 rounded-full ${
-                jobData.status === 'completed' ? 'bg-gold' : 'bg-amber-500'
+              <span className={`h-2 w-2 rounded-full ${
+                jobData.status === 'completed' ? 'bg-gold' : 'bg-amber-500 animate-pulse'
               }`} />
               {jobData.status === 'completed' ? 'Transformation Complete' : 'Processing'}
             </span>
           </div>
         </div>
 
-        {/* Tab Controls */}
-        <div className="border-b border-slate-200 mb-6 overflow-x-auto">
-          <nav className="flex space-x-8 whitespace-nowrap px-1" aria-label="Tabs">
-            {tabItems.map((tab) => {
-              const Icon = tab.icon
-              const isActive = activeTab === tab.id
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as TabType)}
-                  className={`flex items-center gap-2 border-b-2 py-4 px-1 text-sm font-semibold transition-all ${
-                    isActive
-                      ? 'border-blue-600 text-blue-600'
-                      : 'border-transparent text-slate-500 hover:border-slate-350 hover:text-slate-750'
-                  }`}
-                >
-                  <Icon className="h-4.5 w-4.5" />
-                  <span>{tab.label}</span>
-                </button>
-              )
-            })}
-          </nav>
-        </div>
-
-        {/* Tab Panels */}
-        <div className="mb-10 min-h-[450px]">
-          {/* Panel 1: ATS Report */}
-          {activeTab === 'ats' && (
-            <div className="animate-fade-in">
-              <ATSScoreCard scoreData={ats} />
+        {/* MAIN WORKSPACE GRID: Left Control Sidebar + Right Single Window A4 Workspace */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          {/* LEFT SIDEBAR: Report Tabs + CV Controls + Swatches */}
+          <div className="lg:col-span-4 xl:col-span-3 flex flex-col gap-4">
+            
+            {/* Left Panel 1: Vertical Report Navigation Tabs */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-sm">
+              <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 px-2 block mb-2">
+                Report Section Tabs
+              </span>
+              <nav className="flex flex-col gap-1.5" aria-label="Tabs">
+                {tabItems.map((tab) => {
+                  const Icon = tab.icon
+                  const isActive = activeTab === tab.id
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id as TabType)}
+                      className={`flex items-center gap-3 w-full p-3 rounded-xl text-left transition-all cursor-pointer ${
+                        isActive
+                          ? 'bg-primary text-white shadow-md font-bold'
+                          : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-semibold'
+                      }`}
+                    >
+                      <div className={`p-2 rounded-lg shrink-0 ${isActive ? 'bg-white/20 text-white' : 'bg-white text-slate-500 border border-slate-200'}`}>
+                        <Icon className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <span className="block text-xs leading-tight">{tab.label}</span>
+                        <span className={`block text-[10px] ${isActive ? 'text-white/80' : 'text-slate-400'}`}>{tab.desc}</span>
+                      </div>
+                    </button>
+                  )
+                })}
+              </nav>
             </div>
-          )}
 
-          {/* Panel 2: Revamped CV */}
-          {activeTab === 'cv' && (
-            <div className="animate-fade-in">
-              <CVPreview
-                originalText={originalText}
-                revampedText={jobData.generated_cv || ''}
-                selectedTemplate={selectedTemplate}
-                setSelectedTemplate={setSelectedTemplate}
-                selectedColor={selectedColor}
-                setSelectedColor={setSelectedColor}
-                displayCVText={displayCVText}
-                formatting={formatting}
-                isWatermarked={!hasPaid}
-              />
-            </div>
-          )}
+            {/* Left Panel 2: Document Controls & Swatches (Only when activeTab === 'cv') */}
+            {activeTab === 'cv' && (
+              <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-4 animate-fade-in">
+                <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block border-b border-slate-100 pb-2">
+                  CV Display Controls
+                </span>
 
-
-
-          {/* Panel 4: Cover Letter */}
-          {activeTab === 'cover' && (
-            <div className="rounded-2xl border border-slate-150 bg-white shadow-sm overflow-hidden animate-fade-in">
-              <div className="flex items-center justify-between border-b border-slate-150 bg-slate-50/60 px-6 py-4">
-                <div>
-                  <h3 className="text-base font-bold text-slate-800">Tailored Professional Cover Letter</h3>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Optimized against your uploaded requirements</p>
+                {/* Primary Segmented Switch: Revamped CV vs Original CV */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 block">Version Toggle:</label>
+                  <div className="flex rounded-xl border border-slate-200 bg-slate-100 p-1 shadow-inner">
+                    <button
+                      onClick={() => setActiveCVTab('after')}
+                      className={`flex-1 rounded-lg py-2 text-xs font-extrabold transition-all ${
+                        activeCVTab === 'after'
+                          ? 'bg-primary text-white shadow-md scale-[1.02]'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                      }`}
+                    >
+                      Revamped (After)
+                    </button>
+                    <button
+                      onClick={() => setActiveCVTab('before')}
+                      className={`flex-1 rounded-lg py-2 text-xs font-extrabold transition-all ${
+                        activeCVTab === 'before'
+                          ? 'bg-slate-800 text-white shadow-md scale-[1.02]'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                      }`}
+                    >
+                      Original (Before)
+                    </button>
+                  </div>
                 </div>
-                <button
-                  onClick={() => handleCopySection('coverLetter', jobData.cover_letter || '')}
-                  className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
-                >
-                  {copiedText['coverLetter'] ? <Check className="h-3.5 w-3.5 text-gold" /> : <Copy className="h-3.5 w-3.5" />}
-                  <span>Copy Letter</span>
-                </button>
-              </div>
-              <div className="p-6 md:p-8">
-                <pre className="text-sm leading-relaxed text-slate-850 whitespace-pre-wrap font-sans text-justify">
-                  {jobData.cover_letter || 'Cover letter details not generated.'}
-                </pre>
-              </div>
-            </div>
-          )}
 
-          {/* Panel 5: Gap Analysis */}
-          {activeTab === 'gap' && (
-            <div className="grid gap-6 md:grid-cols-3 animate-fade-in">
-              {/* Missing Keywords */}
-              <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm space-y-4">
-                <h3 className="text-base font-bold text-slate-800 border-b border-slate-100 pb-3">
-                  Missing Target Keywords
-                </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  These keywords were found in the job description but are absent or weak in your original CV.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {missingKeywords.length > 0 ? (
-                    missingKeywords.map((kw: string, i: number) => (
-                      <span
-                        key={i}
-                        className="rounded-lg bg-red-50 border border-red-100 px-2.5 py-1.5 text-xs font-semibold text-red-700"
+                {/* Secondary View Mode Toggle (Visual vs Raw Text) */}
+                {activeCVTab === 'after' && (
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-700 block">Format Mode:</label>
+                    <div className="flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+                      <button
+                        onClick={() => setActiveViewMode('visual')}
+                        className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                          activeViewMode === 'visual'
+                            ? 'bg-white text-slate-900 shadow-sm border border-slate-200'
+                            : 'text-slate-500 hover:text-slate-800'
+                        }`}
                       >
-                        {kw}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-xs text-slate-400 italic">No missing keywords found</span>
-                  )}
+                        <span>Visual Preview 🎨</span>
+                      </button>
+                      <button
+                        onClick={() => setActiveViewMode('text')}
+                        className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                          activeViewMode === 'text'
+                            ? 'bg-white text-slate-900 shadow-sm border border-slate-200'
+                            : 'text-slate-500 hover:text-slate-800'
+                        }`}
+                      >
+                        <span>Raw Text 📝</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Active Style Name */}
+                {activeCVTab === 'after' && activeViewMode === 'visual' && (
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 space-y-1">
+                    <span className="text-slate-400 font-normal block text-[10px] uppercase tracking-wider">Active Design Style</span>
+                    <span className="font-mono text-primary font-black uppercase block truncate">
+                      {selectedTemplate.replace(/^sophi-|^m-|^min-/, '').replace(/-/g, ' ')}
+                    </span>
+                  </div>
+                )}
+
+                {/* DYNAMIC COLOR PALETTE SELECTOR */}
+                {activeCVTab === 'after' && activeViewMode === 'visual' && activeColors && activeColors.length > 0 && (
+                  <div className="space-y-2 pt-1 border-t border-slate-100">
+                    <span className="text-xs font-bold text-slate-700 block">Color Palette (5 Themes):</span>
+                    <div className="flex items-center gap-2 flex-wrap bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                      {activeColors.map((color) => (
+                        <button
+                          key={color.id}
+                          onClick={() => setSelectedColor(color.id)}
+                          className={`h-6 w-6 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
+                            selectedColor === color.id
+                              ? 'ring-2 ring-primary ring-offset-2 border-transparent scale-110'
+                              : 'border-slate-300 hover:scale-105'
+                          }`}
+                          style={{ backgroundColor: color.hex }}
+                          title={color.name}
+                        >
+                          {selectedColor === color.id && (
+                            <span className="h-1.5 w-1.5 rounded-full bg-white shadow-sm" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+              </div>
+            )}
+
+          </div>
+
+          {/* RIGHT MAIN WORKSPACE WINDOW: Displays Single A4 Window or Selected Report Tab */}
+          <div className="lg:col-span-8 xl:col-span-9 min-h-[500px]">
+            
+            {/* Panel 1: ATS Report */}
+            {activeTab === 'ats' && (
+              <div className="animate-fade-in">
+                <ATSScoreCard scoreData={ats} />
+              </div>
+            )}
+
+            {/* Panel 2: Revamped CV (Single A4 Window View with Book Page Flip) */}
+            {activeTab === 'cv' && (
+              <div className="animate-fade-in">
+                <CVPreview
+                  originalText={originalText}
+                  revampedText={jobData.generated_cv || ''}
+                  selectedTemplate={selectedTemplate}
+                  setSelectedTemplate={setSelectedTemplate}
+                  selectedColor={selectedColor}
+                  setSelectedColor={setSelectedColor}
+                  displayCVText={displayCVText}
+                  formatting={formatting}
+                  isWatermarked={!hasPaid}
+                  activeTabState={activeCVTab}
+                  setActiveTabState={setActiveCVTab}
+                  viewModeState={activeViewMode}
+                  setViewModeState={setActiveViewMode}
+                />
+              </div>
+            )}
+
+            {/* Panel 3: Cover Letter */}
+            {activeTab === 'cover' && (
+              <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden animate-fade-in">
+                <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/60 px-6 py-4">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-800">Tailored Professional Cover Letter</h3>
+                    <p className="text-[11px] text-slate-500 mt-0.5">Optimized against your uploaded requirements</p>
+                  </div>
+                  <button
+                    onClick={() => handleCopySection('coverLetter', jobData.cover_letter || '')}
+                    className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+                  >
+                    {copiedText['coverLetter'] ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                    <span>Copy Letter</span>
+                  </button>
+                </div>
+                <div className="p-6 md:p-8">
+                  <pre className="text-sm leading-relaxed text-slate-850 whitespace-pre-wrap font-sans text-justify">
+                    {jobData.cover_letter || 'Cover letter details not generated.'}
+                  </pre>
                 </div>
               </div>
+            )}
 
-              {/* Certifications Check */}
-              <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm space-y-4">
-                <h3 className="text-base font-bold text-slate-800 border-b border-slate-100 pb-3">
-                  Recommended Certifications
-                </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Earn these professional credentials to boost your hiring chances by up to 30%.
-                </p>
-                <ul className="space-y-3">
-                  {certifications.length > 0 ? (
-                    certifications.map((cert: string, i: number) => (
-                      <li key={i} className="flex items-start gap-2 text-xs font-medium text-slate-700">
-                        <span className="text-blue-500 font-bold shrink-0 mt-0.5">☐</span>
-                        <span>{cert}</span>
-                      </li>
-                    ))
-                  ) : (
-                    <li className="text-xs text-slate-400 italic">No credentials recommended</li>
-                  )}
-                </ul>
-              </div>
-
-              {/* Quick Wins */}
-              <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm space-y-4">
-                <h3 className="text-base font-bold text-slate-800 border-b border-slate-100 pb-3">
-                  Quick Wins (48-Hour Roadmap)
-                </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  High-impact adjustments you can make to your career presentation immediately.
-                </p>
-                <ol className="space-y-3">
-                  {quickWins.length > 0 ? (
-                    quickWins.map((win: string, i: number) => (
-                      <li key={i} className="flex items-start gap-2.5 text-xs font-semibold text-slate-700">
-                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 text-[10px] text-blue-700">
-                          {i + 1}
+            {/* Panel 4: Gap Analysis */}
+            {activeTab === 'gap' && (
+              <div className="grid gap-6 md:grid-cols-3 animate-fade-in">
+                {/* Missing Keywords */}
+                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+                  <h3 className="text-base font-bold text-slate-800 border-b border-slate-100 pb-3">
+                    Missing Target Keywords
+                  </h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    These keywords were found in the job description but are absent or weak in your original CV.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {missingKeywords.length > 0 ? (
+                      missingKeywords.map((kw: string, i: number) => (
+                        <span
+                          key={i}
+                          className="rounded-lg bg-red-50 border border-red-100 px-2.5 py-1.5 text-xs font-semibold text-red-700"
+                        >
+                          {kw}
                         </span>
-                        <span className="mt-0.5">{win}</span>
-                      </li>
-                    ))
-                  ) : (
-                    <li className="text-xs text-slate-400 italic">No action items suggested</li>
-                  )}
-                </ol>
+                      ))
+                    ) : (
+                      <span className="text-xs text-slate-400 italic">No missing keywords found</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Certifications Check */}
+                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+                  <h3 className="text-base font-bold text-slate-800 border-b border-slate-100 pb-3">
+                    Recommended Certifications
+                  </h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    Earn these professional credentials to boost your hiring chances by up to 30%.
+                  </p>
+                  <ul className="space-y-3">
+                    {certifications.length > 0 ? (
+                      certifications.map((cert: string, i: number) => (
+                        <li key={i} className="flex items-start gap-2 text-xs font-medium text-slate-700">
+                          <span className="text-blue-500 font-bold shrink-0 mt-0.5">☐</span>
+                          <span>{cert}</span>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="text-xs text-slate-400 italic">No credentials recommended</li>
+                    )}
+                  </ul>
+                </div>
+
+                {/* Quick Wins */}
+                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+                  <h3 className="text-base font-bold text-slate-800 border-b border-slate-100 pb-3">
+                    Quick Wins (48-Hour Roadmap)
+                  </h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    High-impact adjustments you can make to your career presentation immediately.
+                  </p>
+                  <ol className="space-y-3">
+                    {quickWins.length > 0 ? (
+                      quickWins.map((win: string, i: number) => (
+                        <li key={i} className="flex items-start gap-2.5 text-xs font-semibold text-slate-700">
+                          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 text-[10px] text-blue-700">
+                            {i + 1}
+                          </span>
+                          <span className="mt-0.5">{win}</span>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="text-xs text-slate-400 italic">No action items suggested</li>
+                    )}
+                  </ol>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+
+          </div>
+
         </div>
 
         {/* Smart Job Recommendations Widget */}
-        <JobRecommendationsWidget
-          userId={jobData.user_id}
-          cvKeywords={[
-            ...(jobData.gap_analysis?.missingKeywords || []),
-            ...(jobData.linkedin_optimizer?.skills || []),
-            ...(jobData.target_industry ? [jobData.target_industry] : [])
-          ]}
-        />
+        <div className="mt-8">
+          <JobRecommendationsWidget
+            userId={jobData.user_id}
+            cvKeywords={[
+              ...(jobData.gap_analysis?.missingKeywords || []),
+              ...(jobData.linkedin_optimizer?.skills || []),
+              ...(jobData.target_industry ? [jobData.target_industry] : [])
+            ]}
+          />
+        </div>
 
         {/* Global sticky bottom download bar */}
-        <div className="sticky bottom-6 w-full rounded-2xl border border-slate-250 bg-white p-4.5 shadow-xl shadow-slate-200/40 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="sticky bottom-6 w-full rounded-2xl border border-slate-250 bg-white p-4.5 shadow-xl shadow-slate-200/40 flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 z-40">
           <div className="flex items-center gap-2">
             <div className="h-9 w-9 rounded-lg bg-primary-50 flex items-center justify-center text-primary shrink-0">
               <Download className="h-4.5 w-4.5" />
@@ -578,7 +643,7 @@ export default function ResultPage() {
             <button
               onClick={() => handleDownloadPDF('min-14-white-blue-minimalist-corporate-ats')}
               disabled={downloadingPDF}
-              className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 disabled:opacity-60"
+              className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 disabled:opacity-60 cursor-pointer"
               title="Download standard plain ATS CV"
             >
               <span>ATS-Safe (Standard)</span>
@@ -586,7 +651,7 @@ export default function ResultPage() {
             <button
               onClick={handleDownloadPDF}
               disabled={downloadingPDF}
-              className="flex items-center justify-center gap-1.5 rounded-lg bg-gold px-4 py-2.5 text-xs font-extrabold text-white shadow-md shadow-gold-100 hover:bg-gold-600 hover:shadow-lg hover:shadow-gold-200 transition-all disabled:opacity-60"
+              className="flex items-center justify-center gap-1.5 rounded-lg bg-gold px-4 py-2.5 text-xs font-extrabold text-white shadow-md shadow-gold-100 hover:bg-gold-600 hover:shadow-lg hover:shadow-gold-200 transition-all disabled:opacity-60 cursor-pointer"
               title="Download your active PDF layout"
             >
               {downloadingPDF && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
@@ -595,7 +660,7 @@ export default function ResultPage() {
             <button
               onClick={handleRegenerateWithDifferentTemplate}
               disabled={rotatingTemplate || downloadingPDF}
-              className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-350 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-450 transition-all disabled:opacity-60"
+              className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-350 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-450 transition-all disabled:opacity-60 cursor-pointer"
               title="Rotate to another design layout"
             >
               {rotatingTemplate && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
@@ -604,7 +669,7 @@ export default function ResultPage() {
             <button
               onClick={triggerEmailResend}
               disabled={sendingEmail}
-              className="flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-primary-850 hover:shadow-md hover:shadow-primary-100 disabled:bg-primary-300"
+              className="flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-primary-850 hover:shadow-md hover:shadow-primary-100 disabled:bg-primary-300 cursor-pointer"
             >
               {sendingEmail ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />

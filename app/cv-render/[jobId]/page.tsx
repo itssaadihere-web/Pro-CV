@@ -56,7 +56,7 @@ export default async function CVRenderPage({
           }
           @page {
             size: A4 portrait;
-            margin: 0;
+            margin: 10mm 0mm 12mm 0mm;
           }
           footer, .footer, footer * {
             display: none !important;
@@ -71,13 +71,24 @@ export default async function CVRenderPage({
             footer, .footer, footer * {
               display: none !important;
             }
-            section, div[style*="borderLeft"], .section-block {
-              page-break-inside: avoid;
-              break-inside: avoid;
+            body {
+              padding-top: 4mm;
+              padding-bottom: 6mm;
             }
-            h1, h2, h3 {
-              page-break-after: avoid;
-              break-after: avoid;
+            section, article, div[style*="borderLeft"], .section-block {
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+              margin-top: 5mm;
+            }
+            h1, h2, h3, h4, .section-title {
+              page-break-after: avoid !important;
+              break-after: avoid !important;
+              margin-top: 6mm;
+              padding-top: 3mm;
+            }
+            ul, ol, li {
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
             }
           }
           .watermark-overlay {
