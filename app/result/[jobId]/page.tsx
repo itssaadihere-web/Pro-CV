@@ -147,30 +147,44 @@ export default function ResultPage() {
     }
   }, [jobData?.generated_cv])
 
-  const handleDownloadPDF = async () => {
+  const handleDownloadPDF = async (templateToDownload?: string | React.MouseEvent) => {
+    const targetTemplate = (typeof templateToDownload === 'string' && templateToDownload) ? templateToDownload : selectedTemplate
     setDownloadingPDF(true)
     try {
       const res = await fetch('/api/export-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobId, templateId: selectedTemplate, color: selectedColor })
+        body: JSON.stringify({ jobId, templateId: targetTemplate, color: selectedColor })
       })
       const data = await res.json().catch(() => null)
       if (!res.ok) {
         throw new Error(data?.error || 'Failed to generate PDF download')
       }
       
-      setJobData((prev: any) => ({
-        ...prev,
-        pdf_output_path: data.pdfUrl
-      }))
+      if (!templateToDownload) {
+        setJobData((prev: any) => ({
+          ...prev,
+          pdf_output_path: data.pdfUrl
+        }))
+      }
       
+      // Fetch the PDF file as a blob so the browser handles it as a local same-origin file download
+      // instead of navigating away to cross-origin Supabase URL.
+      const pdfRes = await fetch(data.pdfUrl)
+      if (!pdfRes.ok) {
+        throw new Error('Failed to fetch generated PDF file')
+      }
+      const blob = await pdfRes.blob()
+      const blobUrl = URL.createObjectURL(blob)
+
       const a = document.createElement('a')
-      a.href = data.pdfUrl
-      a.download = `ProCV-${selectedTemplate}-${jobId.substring(0, 8)}.pdf`
+      a.href = blobUrl
+      a.download = `ProCV-${targetTemplate}-${jobId.substring(0, 8)}.pdf`
       document.body.appendChild(a)
       a.click()
       a.remove()
+
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000)
       toast.success('Successfully downloaded PDF!')
     } catch (err: any) {
       console.error(err)
@@ -559,13 +573,14 @@ export default function ResultPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
-            <a
-              href={`/api/export-pdf?jobId=${jobId}&template=min-14-white-blue-minimalist-corporate-ats`}
-              className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+            <button
+              onClick={() => handleDownloadPDF('min-14-white-blue-minimalist-corporate-ats')}
+              disabled={downloadingPDF}
+              className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 disabled:opacity-60"
               title="Download standard plain ATS CV"
             >
               <span>ATS-Safe (Standard)</span>
-            </a>
+            </button>
             <button
               onClick={handleDownloadPDF}
               disabled={downloadingPDF}
