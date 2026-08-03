@@ -7,10 +7,20 @@ export async function getBrowserInstance() {
     const puppeteerCore = await import('puppeteer-core')
     const chromium = (await import('@sparticuz/chromium')).default as any
     
+    let executablePath: string
+    try {
+      executablePath = await chromium.executablePath()
+    } catch (e: any) {
+      console.warn('⚠️ Local chromium executable path failed. Falling back to remote tarball pack...', e)
+      executablePath = await chromium.executablePath(
+        'https://github.com/Sparticuz/chromium/releases/download/v133.0.0/chromium-v133.0.0-pack.tar'
+      )
+    }
+
     return await puppeteerCore.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
+      executablePath: executablePath,
       headless: chromium.headless,
     })
   } else {

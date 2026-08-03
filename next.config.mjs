@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  serverExternalPackages: ['@sparticuz/chromium', 'puppeteer-core', 'pdf-parse', 'mammoth'],
   experimental: {
-    serverComponentsExternalPackages: ['pdf-parse', 'mammoth'],
+    serverComponentsExternalPackages: ['@sparticuz/chromium', 'puppeteer-core', 'pdf-parse', 'mammoth'],
     optimizeCss: true,
     optimizePackageImports: ['lucide-react'],
   },
