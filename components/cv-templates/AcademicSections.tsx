@@ -14,8 +14,8 @@ export function AcademicSections({ data, scale = 1, primaryColor = '#2563eb' }: 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: s(12), marginTop: s(12) }}>
       {hasPubs && (
-        <section style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-          <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center' }}>
+        <section style={{ breakInside: 'auto', pageBreakInside: 'auto' }}>
+          <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center', breakAfter: 'avoid', pageBreakAfter: 'avoid' }}>
             <div style={{ width: s(4), height: s(14), backgroundColor: primaryColor, marginRight: s(8), borderRadius: s(2) }} />
             <h2 style={{ fontSize: s(11), fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
               Research Publications
@@ -33,8 +33,8 @@ export function AcademicSections({ data, scale = 1, primaryColor = '#2563eb' }: 
       )}
 
       {hasConfs && (
-        <section style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-          <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center' }}>
+        <section style={{ breakInside: 'auto', pageBreakInside: 'auto' }}>
+          <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center', breakAfter: 'avoid', pageBreakAfter: 'avoid' }}>
             <div style={{ width: s(4), height: s(14), backgroundColor: primaryColor, marginRight: s(8), borderRadius: s(2) }} />
             <h2 style={{ fontSize: s(11), fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
               Conference Presentations
@@ -51,8 +51,8 @@ export function AcademicSections({ data, scale = 1, primaryColor = '#2563eb' }: 
       )}
 
       {hasSup && (
-        <section style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-          <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center' }}>
+        <section style={{ breakInside: 'auto', pageBreakInside: 'auto' }}>
+          <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center', breakAfter: 'avoid', pageBreakAfter: 'avoid' }}>
             <div style={{ width: s(4), height: s(14), backgroundColor: primaryColor, marginRight: s(8), borderRadius: s(2) }} />
             <h2 style={{ fontSize: s(11), fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
               Research Supervision
@@ -60,15 +60,15 @@ export function AcademicSections({ data, scale = 1, primaryColor = '#2563eb' }: 
           </div>
           <ul style={{ margin: 0, paddingLeft: s(14), fontSize: s(9), color: '#334155', listStyleType: 'disc' }}>
             {data.researchSupervision!.map((sup, i) => (
-              <li key={i} style={{ marginBottom: s(2.5), lineHeight: '1.4' }}>{sup}</li>
+              <li key={i} style={{ marginBottom: s(2.5), lineHeight: '1.4', pageBreakInside: 'avoid', breakInside: 'avoid' }}>{sup}</li>
             ))}
           </ul>
         </section>
       )}
 
       {hasTrn && (
-        <section style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-          <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center' }}>
+        <section style={{ breakInside: 'auto', pageBreakInside: 'auto' }}>
+          <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center', breakAfter: 'avoid', pageBreakAfter: 'avoid' }}>
             <div style={{ width: s(4), height: s(14), backgroundColor: primaryColor, marginRight: s(8), borderRadius: s(2) }} />
             <h2 style={{ fontSize: s(11), fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
               Executive Trainings & Workshops
@@ -76,7 +76,7 @@ export function AcademicSections({ data, scale = 1, primaryColor = '#2563eb' }: 
           </div>
           <ul style={{ margin: 0, paddingLeft: s(14), fontSize: s(9), color: '#334155', listStyleType: 'disc' }}>
             {data.executiveTrainings!.map((trn, i) => (
-              <li key={i} style={{ marginBottom: s(2.5), lineHeight: '1.4' }}>{trn}</li>
+              <li key={i} style={{ marginBottom: s(2.5), lineHeight: '1.4', pageBreakInside: 'avoid', breakInside: 'avoid' }}>{trn}</li>
             ))}
           </ul>
         </section>

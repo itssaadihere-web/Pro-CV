@@ -43,6 +43,10 @@ export default function CVPreview({
   const [internalViewMode, setInternalViewMode] = useState<'visual' | 'text'>('visual')
   const [copied, setCopied] = useState(false)
 
+  // Shared Page Switcher State (Interconnected Top & Bottom Controls)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+
   const activeTab = activeTabState || internalActiveTab
   const setActiveTab = setActiveTabState || setInternalActiveTab
   const viewMode = viewModeState || internalViewMode
@@ -65,8 +69,8 @@ export default function CVPreview({
       {/* SINGLE VIEW PREVIEW CONTAINER */}
       <div className="w-full flex flex-col rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-md">
         
-        {/* Container Header Banner */}
-        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-5 py-3.5">
+        {/* Container Header Banner (Includes Interconnected Top Page Switcher Controls) */}
+        <div className="flex flex-wrap items-center justify-between border-b border-slate-200 bg-slate-50/90 px-5 py-3 gap-3">
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-primary animate-pulse" />
             <span className="text-xs font-black text-slate-800 uppercase tracking-wider">
@@ -75,13 +79,45 @@ export default function CVPreview({
                 : 'Original Parsed CV Text (Before Optimization)'}
             </span>
           </div>
-          <button
-            onClick={handleCopy}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-900"
-          >
-            {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
-            <span>Copy Active Tab</span>
-          </button>
+
+          <div className="flex items-center gap-3">
+            {/* TOP INTERCONNECTED PAGE SWITCHER */}
+            {activeTab === 'after' && viewMode === 'visual' && (
+              <div className="flex items-center gap-2 bg-white px-2.5 py-1 rounded-xl border border-slate-200 shadow-sm">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage <= 1}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 text-[11px] font-bold text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-100 transition-all cursor-pointer"
+                  title="Previous Page"
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                  <span>Prev</span>
+                </button>
+
+                <div className="text-[11px] font-black text-slate-800 px-1 font-mono">
+                  <span className="text-primary">{currentPage}</span> / <span>{totalPages}</span>
+                </div>
+
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage >= totalPages}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 text-[11px] font-bold text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-100 transition-all cursor-pointer"
+                  title="Next Page"
+                >
+                  <span>Next</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
+
+            <button
+              onClick={handleCopy}
+              className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-900 cursor-pointer"
+            >
+              {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+              <span>Copy Active Tab</span>
+            </button>
+          </div>
         </div>
 
         {/* Canvas Body */}
@@ -94,7 +130,16 @@ export default function CVPreview({
                   <span className="text-xs font-bold text-slate-600">AI is structuring multi-page layout...</span>
                 </div>
               )}
-              <VisualCV cvText={displayCVText} template={selectedTemplate} colorTheme={selectedColor} isWatermarked={isWatermarked} />
+              <VisualCV 
+                cvText={displayCVText} 
+                template={selectedTemplate} 
+                colorTheme={selectedColor} 
+                isWatermarked={isWatermarked}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                totalPages={totalPages}
+                setTotalPages={setTotalPages}
+              />
             </div>
           ) : (
             <div className="overflow-auto max-h-[780px] bg-white">
@@ -118,18 +163,24 @@ function VisualCV({
   cvText, 
   template, 
   colorTheme,
-  isWatermarked = true
+  isWatermarked = true,
+  currentPage,
+  setCurrentPage,
+  totalPages,
+  setTotalPages
 }: { 
   cvText: string; 
   template: string; 
   colorTheme: string;
   isWatermarked?: boolean;
+  currentPage: number;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  totalPages: number;
+  setTotalPages: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const cvData = parseKimiCV(cvText)
   const TemplateComponent = getTemplate(template)
   const contentRef = useRef<HTMLDivElement>(null)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
 
   const A4_HEIGHT = 1123 // Standard A4 height at 794px width
 
@@ -150,7 +201,7 @@ function VisualCV({
     const observer = new ResizeObserver(updatePages)
     observer.observe(contentRef.current)
     return () => observer.disconnect()
-  }, [cvText, template, colorTheme, currentPage])
+  }, [cvText, template, colorTheme, currentPage, setCurrentPage, setTotalPages])
 
   return (
     <div className="relative flex flex-col items-center w-full bg-slate-100/90 border-0 rounded-b-2xl overflow-hidden">
@@ -184,7 +235,7 @@ function VisualCV({
         </div>
       </div>
 
-      {/* Book-Style Discrete Page Switcher Footer */}
+      {/* Book-Style Interconnected Discrete Page Switcher Footer */}
       <div className="w-full bg-white border-t border-slate-200 px-5 py-3.5 flex flex-wrap items-center justify-between gap-3 shadow-sm z-20">
         <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
           <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
