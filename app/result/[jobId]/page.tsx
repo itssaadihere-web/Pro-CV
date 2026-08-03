@@ -508,9 +508,9 @@ export default function ResultPage() {
 
           </div>
 
-          {/* COLUMN 3 (RIGHT): CV Display Controls & Swatches (Parallel to CV Preview) */}
+          {/* COLUMN 3 (TOP RIGHT): CV Display Controls & Swatches (Parallel to Top of CV Preview) */}
           {activeTab === 'cv' && (
-            <div className="lg:col-span-3 xl:col-span-2.5 flex flex-col gap-4 sticky top-6">
+            <div className="lg:col-span-3 xl:col-span-2.5 flex flex-col gap-4 sticky top-6 self-start">
               <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-4 animate-fade-in">
                 <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block border-b border-slate-100 pb-2">
                   CV Display Controls
