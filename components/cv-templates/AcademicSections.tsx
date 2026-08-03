@@ -24,8 +24,11 @@ export function AcademicSections({ data, scale = 1, primaryColor = '#2563eb' }: 
           <div style={{ display: 'flex', flexDirection: 'column', gap: s(8) }}>
             {data.publications!.map((pub, i) => (
               <div key={i} style={{ fontSize: s(9.2), color: '#334155', lineHeight: '1.45', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-                • <strong>{pub.authors}</strong> ({pub.year}). "{pub.title}." <em>{pub.journal}</em>
-                {pub.indexing_tier && <span style={{ color: primaryColor, fontWeight: 600 }}> [{pub.indexing_tier}]</span>}
+                • {pub.authors ? <strong>{pub.authors} </strong> : null}
+                {pub.year ? `(${pub.year}). ` : ''}
+                {pub.title ? `"${pub.title}." ` : ''}
+                {pub.journal ? <em>{pub.journal} </em> : null}
+                {pub.indexing_tier ? <span style={{ color: primaryColor, fontWeight: 600 }}>[{pub.indexing_tier}]</span> : null}
               </div>
             ))}
           </div>
@@ -43,7 +46,10 @@ export function AcademicSections({ data, scale = 1, primaryColor = '#2563eb' }: 
           <div style={{ display: 'flex', flexDirection: 'column', gap: s(8) }}>
             {data.conferencePresentations!.map((conf, i) => (
               <div key={i} style={{ fontSize: s(9.2), color: '#334155', lineHeight: '1.45', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-                • <strong>{conf.authors}</strong> ({conf.year}). "{conf.title}." Presented at: <em>{conf.conference}</em>
+                • {conf.authors ? <strong>{conf.authors} </strong> : null}
+                {conf.year ? `(${conf.year}). ` : ''}
+                {conf.title ? `"${conf.title}." ` : ''}
+                {conf.conference ? <span>Presented at: <em>{conf.conference}</em></span> : null}
               </div>
             ))}
           </div>

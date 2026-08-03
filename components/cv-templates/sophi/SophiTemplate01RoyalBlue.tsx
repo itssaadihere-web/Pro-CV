@@ -185,7 +185,7 @@ export default function SophiTemplate01RoyalBlue({ data, scale = 1, colorTheme }
                 <div key={i} style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: s(2) }}>
                     <strong style={{ fontSize: s(10.5), color: '#0f172a' }}>{job.company} | {job.title}</strong>
-                    <span style={{ fontSize: s(8.5), color: primaryColor, fontWeight: 700 }}>{job.startDate} – {job.endDate}</span>
+                    {(job.startDate || job.endDate) && <span style={{ fontSize: s(8.5), color: primaryColor, fontWeight: 700 }}>{[job.startDate, job.endDate].filter(Boolean).join(' – ')}</span>}
                   </div>
                   <ul style={{ margin: 0, paddingLeft: s(14), fontSize: s(9), color: '#334155', listStyleType: 'disc' }}>
                     {job.bullets.map((bullet, idx) => (

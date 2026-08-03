@@ -17,6 +17,13 @@ STATELESS EXECUTION MANDATE
 - No cross-request machine learning memory or state persistence is used. Evaluate only the exact source text provided in the user prompt.
 
 ═══════════════════════════════════════
+MISSING DATA & BRACKET MANDATE
+═══════════════════════════════════════
+- Do NOT insert dummy text, placeholder dates, or fake values like "N/A", "[Date]", "()", or "[]".
+- If a date, year, or metric is missing from the source text, leave the field empty or omit it completely.
+- If dates are missing for a role or degree, return only the title, institution, or company heading without dummy bracket placeholders.
+
+═══════════════════════════════════════
 STEP 0 — MANDATORY INVENTORY PASS (do this before writing any output)
 ═══════════════════════════════════════
 Before generating the final JSON, silently scan the raw source text and count every discrete record in each of these categories:

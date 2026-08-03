@@ -91,7 +91,7 @@ export default function SophiATSMasterCorporate({ data, scale = 1, colorTheme }:
                 <div key={i} style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: s(2) }}>
                     <strong style={{ fontSize: s(10.5), color: primaryColor }}>{job.title}</strong>
-                    <span style={{ fontSize: s(9), color: '#475569', fontWeight: 700 }}>{job.startDate} – {job.endDate}</span>
+                    {(job.startDate || job.endDate) && <span style={{ fontSize: s(9), color: '#475569', fontWeight: 700 }}>{[job.startDate, job.endDate].filter(Boolean).join(' – ')}</span>}
                   </div>
                   <div style={{ fontSize: s(9.5), color: accentColor, fontWeight: 700, marginBottom: s(4) }}>
                     {job.company} {job.location ? `| ${job.location}` : ''}
@@ -140,7 +140,7 @@ export default function SophiATSMasterCorporate({ data, scale = 1, colorTheme }:
                     <strong style={{ color: primaryColor }}>{edu.degree}</strong> — {edu.institution}
                     {edu.distinction && <span style={{ display: 'block', color: '#64748b', fontSize: s(8), fontStyle: 'italic' }}>{edu.distinction}</span>}
                   </div>
-                  <span style={{ color: '#475569', fontWeight: 650 }}>{edu.endYear}</span>
+                  {edu.endYear && <span style={{ fontSize: '9px', color: '#64748b', fontWeight: 600 }}>{edu.endYear}</span>}
                 </div>
               ))}
             </div>
@@ -157,7 +157,7 @@ export default function SophiATSMasterCorporate({ data, scale = 1, colorTheme }:
               {data.certifications.map((cert, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: s(9.2), color: '#334155' }}>
                   <span>✔ <strong>{cert.name}</strong> — {cert.issuer}</span>
-                  <span style={{ color: '#475569', fontWeight: 650 }}>{cert.year}</span>
+                  {cert.year && <span style={{ fontSize: '9px', color: '#64748b', fontWeight: 600 }}>{cert.year}</span>}
                 </div>
               ))}
             </div>

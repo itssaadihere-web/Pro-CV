@@ -99,7 +99,7 @@ export default function SophiCreativeCoralModernist({ data, scale = 1, colorThem
                   <div key={i} style={{ borderLeft: `${s(1.5)} solid ${badgeBg}`, paddingLeft: s(12), marginLeft: s(2), pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: s(2) }}>
                       <strong style={{ fontSize: s(10.5), color: '#0f172a' }}>{job.title}</strong>
-                      <span style={{ fontSize: s(8.5), color: primaryColor, fontWeight: 650 }}>{job.startDate} – {job.endDate}</span>
+                      {(job.startDate || job.endDate) && <span style={{ fontSize: s(8.5), color: primaryColor, fontWeight: 650 }}>{[job.startDate, job.endDate].filter(Boolean).join(' – ')}</span>}
                     </div>
                     <div style={{ fontSize: s(9.2), color: '#475569', fontWeight: 600, marginBottom: s(4) }}>
                       {job.company} {job.location ? `• ${job.location}` : ''}

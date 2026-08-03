@@ -225,7 +225,7 @@ export default function SophiTemplate02YellowBlackBlock({ data, scale = 1, color
                   <div key={i} style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: s(2) }}>
                       <strong style={{ fontSize: s(10.5), color: primaryColor, textTransform: 'uppercase' }}>{job.title} | {job.company}</strong>
-                      <span style={{ fontSize: s(8.5), color: '#52525b', fontWeight: 700 }}>{job.startDate} – {job.endDate}</span>
+                      {(job.startDate || job.endDate) && <span style={{ fontSize: s(8.5), color: '#52525b', fontWeight: 700 }}>{[job.startDate, job.endDate].filter(Boolean).join(' – ')}</span>}
                     </div>
                     <ul style={{ margin: 0, paddingLeft: s(14), fontSize: s(9), color: '#334155', listStyleType: 'disc' }}>
                       {job.bullets.map((bullet, idx) => (

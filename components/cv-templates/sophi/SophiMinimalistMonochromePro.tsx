@@ -83,7 +83,7 @@ export default function SophiMinimalistMonochromePro({ data, scale = 1 }: CVTemp
                 <div key={i} style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: s(2) }}>
                     <strong style={{ fontSize: s(11), color: primaryColor, fontFamily: "'Inter', sans-serif" }}>{job.title}</strong>
-                    <span style={{ fontSize: s(9), fontFamily: "'Inter', sans-serif", color: '#52525b', fontWeight: 700 }}>{job.startDate} – {job.endDate}</span>
+                    {(job.startDate || job.endDate) && <span style={{ fontSize: s(9), fontFamily: "'Inter', sans-serif", color: '#52525b', fontWeight: 700 }}>{[job.startDate, job.endDate].filter(Boolean).join(' – ')}</span>}
                   </div>
                   <div style={{ fontSize: s(9.8), color: '#27272a', fontWeight: 600, fontStyle: 'italic', marginBottom: s(4) }}>
                     {job.company} {job.location ? `| ${job.location}` : ''}
@@ -132,7 +132,7 @@ export default function SophiMinimalistMonochromePro({ data, scale = 1 }: CVTemp
                     <strong style={{ color: primaryColor, fontFamily: "'Inter', sans-serif" }}>{edu.degree}</strong> — {edu.institution}
                     {edu.distinction && <span style={{ display: 'block', color: '#52525b', fontSize: s(8.2), fontStyle: 'italic' }}>{edu.distinction}</span>}
                   </div>
-                  <span style={{ color: '#52525b', fontWeight: 650, fontFamily: "'Inter', sans-serif" }}>{edu.endYear}</span>
+                  {edu.endYear && <span style={{ fontSize: '9px', color: '#64748b', fontWeight: 600 }}>{edu.endYear}</span>}
                 </div>
               ))}
             </div>
@@ -149,7 +149,7 @@ export default function SophiMinimalistMonochromePro({ data, scale = 1 }: CVTemp
               {data.certifications.map((cert, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: s(9.2), color: '#27272a' }}>
                   <span>✔ <strong>{cert.name}</strong> — {cert.issuer}</span>
-                  <span style={{ color: '#52525b', fontWeight: 650, fontFamily: "'Inter', sans-serif" }}>{cert.year}</span>
+                  {cert.year && <span style={{ fontSize: '9px', color: '#64748b', fontWeight: 600 }}>{cert.year}</span>}
                 </div>
               ))}
             </div>

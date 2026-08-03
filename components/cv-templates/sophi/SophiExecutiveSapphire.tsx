@@ -137,7 +137,7 @@ export default function SophiExecutiveSapphire({ data, scale = 1, colorTheme }: 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: s(2) }}>
                       <strong style={{ fontSize: s(10.5), color: '#0f172a', fontWeight: 800 }}>{job.title}</strong>
                       <span style={{ fontSize: s(8.5), color: primaryColor, fontWeight: 700, backgroundColor: badgeBg, padding: `${s(1.5)} ${s(6)}`, borderRadius: s(4) }}>
-                        {job.startDate} – {job.endDate}
+                        {[job.startDate, job.endDate].filter(Boolean).join(' – ')}
                       </span>
                     </div>
 

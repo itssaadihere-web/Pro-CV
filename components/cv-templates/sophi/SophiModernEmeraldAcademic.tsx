@@ -118,7 +118,7 @@ export default function SophiModernEmeraldAcademic({ data, scale = 1, colorTheme
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: s(2) }}>
                       <strong style={{ fontSize: s(10.5), color: primaryColor }}>{job.title}</strong>
                       <span style={{ fontSize: s(8.5), color: '#065f46', fontWeight: 700, backgroundColor: badgeBg, padding: `${s(1.5)} ${s(6)}`, borderRadius: s(4) }}>
-                        {job.startDate} – {job.endDate}
+                        {[job.startDate, job.endDate].filter(Boolean).join(' – ')}
                       </span>
                     </div>
                     <div style={{ fontSize: s(9.2), color: '#475569', fontWeight: 700, marginBottom: s(4) }}>

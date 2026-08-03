@@ -218,7 +218,7 @@ export default function SophiTemplate03GoldCharcoalGeometric({ data, scale = 1, 
                   <div key={i} style={{ pageBreakInside: 'avoid', breakInside: 'avoid', borderLeft: `${s(2)} solid ${goldAccent}`, paddingLeft: s(12), marginLeft: s(3) }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: s(2) }}>
                       <strong style={{ fontSize: s(10.5), color: primaryColor }}>{job.title}</strong>
-                      <span style={{ fontSize: s(8.5), color: goldAccent, fontWeight: 700 }}>{job.startDate} – {job.endDate}</span>
+                      {(job.startDate || job.endDate) && <span style={{ fontSize: s(8.5), color: goldAccent, fontWeight: 700 }}>{[job.startDate, job.endDate].filter(Boolean).join(' – ')}</span>}
                     </div>
                     <div style={{ fontSize: s(9.2), color: '#6b7280', fontStyle: 'italic', marginBottom: s(4) }}>
                       {job.company} {job.location ? `| ${job.location}` : ''}
