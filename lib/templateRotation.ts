@@ -2,11 +2,13 @@ import { getServiceSupabase } from '@/lib/supabase-server'
 
 export class TemplateRotationEngine {
   private readonly MODERN_TEMPLATES = [
+    'sophi-01-royal-blue-executive',
+    'sophi-02-yellow-black-block',
+    'sophi-03-gold-charcoal-geometric',
+    'sophi-04-curved-gold-wave',
+    'sophi-05-ribbon-graphic-infographic',
     'sophi-executive-sapphire',
     'sophi-ats-master-corporate',
-    'sophi-modern-emerald-academic',
-    'sophi-creative-coral-modernist',
-    'sophi-minimalist-monochrome-pro',
   ]
 
   private readonly MINIMALIST_TEMPLATES = [
