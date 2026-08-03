@@ -1,4 +1,5 @@
 import { CVTemplateProps } from '@/types/cv'
+import { AcademicSections } from '../AcademicSections'
 
 const SectionHeader = ({ label, scale, primaryColor = '#1e3a8a', icon = '✦' }: { label: string; scale: number; primaryColor?: string; icon?: string }) => {
   const s = (n: number) => `${n * scale}px`
@@ -130,7 +131,7 @@ export default function M37CreativeSapphireExecutive({ data, scale = 1, colorThe
                 Core Competencies
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: s(10) }}>
-                {Object.entries(data.technicalSkills).slice(0, 5).map(([cat, skills], i) => (
+                {Object.entries(data.technicalSkills).map(([cat, skills], i) => (
                   <div key={i}>
                     <div style={{ fontSize: s(8.5), fontWeight: 750, color: textAccent, marginBottom: s(4), textTransform: 'uppercase' }}>{cat}</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: s(4) }}>
@@ -309,6 +310,8 @@ export default function M37CreativeSapphireExecutive({ data, scale = 1, colorThe
             </section>
           )}
 
+          {/* Academic Sections (Publications, Presentations, Supervision, Workshops) */}
+          <AcademicSections data={data} scale={scale} primaryColor={primaryColor} />
         </div>
 
       </div>

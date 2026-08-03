@@ -1,5 +1,6 @@
 // Auto-generated Pro-CV Template Component
 import { CVTemplateProps } from '@/types/cv'
+import { AcademicSections } from '../AcademicSections'
 
 
     const SectionHeader = ({ label, scale }: { label: string; scale: number }) => {
@@ -178,6 +179,9 @@ export default function M01BlackModernProfessional({ data, scale = 1 }: CVTempla
         </div>
       </section>
     )}
+
+    {/* Academic Sections */}
+    <AcademicSections data={data} scale={scale} primaryColor="#000000" />
 
     {/* Certifications (if single column or not listed in sidebar) */}
     {!isTwoColumn && data.certifications.length > 0 && (
