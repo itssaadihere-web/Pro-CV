@@ -9,8 +9,9 @@ export async function generateKimiCompletion(
   const apiKey = process.env.MOONSHOT_API_KEY || process.env.KIMI_API_KEY
   const apiBase = process.env.KIMI_API_BASE || 'https://api.moonshot.ai/v1'
   const model = options?.model || process.env.KIMI_MODEL || 'kimi-k3'
-  // Configured to 'high' reasoning effort by default for maximum intelligence within a 45-second execution budget
-  const reasoningEffort = options?.reasoningEffort || 'high'
+  
+  // Enforce 'low' reasoning_effort for ultra-fast (5-8s) response times to stay within Vercel Free Tier limits
+  const reasoningEffort = options?.reasoningEffort || 'low'
 
   if (!apiKey) {
     throw new Error('MOONSHOT_API_KEY or KIMI_API_KEY is not configured in .env.local')
@@ -34,37 +35,52 @@ export async function generateKimiCompletion(
     requestBody.max_tokens = 16000
   }
 
-  const response = await fetch(`${apiBase}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify(requestBody),
-  })
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 25000) // 25-second client abort guard
 
-  if (!response.ok) {
-    const errorText = await response.text()
-    console.error(`Kimi API Error Response (${model}):`, errorText)
+  try {
+    const response = await fetch(`${apiBase}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(requestBody),
+      signal: controller.signal
+    })
 
-    // Fallback to legacy model if kimi-k3 returns model not found or authorization issue
-    if (isK3 && (response.status === 404 || errorText.includes('model_not_found'))) {
-      console.warn('⚠️ Kimi K3 not active on current endpoint key. Falling back to moonshot-v1-32k...')
-      return generateKimiCompletion(systemPrompt, userPrompt, { model: 'moonshot-v1-32k' })
+    clearTimeout(timeoutId)
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`Kimi API Error Response (${model}):`, errorText)
+
+      if (isK3 && (response.status === 404 || errorText.includes('model_not_found'))) {
+        console.warn('⚠️ Kimi K3 fallback triggered -> switching to moonshot-v1-32k...')
+        return generateKimiCompletion(systemPrompt, userPrompt, { model: 'moonshot-v1-32k' })
+      }
+
+      throw new Error(`Kimi API failed with status ${response.status}: ${errorText}`)
     }
 
-    throw new Error(`Kimi API failed with status ${response.status}: ${errorText}`)
-  }
+    const data = await response.json()
+    if (!data.choices || data.choices.length === 0) {
+      throw new Error('Kimi API returned an empty completion response')
+    }
 
-  const data = await response.json()
-  if (!data.choices || data.choices.length === 0) {
-    throw new Error('Kimi API returned an empty completion response')
-  }
+    const message = data.choices[0].message
+    if (message.reasoning_content) {
+      console.log('🧠 Kimi K3 Reasoning Trace length:', message.reasoning_content.length)
+    }
 
-  const message = data.choices[0].message
-  if (message.reasoning_content) {
-    console.log('🧠 Kimi K3 High-Tier Reasoning Trace length:', message.reasoning_content.length)
+    return message.content || ''
+  } catch (err: any) {
+    clearTimeout(timeoutId)
+    // If K3 times out or aborts, instantly fallback to high-speed moonshot-v1-32k
+    if (isK3 && (err.name === 'AbortError' || err.message?.includes('aborted'))) {
+      console.warn('⚠️ Kimi K3 25s timeout limit reached. Retrying instantly with high-speed moonshot-v1-32k fallback...')
+      return generateKimiCompletion(systemPrompt, userPrompt, { model: 'moonshot-v1-32k' })
+    }
+    throw err
   }
-
-  return message.content || ''
 }
