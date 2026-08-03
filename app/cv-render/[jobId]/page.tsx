@@ -58,7 +58,19 @@ export default async function CVRenderPage({
             size: A4 portrait;
             margin: 0;
           }
+          footer, .footer, footer * {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            max-height: 0 !important;
+            overflow: hidden !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
           @media print {
+            footer, .footer, footer * {
+              display: none !important;
+            }
             section, div[style*="borderLeft"], .section-block {
               page-break-inside: avoid;
               break-inside: avoid;

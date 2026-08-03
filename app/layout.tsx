@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
-import Footer from "@/components/Footer";
+import ConditionalFooter from "@/components/ConditionalFooter";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import Script from 'next/script';
 import { organizationSchema } from '@/lib/schema';
@@ -109,7 +109,7 @@ export default function RootLayout({
         />
         <Toaster position="top-center" reverseOrder={false} />
         {children}
-        <Footer />
+        <ConditionalFooter />
         <GoogleAnalytics gaId="G-8YEPSJ9MP3" />
         <Analytics />
         <SpeedInsights />
