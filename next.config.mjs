@@ -56,6 +56,11 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: '/upload',
+        destination: '/transform-cv',
+        permanent: true,
+      },
+      {
         source: '/:path*',
         has: [{ type: 'host', value: 'www.joinsophi.com' }],
         destination: 'https://joinsophi.com/:path*',

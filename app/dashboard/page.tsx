@@ -325,7 +325,7 @@ export default function DashboardPage() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => handleServiceLaunch(30, '/upload', 'Transform Current CV')}
+                    onClick={() => handleServiceLaunch(30, '/transform-cv', 'Transform Current CV')}
                     className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 px-3.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-2xs border border-slate-800 cursor-pointer"
                   >
                     <FileText className="h-3.5 w-3.5 text-gold" />

@@ -315,7 +315,7 @@ function TailorCvContent() {
               <span>Create CV from Scratch (30 Cr)</span>
             </Link>
             <Link
-              href="/upload"
+              href="/transform-cv"
               className="w-full sm:w-auto px-6 py-3 bg-slate-900 text-white font-bold rounded-xl text-xs hover:bg-slate-800 transition-colors shadow-sm flex items-center justify-center gap-2"
             >
               <Upload className="h-4 w-4 text-amber-400" />

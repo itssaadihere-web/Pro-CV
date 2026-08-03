@@ -149,7 +149,7 @@ export default function Header() {
                   type="button"
                   onClick={() => {
                     if (credits !== null && credits >= 30) {
-                      router.push('/upload')
+                      router.push('/transform-cv')
                     } else {
                       toast.error(`Insufficient Credits! Transform CV requires 30 Credits, but you currently have ${credits ?? 0} Credits. Redirecting to payment...`)
                       router.push('/payment')

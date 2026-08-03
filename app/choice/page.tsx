@@ -80,7 +80,7 @@ export default function ChoicePage() {
         <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
           {/* Revamp / Transform Option */}
           <button
-            onClick={() => router.push('/upload')}
+            onClick={() => router.push('/transform-cv')}
             className="relative flex flex-col items-center justify-center p-8 text-center rounded-2xl border-2 border-slate-200 bg-white transition-all hover:border-primary hover:shadow-xl hover:shadow-primary-100 group"
           >
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 text-slate-400 group-hover:bg-primary-50 group-hover:text-primary transition-colors mb-6">

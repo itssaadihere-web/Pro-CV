@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       TAILOR_CV: '/tailor-cv',
       LINKEDIN_OPTIMIZER: '/linkedin-optimizer',
       CREATE_CV: '/choice',
-      TRANSFORM_CV: '/upload',
+      TRANSFORM_CV: '/transform-cv',
     }
     const targetUrl = urlMap[serviceType] || '/dashboard'
 

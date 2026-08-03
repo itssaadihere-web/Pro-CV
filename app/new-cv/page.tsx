@@ -712,7 +712,7 @@ export default function ChatPage() {
       sessionStorage.setItem('scratch_job_title', form.jobTitle)
 
       toast.success('Details saved! Now configure your target job preferences.')
-      router.push('/upload?source=scratch')
+      router.push('/transform-cv?source=scratch')
 
     } catch (err: any) {
       console.error(err)

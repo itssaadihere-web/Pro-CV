@@ -9,7 +9,7 @@ export async function middleware(req: NextRequest) {
   // Refresh session if expired - required for Server Components & Route Handlers
   const { data: { user } } = await supabase.auth.getUser()
 
-  const protectedRoutes = ['/upload', '/dashboard', '/result']
+  const protectedRoutes = ['/transform-cv', '/new-cv', '/upload', '/dashboard', '/result']
   const isProtected = protectedRoutes.some((route) =>
     req.nextUrl.pathname.startsWith(route)
   )
@@ -25,8 +25,8 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
-  // Pre-check user credits before allowing upload route access (30 Credits required)
-  if (user && req.nextUrl.pathname.startsWith('/upload')) {
+  // Pre-check user credits before allowing transform-cv route access (30 Credits required)
+  if (user && (req.nextUrl.pathname.startsWith('/transform-cv') || req.nextUrl.pathname.startsWith('/upload'))) {
     const { data: profile } = await supabase
       .from('profiles')
       .select('has_paid, cv_credits, email')

@@ -181,7 +181,7 @@ function ATSCheckerContent() {
 
     if (credits >= 30) {
       toast.success(`30 Credits available! Navigating to CV Transformation...`);
-      router.push('/upload');
+      router.push('/transform-cv');
     } else {
       toast.error(`Insufficient credits for full CV transformation (Requires 30 Credits, Available: ${credits} Credits). Redirecting to refill...`);
       router.push('/payment');
