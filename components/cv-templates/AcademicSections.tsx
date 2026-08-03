@@ -14,7 +14,7 @@ export function AcademicSections({ data, scale = 1, primaryColor = '#2563eb' }: 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: s(12), marginTop: s(12) }}>
       {hasPubs && (
-        <section>
+        <section style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
           <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center' }}>
             <div style={{ width: s(4), height: s(14), backgroundColor: primaryColor, marginRight: s(8), borderRadius: s(2) }} />
             <h2 style={{ fontSize: s(11), fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -23,7 +23,7 @@ export function AcademicSections({ data, scale = 1, primaryColor = '#2563eb' }: 
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: s(8) }}>
             {data.publications!.map((pub, i) => (
-              <div key={i} style={{ fontSize: s(9.2), color: '#334155', lineHeight: '1.45' }}>
+              <div key={i} style={{ fontSize: s(9.2), color: '#334155', lineHeight: '1.45', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                 • <strong>{pub.authors}</strong> ({pub.year}). "{pub.title}." <em>{pub.journal}</em>
                 {pub.indexing_tier && <span style={{ color: primaryColor, fontWeight: 600 }}> [{pub.indexing_tier}]</span>}
               </div>
@@ -33,7 +33,7 @@ export function AcademicSections({ data, scale = 1, primaryColor = '#2563eb' }: 
       )}
 
       {hasConfs && (
-        <section>
+        <section style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
           <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center' }}>
             <div style={{ width: s(4), height: s(14), backgroundColor: primaryColor, marginRight: s(8), borderRadius: s(2) }} />
             <h2 style={{ fontSize: s(11), fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -42,7 +42,7 @@ export function AcademicSections({ data, scale = 1, primaryColor = '#2563eb' }: 
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: s(8) }}>
             {data.conferencePresentations!.map((conf, i) => (
-              <div key={i} style={{ fontSize: s(9.2), color: '#334155', lineHeight: '1.45' }}>
+              <div key={i} style={{ fontSize: s(9.2), color: '#334155', lineHeight: '1.45', pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                 • <strong>{conf.authors}</strong> ({conf.year}). "{conf.title}." Presented at: <em>{conf.conference}</em>
               </div>
             ))}
@@ -51,7 +51,7 @@ export function AcademicSections({ data, scale = 1, primaryColor = '#2563eb' }: 
       )}
 
       {hasSup && (
-        <section>
+        <section style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
           <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center' }}>
             <div style={{ width: s(4), height: s(14), backgroundColor: primaryColor, marginRight: s(8), borderRadius: s(2) }} />
             <h2 style={{ fontSize: s(11), fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -67,7 +67,7 @@ export function AcademicSections({ data, scale = 1, primaryColor = '#2563eb' }: 
       )}
 
       {hasTrn && (
-        <section>
+        <section style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
           <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center' }}>
             <div style={{ width: s(4), height: s(14), backgroundColor: primaryColor, marginRight: s(8), borderRadius: s(2) }} />
             <h2 style={{ fontSize: s(11), fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>

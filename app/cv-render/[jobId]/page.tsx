@@ -47,7 +47,27 @@ export default async function CVRenderPage({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Georgia:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
         <style>{`
           * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; position: relative; }
+          html, body {
+            background: white;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            width: 100%;
+            height: auto !important;
+          }
+          @page {
+            size: A4 portrait;
+            margin: 0;
+          }
+          @media print {
+            section, div[style*="borderLeft"], .section-block {
+              page-break-inside: avoid;
+              break-inside: avoid;
+            }
+            h1, h2, h3 {
+              page-break-after: avoid;
+              break-after: avoid;
+            }
+          }
           .watermark-overlay {
             position: fixed;
             top: 0;
