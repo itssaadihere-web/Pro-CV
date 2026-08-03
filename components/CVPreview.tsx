@@ -213,8 +213,14 @@ function VisualCV({
       
       {/* Viewport Box (Strictly 1 Single A4 Page Window - No Vertical Scrollbar) */}
       <div className="relative w-full p-4 sm:p-6 flex justify-center items-center overflow-hidden">
-        {/* Single Page Frame Container (794px x 1123px) */}
-        <div className="relative w-full max-w-[794px] h-[1123px] bg-white shadow-2xl rounded-sm border border-slate-200/80 overflow-hidden transition-all">
+        {/* Single Page Frame Container (794px x 1123px) with Whole-Page Margins */}
+        <div 
+          className="relative w-full max-w-[794px] h-[1123px] bg-white shadow-2xl rounded-sm border border-slate-200/80 overflow-hidden transition-all"
+          style={{
+            paddingTop: currentPage > 1 ? '113px' : '0px',
+            paddingBottom: '76px'
+          }}
+        >
           
           {/* SOPHI 5% Centered Tilted Watermark Overlay (Visual Preview Only) */}
           {isWatermarked && (
@@ -237,13 +243,10 @@ function VisualCV({
           >
             <style>{`
               .cv-preview-canvas section, .cv-preview-canvas article, .cv-preview-canvas .section-block, .cv-preview-canvas .cv-job-block, .cv-preview-canvas .cv-item-block {
-                margin-top: 113px;
-                margin-bottom: 76px !important;
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
                 break-inside: auto;
                 page-break-inside: auto;
-              }
-              .cv-preview-canvas section:first-of-type, .cv-preview-canvas article:first-of-type, .cv-preview-canvas .section-block:first-of-type, .cv-preview-canvas .cv-job-block:first-of-type {
-                margin-top: 0px !important;
               }
               .cv-preview-canvas h1, .cv-preview-canvas h2, .cv-preview-canvas h3, .cv-preview-canvas h4, .cv-preview-canvas .section-title, .cv-preview-canvas .job-title-header {
                 break-after: avoid !important;

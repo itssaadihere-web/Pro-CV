@@ -54,9 +54,19 @@ export default async function CVRenderPage({
             width: 100%;
             height: auto !important;
           }
+          /* Page as a whole layout margin (Top 30mm starting page 2, Bottom 20mm starting page 1) */
           @page {
             size: A4 portrait;
-            margin: 0;
+            margin-top: 30mm;
+            margin-bottom: 20mm;
+            margin-left: 0mm;
+            margin-right: 0mm;
+          }
+          @page :first {
+            margin-top: 0mm;
+            margin-bottom: 20mm;
+            margin-left: 0mm;
+            margin-right: 0mm;
           }
           footer, .footer, footer * {
             display: none !important;
@@ -71,15 +81,10 @@ export default async function CVRenderPage({
             footer, .footer, footer * {
               display: none !important;
             }
-            /* 30mm Text Top Margin (Page 2 Onwards) & 20mm Bottom Margin (Page 1 Onwards) */
+            /* Clean element flow — zero repeated element-level margins */
             section, article, .section-block, .cv-job-block, .cv-item-block {
               break-inside: auto;
               page-break-inside: auto;
-              margin-top: 30mm;
-              margin-bottom: 20mm !important;
-            }
-            section:first-of-type, article:first-of-type, .section-block:first-of-type, .cv-job-block:first-of-type {
-              margin-top: 0mm !important;
             }
             h1, h2, h3, h4, .section-title, .job-title-header {
               break-after: avoid !important;
