@@ -46,11 +46,11 @@ export async function generateAndUploadPdf(jobId: string, templateId: string, co
   
   await page.goto(renderUrl, { waitUntil: 'domcontentloaded', timeout: 20000 })
 
-  // Export A4 PDF with clean page break margins
+  // Export A4 PDF
   const pdfBuffer = await page.pdf({
     format: 'A4',
     printBackground: true,
-    margin: { top: '10mm', right: '0mm', bottom: '12mm', left: '0mm' }
+    margin: { top: '0', right: '0', bottom: '0', left: '0' }
   })
 
   await browser.close()
