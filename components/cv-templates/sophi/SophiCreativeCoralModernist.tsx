@@ -1,34 +1,22 @@
-// Auto-generated Pro-CV Template Component
+import React from 'react'
 import { CVTemplateProps } from '@/types/cv'
 import { AcademicSections } from '../AcademicSections'
 
-const SectionHeader = ({ label, scale, primaryColor = '#f43f5e' }: { label: string; scale: number; primaryColor?: string }) => {
-  const s = (n: number) => `${n * scale}px`;
-
-  return (
-    <div style={{ marginBottom: s(12), marginTop: s(16), display: 'flex', alignItems: 'center' }}>
-      <div style={{ width: s(4), height: s(14), backgroundColor: primaryColor, marginRight: s(8), borderRadius: s(2) }} />
-      <h2 style={{ fontSize: s(11), fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</h2>
-    </div>
-  );
-};
-
-export default function M36CreativeCoralModernist({ data, scale = 1, colorTheme }: CVTemplateProps) {
+export default function SophiCreativeCoralModernist({ data, scale = 1, colorTheme }: CVTemplateProps) {
   const s = (n: number) => `${n * scale}px`
 
-  // Default is Coral
-  let primaryColor = '#f43f5e';
-  let accentColor = '#e11d48';
-  let badgeBg = '#ffe4e6';
+  let primaryColor = '#f43f5e'
+  let accentColor = '#e11d48'
+  let badgeBg = '#ffe4e6'
 
   if (colorTheme === 'blue') {
-    primaryColor = '#3b82f6';
-    accentColor = '#2563eb';
-    badgeBg = '#eff6ff';
+    primaryColor = '#3b82f6'
+    accentColor = '#2563eb'
+    badgeBg = '#eff6ff'
   } else if (colorTheme === 'purple') {
-    primaryColor = '#7c3aed';
-    accentColor = '#6d28d9';
-    badgeBg = '#faf5ff';
+    primaryColor = '#7c3aed'
+    accentColor = '#6d28d9'
+    badgeBg = '#faf5ff'
   }
 
   return (
@@ -61,7 +49,7 @@ export default function M36CreativeCoralModernist({ data, scale = 1, colorTheme 
           </div>
         </div>
 
-        {/* badge initials */}
+        {/* Initials Badge */}
         <div style={{
           width: s(60),
           height: s(60),
@@ -80,16 +68,19 @@ export default function M36CreativeCoralModernist({ data, scale = 1, colorTheme 
         </div>
       </div>
 
-      {/* BODY IN TWO-COLUMNS (Left: main, Right: sidebar info) */}
-      <div style={{ display: 'flex', gap: s(24), minHeight: s(940) }}>
+      {/* BODY IN TWO-COLUMNS */}
+      <div style={{ display: 'flex', gap: s(24) }}>
         
         {/* LEFT COLUMN: Main content */}
         <div style={{ flex: 1.7, display: 'flex', flexDirection: 'column', gap: s(14) }}>
           
           {/* Summary */}
           {data.summary && (
-            <section>
-              <SectionHeader label="Professional Profile" scale={scale} primaryColor={primaryColor} />
+            <section style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
+              <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center' }}>
+                <div style={{ width: s(4), height: s(14), backgroundColor: primaryColor, marginRight: s(8), borderRadius: s(2) }} />
+                <h2 style={{ fontSize: s(11), fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Professional Profile</h2>
+              </div>
               <p style={{ margin: 0, fontSize: s(9.8), color: '#334155', lineHeight: '1.6', textAlign: 'justify' }}>
                 {data.summary}
               </p>
@@ -99,10 +90,13 @@ export default function M36CreativeCoralModernist({ data, scale = 1, colorTheme 
           {/* Experience */}
           {data.experience && data.experience.length > 0 && (
             <section>
-              <SectionHeader label="Employment History" scale={scale} primaryColor={primaryColor} />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: s(12), marginTop: s(8) }}>
+              <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center' }}>
+                <div style={{ width: s(4), height: s(14), backgroundColor: primaryColor, marginRight: s(8), borderRadius: s(2) }} />
+                <h2 style={{ fontSize: s(11), fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Employment History</h2>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: s(12), marginTop: s(4) }}>
                 {data.experience.map((job, i) => (
-                  <div key={i} style={{ borderLeft: `${s(1.5)} solid ${badgeBg}`, paddingLeft: s(12), marginLeft: s(2) }}>
+                  <div key={i} style={{ borderLeft: `${s(1.5)} solid ${badgeBg}`, paddingLeft: s(12), marginLeft: s(2), pageBreakInside: 'avoid', breakInside: 'avoid' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: s(2) }}>
                       <strong style={{ fontSize: s(10.5), color: '#0f172a' }}>{job.title}</strong>
                       <span style={{ fontSize: s(8.5), color: primaryColor, fontWeight: 650 }}>{job.startDate} – {job.endDate}</span>
@@ -123,9 +117,12 @@ export default function M36CreativeCoralModernist({ data, scale = 1, colorTheme 
 
           {/* Key Achievements */}
           {data.keyAchievements && data.keyAchievements.length > 0 && (
-            <section>
-              <SectionHeader label="Key Projects & Accomplishments" scale={scale} primaryColor={primaryColor} />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: s(6), marginTop: s(8) }}>
+            <section style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
+              <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center' }}>
+                <div style={{ width: s(4), height: s(14), backgroundColor: primaryColor, marginRight: s(8), borderRadius: s(2) }} />
+                <h2 style={{ fontSize: s(11), fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Key Projects & Accomplishments</h2>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: s(6), marginTop: s(4) }}>
                 {data.keyAchievements.map((ach, i) => (
                   <div key={i} style={{ display: 'flex', gap: s(6), fontSize: s(9), color: '#334155', lineHeight: '1.4' }}>
                     <span style={{ color: primaryColor, fontWeight: 'bold' }}>✓</span>
@@ -136,11 +133,11 @@ export default function M36CreativeCoralModernist({ data, scale = 1, colorTheme 
             </section>
           )}
 
-          {/* Academic Sections (Publications, Presentations, Supervision, Workshops) */}
+          {/* Academic Sections */}
           <AcademicSections data={data} scale={scale} primaryColor={primaryColor} />
         </div>
 
-        {/* RIGHT COLUMN: Sidebar info (Contact, Skills, Education, Languages) */}
+        {/* RIGHT COLUMN: Sidebar info */}
         <div style={{
           width: s(210),
           backgroundColor: '#f8fafc',
@@ -154,8 +151,11 @@ export default function M36CreativeCoralModernist({ data, scale = 1, colorTheme 
           
           {/* Contact Details */}
           <div>
-            <SectionHeader label="Contact Info" scale={scale} primaryColor={primaryColor} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: s(6), fontSize: s(8.8), color: '#475569', marginTop: s(6) }}>
+            <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center' }}>
+              <div style={{ width: s(4), height: s(14), backgroundColor: primaryColor, marginRight: s(8), borderRadius: s(2) }} />
+              <h2 style={{ fontSize: s(11), fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Contact Info</h2>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: s(6), fontSize: s(8.8), color: '#475569', marginTop: s(4) }}>
               {data.email && <div style={{ wordBreak: 'break-all' }}>✉ {data.email}</div>}
               {data.phone && <div>☎ {data.phone}</div>}
               {data.location && <div>📍 {data.location}</div>}
@@ -167,8 +167,11 @@ export default function M36CreativeCoralModernist({ data, scale = 1, colorTheme 
           {/* Skills */}
           {Object.keys(data.technicalSkills).length > 0 && (
             <div>
-              <SectionHeader label="Key Skills" scale={scale} primaryColor={primaryColor} />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: s(8), marginTop: s(6) }}>
+              <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center' }}>
+                <div style={{ width: s(4), height: s(14), backgroundColor: primaryColor, marginRight: s(8), borderRadius: s(2) }} />
+                <h2 style={{ fontSize: s(11), fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Key Skills</h2>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: s(8), marginTop: s(4) }}>
                 {Object.entries(data.technicalSkills).map(([cat, skills], i) => (
                   <div key={i}>
                     <div style={{ fontSize: s(8.5), fontWeight: 750, color: '#0f172a', marginBottom: s(2), textTransform: 'uppercase' }}>{cat}</div>
@@ -196,13 +199,16 @@ export default function M36CreativeCoralModernist({ data, scale = 1, colorTheme 
           {/* Education */}
           {data.education && data.education.length > 0 && (
             <div>
-              <SectionHeader label="Education" scale={scale} primaryColor={primaryColor} />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: s(8), marginTop: s(6) }}>
+              <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center' }}>
+                <div style={{ width: s(4), height: s(14), backgroundColor: primaryColor, marginRight: s(8), borderRadius: s(2) }} />
+                <h2 style={{ fontSize: s(11), fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Education</h2>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: s(8), marginTop: s(4) }}>
                 {data.education.map((edu, i) => (
                   <div key={i} style={{ fontSize: s(8.8) }}>
                     <strong style={{ color: '#0f172a' }}>{edu.degree}</strong>
                     <div style={{ color: '#475569' }}>{edu.institution}</div>
-                    <div style={{ color: '#64748b', fontSize: s(7.8) }}>{edu.startYear} - {edu.endYear} {edu.distinction ? `| ${edu.distinction}` : ''}</div>
+                    <div style={{ color: '#64748b', fontSize: s(7.8) }}>{edu.endYear} {edu.distinction ? `| ${edu.distinction}` : ''}</div>
                   </div>
                 ))}
               </div>
@@ -212,8 +218,11 @@ export default function M36CreativeCoralModernist({ data, scale = 1, colorTheme 
           {/* Certifications */}
           {data.certifications && data.certifications.length > 0 && (
             <div>
-              <SectionHeader label="Credentials" scale={scale} primaryColor={primaryColor} />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: s(4), marginTop: s(6) }}>
+              <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center' }}>
+                <div style={{ width: s(4), height: s(14), backgroundColor: primaryColor, marginRight: s(8), borderRadius: s(2) }} />
+                <h2 style={{ fontSize: s(11), fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Credentials</h2>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: s(4), marginTop: s(4) }}>
                 {data.certifications.map((cert, i) => (
                   <div key={i} style={{
                     fontSize: s(8.2),
@@ -232,8 +241,11 @@ export default function M36CreativeCoralModernist({ data, scale = 1, colorTheme 
           {/* Languages */}
           {data.languages && data.languages.length > 0 && (
             <div>
-              <SectionHeader label="Languages" scale={scale} primaryColor={primaryColor} />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: s(3), fontSize: s(8.8), marginTop: s(6) }}>
+              <div style={{ marginBottom: s(6), display: 'flex', alignItems: 'center' }}>
+                <div style={{ width: s(4), height: s(14), backgroundColor: primaryColor, marginRight: s(8), borderRadius: s(2) }} />
+                <h2 style={{ fontSize: s(11), fontWeight: 800, color: '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Languages</h2>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: s(3), fontSize: s(8.8), marginTop: s(4) }}>
                 {data.languages.map((lang, i) => (
                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', color: '#475569' }}>
                     <strong>{lang.language}</strong>
@@ -256,7 +268,7 @@ export default function M36CreativeCoralModernist({ data, scale = 1, colorTheme 
         color: '#94a3b8',
         textAlign: 'center'
       }}>
-        References available upon request — Generated via Pro-CV
+        Executive Profile — Generated via SOPHI AI Pro-CV
       </div>
     </div>
   )
