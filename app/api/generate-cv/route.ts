@@ -224,6 +224,11 @@ export async function POST(req: NextRequest) {
 
     const userPrompt = `I am uploading my current CV for a complete AI-powered transformation.
 
+CRITICAL DOCUMENT LENGTH MANDATE:
+- There is NO 1-page or single-page restriction under any circumstances.
+- If the source CV contains multiple pages, long career histories, extensive research publications, conference presentations, thesis supervisions, or workshops, you MUST preserve EVERY SINGLE RECORD.
+- Do NOT condense, truncate, or summarize past roles or academic entries.
+
 CURRENT CV CONTENT:
 ${cvText}
 
@@ -255,6 +260,7 @@ Please run the full transformation and output all sections as specified in your 
         status: 'completed',
         ats_score: sections.atsScoreJson,
         generated_cv: cvContentToSave,
+        original_cv: cvText,
         linkedin_optimizer: sections.linkedinJson,
         cover_letter: sections.coverLetter,
         gap_analysis: sections.gapAnalysisJson,

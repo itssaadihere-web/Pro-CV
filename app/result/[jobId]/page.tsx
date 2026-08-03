@@ -124,11 +124,13 @@ export default function ResultPage() {
           setSelectedTemplate(job.template_used)
         }
 
-        // Attempt to parse/fetch original CV text from file storage if available, 
-        // otherwise we fallback to a placeholder message.
-        setOriginalText(
-          'Original CV Content parsed successfully. Read details in the "Before" preview card.'
-        )
+        if (job?.original_cv) {
+          setOriginalText(job.original_cv)
+        } else if (job?.raw_text) {
+          setOriginalText(job.raw_text)
+        } else {
+          setOriginalText(job?.generated_cv || 'Original CV content parsed successfully.')
+        }
       } catch (err: any) {
         toast.error(err.message || 'Error loading job details.')
         router.push('/dashboard')
