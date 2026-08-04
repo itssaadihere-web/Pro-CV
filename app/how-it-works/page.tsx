@@ -15,11 +15,11 @@ const steps = [
     icon: Zap,
     title: 'Get Your Credits',
     subtitle: 'Unlock full access instantly',
-    description: 'Purchase a credit package to unlock the full power of Sophi AI. Credits are reusable across all tools — CV transformation, ATS checker, LinkedIn optimizer, and more.',
-    color: 'from-violet-500 to-purple-600',
-    bg: 'bg-violet-50',
-    border: 'border-violet-200',
-    iconColor: 'text-violet-600',
+    description: 'Purchase a credit package to unlock the full power of SOPHI AI. Credits are reusable across all tools — CV transformation, ATS checker, LinkedIn optimizer, and more.',
+    color: 'from-primary-900 to-primary-950',
+    bg: 'bg-slate-900/90 text-white',
+    border: 'border-primary-800',
+    iconColor: 'text-amber-400',
     checks: ['Instant account activation', 'Credits valid across all tools', 'No subscription required'],
   },
   {
@@ -27,11 +27,11 @@ const steps = [
     icon: Upload,
     title: 'Upload Your CV',
     subtitle: 'PDF or DOCX — any format works',
-    description: 'Upload your existing CV in PDF or DOCX format. Tell Sophi your target industry, paste an optional job description, and choose your preferred output language.',
-    color: 'from-blue-500 to-cyan-500',
-    bg: 'bg-blue-50',
-    border: 'border-blue-200',
-    iconColor: 'text-blue-600',
+    description: 'Upload your existing CV in PDF or DOCX format. Tell SOPHI your target industry, paste an optional job description, and choose your preferred output language.',
+    color: 'from-gold to-amber-600',
+    bg: 'bg-white',
+    border: 'border-slate-200',
+    iconColor: 'text-primary',
     checks: ['PDF & DOCX supported', 'Multi-language output', 'Target industry selection'],
   },
   {
@@ -39,11 +39,11 @@ const steps = [
     icon: Sparkles,
     title: 'AI Transforms Your CV',
     subtitle: 'Advanced LLM rewriting in under 60 seconds',
-    description: 'Sophi\'s AI engine analyzes your CV, identifies gaps, injects ATS-optimized keywords, rewrites achievement bullets using the STAR method, and structures your document for maximum recruiter impact.',
-    color: 'from-amber-500 to-orange-500',
-    bg: 'bg-amber-50',
-    border: 'border-amber-200',
-    iconColor: 'text-amber-600',
+    description: 'SOPHI\'s AI engine analyzes your CV, identifies gaps, injects ATS-optimized keywords, rewrites achievement bullets using the STAR method, and structures your document for maximum recruiter impact.',
+    color: 'from-primary-900 to-primary-950',
+    bg: 'bg-slate-900/90 text-white',
+    border: 'border-primary-800',
+    iconColor: 'text-amber-400',
     checks: ['ATS keyword optimization', 'STAR-method bullet rewriting', 'Semantic relevance scoring'],
   },
   {
@@ -52,10 +52,10 @@ const steps = [
     title: 'Download & Get Hired',
     subtitle: 'Beautiful PDF + full career toolkit',
     description: 'Receive your professionally redesigned CV in a premium template, along with a tailored cover letter, LinkedIn optimizer suggestions, ATS score report, and gap analysis — all delivered in seconds.',
-    color: 'from-emerald-500 to-teal-500',
-    bg: 'bg-emerald-50',
-    border: 'border-emerald-200',
-    iconColor: 'text-emerald-600',
+    color: 'from-gold to-amber-600',
+    bg: 'bg-white',
+    border: 'border-slate-200',
+    iconColor: 'text-primary',
     checks: ['50+ premium templates', 'Cover letter included', 'Emailed to your inbox'],
   },
 ]
@@ -97,7 +97,7 @@ export default function HowItWorksPage() {
               initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
               className="text-slate-300 text-lg font-medium max-w-xl mx-auto"
             >
-              See exactly how Sophi transforms your old CV into an ATS-optimized career document using advanced AI.
+              See exactly how SOPHI transforms your old CV into an ATS-optimized career document using advanced AI.
             </motion.p>
           </div>
         </section>
@@ -179,7 +179,7 @@ export default function HowItWorksPage() {
         <section className="py-16 px-4 text-center">
           <motion.div variants={fadeUp} initial="initial" whileInView="animate" viewport={{ once: true }}>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mb-4">Ready to get started?</h2>
-            <p className="text-slate-500 text-sm mb-7 max-w-sm mx-auto">Join thousands of professionals who've already landed their next role with Sophi.</p>
+            <p className="text-slate-500 text-sm mb-7 max-w-sm mx-auto">Join thousands of professionals who've already landed their next role with SOPHI.</p>
             <Link
               href="/login"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-bold text-white bg-primary rounded-xl hover:bg-primary-800 transition-all shadow-lg hover:shadow-primary-200"

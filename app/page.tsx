@@ -15,11 +15,11 @@ import Logo from '@/components/Logo'
 import Script from 'next/script'
 import { websiteSchema, softwareSchema, faqSchema } from '@/lib/schema'
 
-/* ─── Brand helper — highlights "Sophi" in brand colour ─── */
-function S({ children }: { children: React.ReactNode }) {
+/* ─── Brand helper — renders "SOPHI" in uppercase brand style ─── */
+function S({ children }: { children?: React.ReactNode }) {
   return (
     <span className="font-black text-primary tracking-wide">
-      {children}
+      SOPHI
     </span>
   )
 }
@@ -30,8 +30,8 @@ const CORE_HIGHLIGHTS = [
     badge: 'ATS Audit Engine',
     title: 'ATS Score & Compliance Check',
     description: 'Evaluate your CV compliance across 5 dimensions: keyword density, formatting safety, semantic relevance, experience metrics, and section structure.',
-    badgeBg: 'bg-blue-50 text-blue-700 border-blue-200',
-    iconBg: 'bg-blue-600 text-white',
+    badgeBg: 'bg-primary-50 text-primary-900 border-primary-200',
+    iconBg: 'bg-primary text-white',
     href: '/ats-checker',
   },
   {
@@ -39,8 +39,8 @@ const CORE_HIGHLIGHTS = [
     badge: 'Gap Intelligence',
     title: 'Career & Skill Gap Analysis',
     description: 'Instantly uncover missing keywords, work experience gaps, and critical qualifications required to outrank rival candidates in recruiter filters.',
-    badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
-    iconBg: 'bg-amber-600 text-white',
+    badgeBg: 'bg-amber-50 text-amber-900 border-amber-200',
+    iconBg: 'bg-gold text-slate-950',
     href: '/transform-cv',
   },
   {
@@ -48,8 +48,8 @@ const CORE_HIGHLIGHTS = [
     badge: 'Targeted Matching',
     title: 'Job-Specific CV Tailoring',
     description: 'Paste any job description to automatically adjust your bullet points, skills, and summary to align with specific role requirements.',
-    badgeBg: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-    iconBg: 'bg-indigo-600 text-white',
+    badgeBg: 'bg-primary-50 text-primary-900 border-primary-200',
+    iconBg: 'bg-primary-800 text-white',
     href: '/tailor-cv',
   },
   {
@@ -57,8 +57,8 @@ const CORE_HIGHLIGHTS = [
     badge: 'Wizard Assistant',
     title: 'Build CV from Scratch',
     description: 'No existing resume? Easily generate a fresh, professional, ATS-approved CV from scratch using our step-by-step guided builder.',
-    badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    iconBg: 'bg-emerald-600 text-white',
+    badgeBg: 'bg-amber-50 text-amber-900 border-amber-200',
+    iconBg: 'bg-gold text-slate-950',
     href: '/new-cv',
   },
   {
@@ -66,8 +66,8 @@ const CORE_HIGHLIGHTS = [
     badge: '30-Sec AI Revamp',
     title: 'Transform CV in 30 Seconds',
     description: 'Upload your current PDF or Word document and let advanced AI restructure and optimize it into an interview-winning CV in 30 seconds.',
-    badgeBg: 'bg-purple-50 text-purple-700 border-purple-200',
-    iconBg: 'bg-purple-600 text-white',
+    badgeBg: 'bg-primary-50 text-primary-900 border-primary-200',
+    iconBg: 'bg-primary-950 text-white',
     href: '/transform-cv',
   },
 ]
@@ -77,101 +77,101 @@ const ADDITIONAL_FEATURES = [
     icon: Zap,
     title: 'STAR-Metric Bullets',
     description: 'Converts descriptors into quantifiable accomplishments: Action (Power Verb) + Context + Metric Result.',
-    color: 'bg-violet-100 text-violet-700',
+    color: 'bg-primary-100 text-primary-900',
   },
   {
     icon: Award,
     title: '2026 Executive Summary',
     description: 'A 3-line structural hook summarizing total years of experience, top value statements, and key proof figures.',
-    color: 'bg-amber-100 text-amber-700',
+    color: 'bg-amber-100 text-amber-900',
   },
   {
     icon: ShieldCheck,
     title: 'LinkedIn Profile Optimizer',
     description: 'Build custom headers, hook summaries, and keywords so recruiters discover your profile easily.',
-    color: 'bg-blue-100 text-blue-700',
+    color: 'bg-primary-100 text-primary-900',
   },
   {
     icon: FileText,
     title: 'AI Cover Letter Generator',
     description: 'Fully personalized, achievement-driven introductory letters customized against target job descriptions.',
-    color: 'bg-emerald-100 text-emerald-700',
+    color: 'bg-amber-100 text-amber-900',
   },
   {
     icon: Download,
     title: '49 PDF Templates Export',
     description: 'One-click downloads supporting ATS-Safe formatting, Modern spacing, and clean Minimalist layouts.',
-    color: 'bg-rose-100 text-rose-700',
+    color: 'bg-primary-100 text-primary-900',
   },
   {
     icon: Languages,
     title: 'Multi-Language Support',
     description: 'Optimize CVs in English (EN), Arabic (AR with RTL format), French (FR), or Spanish (ES).',
-    color: 'bg-teal-100 text-teal-700',
+    color: 'bg-amber-100 text-amber-900',
   },
 ]
 
-/* ─── Full process flowchart steps ─── */
+/* ─── Full process flowchart steps — Sophi brand navy/gold ─── */
 const FLOW_STEPS = [
   {
     num: '01',
     icon: Upload,
     title: 'Upload or Start Fresh',
     desc: 'Upload your existing CV (PDF / DOCX) for an instant AI revamp, or launch our step-by-step wizard to build a brand-new ATS-compliant CV from scratch.',
-    color: 'from-violet-500 to-purple-600',
-    bg: 'bg-violet-50',
-    border: 'border-violet-200',
-    pill: 'bg-violet-100 text-violet-700',
+    color: 'from-primary-900 to-primary-950',
+    bg: 'bg-slate-900/90',
+    border: 'border-primary-800',
+    pill: 'bg-primary-800/80 text-amber-300',
   },
   {
     num: '02',
     icon: Search,
     title: 'ATS Audit & Gap Detection',
     desc: 'Our AI instantly scores your CV across keyword density, formatting safety, semantic match, experience depth, and section structure — revealing every gap in seconds.',
-    color: 'from-blue-500 to-cyan-500',
-    bg: 'bg-blue-50',
-    border: 'border-blue-200',
-    pill: 'bg-blue-100 text-blue-700',
+    color: 'from-gold to-amber-600',
+    bg: 'bg-slate-900/90',
+    border: 'border-amber-500/30',
+    pill: 'bg-amber-500/20 text-amber-300',
   },
   {
     num: '03',
     icon: Scissors,
     title: 'Job-Specific Tailoring',
-    desc: 'Paste a job description and Sophi automatically realigns your bullet points, skills, and profile summary to the exact requirements of that role.',
-    color: 'from-indigo-500 to-blue-600',
-    bg: 'bg-indigo-50',
-    border: 'border-indigo-200',
-    pill: 'bg-indigo-100 text-indigo-700',
+    desc: 'Paste a job description and SOPHI automatically realigns your bullet points, skills, and profile summary to the exact requirements of that role.',
+    color: 'from-primary-800 to-primary-900',
+    bg: 'bg-slate-900/90',
+    border: 'border-primary-800',
+    pill: 'bg-primary-800/80 text-amber-300',
   },
   {
     num: '04',
     icon: Cpu,
     title: 'AI Rewrites & Optimizes',
     desc: 'Advanced LLMs rewrite every section using STAR-method bullets, inject ATS keywords, and restructure your document for maximum recruiter visibility.',
-    color: 'from-amber-500 to-orange-500',
-    bg: 'bg-amber-50',
-    border: 'border-amber-200',
-    pill: 'bg-amber-100 text-amber-700',
+    color: 'from-gold to-amber-600',
+    bg: 'bg-slate-900/90',
+    border: 'border-amber-500/30',
+    pill: 'bg-amber-500/20 text-amber-300',
   },
   {
     num: '05',
     icon: Link2,
     title: 'LinkedIn & Cover Letter',
     desc: 'Receive a custom LinkedIn headline, hook summary, and a fully personalized cover letter — all auto-tailored to your target role.',
-    color: 'from-sky-500 to-blue-500',
-    bg: 'bg-sky-50',
-    border: 'border-sky-200',
-    pill: 'bg-sky-100 text-sky-700',
+    color: 'from-primary-800 to-primary-950',
+    bg: 'bg-slate-900/90',
+    border: 'border-primary-800',
+    pill: 'bg-primary-800/80 text-amber-300',
   },
   {
     num: '06',
     icon: Download,
     title: 'Download & Get Hired',
     desc: 'In under 60 seconds, download your ATS-optimized CV in a premium template, plus your cover letter and full ATS score report — ready to apply.',
-    color: 'from-emerald-500 to-teal-500',
-    bg: 'bg-emerald-50',
-    border: 'border-emerald-200',
-    pill: 'bg-emerald-100 text-emerald-700',
+    color: 'from-gold to-amber-600',
+    bg: 'bg-slate-900/90',
+    border: 'border-amber-500/30',
+    pill: 'bg-amber-500/20 text-amber-300',
   },
 ]
 
@@ -190,256 +190,237 @@ export default function LandingPage() {
       <Header />
 
       {/* ═══════════════════════════════════════════════════════
-          HERO — Full-viewport split screen
+          HERO — Light background overall with Dark Career Box
       ══════════════════════════════════════════════════════════ */}
-      <section className="relative min-h-[92vh] flex flex-col lg:flex-row overflow-hidden">
+      <section className="relative overflow-hidden bg-slate-50 py-12 lg:py-20">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.blue.50),white)] opacity-80" />
+        
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-12 items-center">
 
-        {/* ── LEFT HALF: Sophi CV Platform ── */}
-        <div className="relative flex-1 bg-gradient-to-br from-primary-950 via-primary-900 to-slate-900 text-white flex items-center justify-center px-8 py-16 lg:px-12 xl:px-16 overflow-hidden">
-
-          {/* Decorative blobs */}
-          <div className="pointer-events-none absolute -top-24 -left-24 w-80 h-80 rounded-full bg-indigo-500/20 blur-3xl" />
-          <div className="pointer-events-none absolute bottom-0 right-0 w-64 h-64 rounded-full bg-gold/10 blur-2xl" />
-
-          {/* Subtle grid lines */}
-          <div className="pointer-events-none absolute inset-0 opacity-[0.04]"
-            style={{ backgroundImage: 'linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)', backgroundSize: '40px 40px' }}
-          />
-
-          <motion.div
-            initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
-            className="relative z-10 max-w-lg w-full space-y-8"
-          >
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-xs font-extrabold text-amber-300 tracking-wider backdrop-blur-sm">
-              <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-              AI-POWERED CV TRANSFORMATION
-            </div>
-
-            {/* Headline */}
-            <div className="space-y-3">
-              <h1 className="text-4xl xl:text-5xl font-black tracking-tight leading-[1.08]">
-                Build & Transform<br />CVs with <S>Sophi</S> AI.
-              </h1>
-              <p className="text-slate-300 text-base leading-relaxed max-w-sm">
-                ATS-optimized in 30 seconds. Upload your CV or start from scratch — get interview-ready instantly.
-              </p>
-            </div>
-
-            {/* Feature pills */}
-            <div className="grid grid-cols-2 gap-2.5">
-              {[
-                { icon: Target,    label: 'ATS Score Audit' },
-                { icon: BarChart3, label: 'Gap Analysis' },
-                { icon: Sparkles,  label: 'Job Tailoring' },
-                { icon: FilePlus,  label: 'Build from Scratch' },
-              ].map(({ icon: Icon, label }) => (
-                <div key={label} className="flex items-center gap-2 bg-white/8 border border-white/10 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-200 backdrop-blur-sm">
-                  <Icon className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-                  {label}
-                </div>
-              ))}
-            </div>
-
-            {/* CTA buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <Link href="/login"
-                className="flex items-center justify-center gap-2 rounded-xl bg-gold px-7 py-3.5 text-sm font-black text-slate-950 hover:bg-amber-300 transition-all shadow-lg hover:shadow-gold/30 hover:scale-[1.02]"
+            {/* ── LEFT SECTION: Sophi CV Platform (Light BG Side) ── */}
+            <div className="lg:col-span-6 space-y-7 text-left">
+              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 rounded-full bg-primary-50 px-4 py-1.5 text-xs font-black text-primary border border-primary-200"
               >
-                <Sparkles className="h-4 w-4" />
-                Transform CV Now
-              </Link>
-              <a href="#how-it-works"
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-white/20 bg-white/8 px-6 py-3.5 text-sm font-bold text-white hover:bg-white/15 transition-all backdrop-blur-sm"
+                <Sparkles className="h-4 w-4 text-gold" />
+                <span>NEXT-GEN AI CV PLATFORM v2.5</span>
+              </motion.div>
+
+              <div className="space-y-4">
+                <motion.h1 initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
+                  className="text-4xl font-black tracking-tight text-slate-950 sm:text-5xl lg:text-6xl leading-[1.1]"
+                >
+                  Build & Transform<br />
+                  CVs with <S>SOPHI</S> AI.<br />
+                  <span className="bg-gradient-to-r from-primary via-primary-800 to-gold bg-clip-text text-transparent">
+                    ATS-Optimized in 30s.
+                  </span>
+                </motion.h1>
+                <motion.p initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
+                  className="text-sm sm:text-base leading-relaxed text-slate-600 max-w-xl"
+                >
+                  Audit your ATS score, analyze career gaps, tailor your CV for job roles, build a new resume from scratch, or revamp your document in 30 seconds — powered by <S>SOPHI</S>.
+                </motion.p>
+              </div>
+
+              {/* Feature pills */}
+              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.25 }}
+                className="grid grid-cols-2 gap-2.5 max-w-md"
               >
-                See How It Works
-                <ArrowRight className="h-4 w-4" />
-              </a>
-            </div>
-
-            {/* Social proof */}
-            <div className="flex items-center gap-4 pt-2 border-t border-white/10">
-              <div className="text-center">
-                <div className="text-xl font-black text-white">4,800+</div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">CVs Optimized</div>
-              </div>
-              <div className="w-px h-8 bg-white/10" />
-              <div className="text-center">
-                <div className="text-xl font-black text-white">98%</div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ATS Pass Rate</div>
-              </div>
-              <div className="w-px h-8 bg-white/10" />
-              <div className="text-center">
-                <div className="text-xl font-black text-white">&lt; 60s</div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Delivery Time</div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Divider / split line — visible on desktop */}
-        <div className="hidden lg:flex flex-col items-center justify-center relative z-20 w-0 overflow-visible">
-          <div className="h-full w-px bg-gradient-to-b from-transparent via-slate-400/40 to-transparent absolute" />
-          <div className="relative z-30 bg-white rounded-full w-9 h-9 border-2 border-slate-200 flex items-center justify-center shadow-xl">
-            <span className="text-[10px] font-black text-slate-500 leading-none">OR</span>
-          </div>
-        </div>
-
-        {/* Horizontal divider — mobile */}
-        <div className="lg:hidden flex items-center gap-3 px-6 py-4 bg-slate-100">
-          <div className="flex-1 h-px bg-slate-300" />
-          <span className="text-xs font-black text-slate-500 uppercase tracking-widest">Or Find a Job</span>
-          <div className="flex-1 h-px bg-slate-300" />
-        </div>
-
-        {/* ── RIGHT HALF: Career Portal Job Search ── */}
-        <div className="relative flex-1 bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center px-8 py-16 lg:px-12 xl:px-16 overflow-hidden">
-
-          {/* Decorative */}
-          <div className="pointer-events-none absolute top-0 right-0 w-72 h-72 rounded-full bg-blue-100/60 blur-3xl" />
-          <div className="pointer-events-none absolute bottom-0 left-0 w-48 h-48 rounded-full bg-indigo-100/40 blur-2xl" />
-
-          <motion.div
-            initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, ease: 'easeOut', delay: 0.1 }}
-            className="relative z-10 max-w-lg w-full space-y-7"
-          >
-            {/* Badge */}
-            <div className="flex items-center gap-2">
-              <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-200 px-4 py-1.5 text-xs font-extrabold text-blue-700 tracking-wider">
-                💼 CAREER PORTAL — SOPHI JOBS
-              </div>
-              <a href="https://career.joinsophi.com" target="_blank" rel="noopener noreferrer"
-                className="text-[10px] font-bold text-slate-400 hover:text-primary transition-colors underline underline-offset-2"
-              >
-                career.joinsophi.com ↗
-              </a>
-            </div>
-
-            {/* Headline */}
-            <div className="space-y-2">
-              <h2 className="text-3xl xl:text-4xl font-black tracking-tight text-slate-900 leading-tight">
-                Find Your Next<br />
-                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                  Dream Opportunity
-                </span>
-              </h2>
-              <p className="text-slate-500 text-sm leading-relaxed">
-                Search 500+ verified jobs across Pakistan & Gulf — matched to your <S>Sophi</S> CV profile.
-              </p>
-            </div>
-
-            {/* Search Form */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                const fd = new FormData(e.currentTarget)
-                const q = fd.get('q') as string
-                const loc = fd.get('location') as string
-                const type = fd.get('type') as string
-                const params = new URLSearchParams()
-                if (q)    params.set('q', q)
-                if (loc && loc !== 'all')  params.set('location', loc)
-                if (type && type !== 'all') params.set('type', type)
-                window.open(
-                  `https://career.joinsophi.com/jobs${params.toString() ? '?' + params.toString() : ''}`,
-                  '_blank'
-                )
-              }}
-              className="space-y-3"
-            >
-              {/* Job title / keyword */}
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
-                <input
-                  type="text"
-                  name="q"
-                  placeholder="Job title, skill, or keyword..."
-                  className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary shadow-sm transition"
-                />
-              </div>
-
-              {/* Filters row */}
-              <div className="grid grid-cols-2 gap-3">
-                {/* Location */}
-                <div className="relative">
-                  <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
-                  <select
-                    name="location"
-                    className="w-full appearance-none pl-9 pr-4 py-3.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary shadow-sm transition cursor-pointer"
-                  >
-                    <option value="all">All Cities / Remote</option>
-                    <option value="Karachi">Karachi</option>
-                    <option value="Lahore">Lahore</option>
-                    <option value="Islamabad">Islamabad</option>
-                    <option value="Rawalpindi">Rawalpindi</option>
-                    <option value="Peshawar">Peshawar</option>
-                    <option value="Remote">Remote</option>
-                    <option value="Dubai">Dubai, UAE</option>
-                    <option value="Riyadh">Riyadh, KSA</option>
-                  </select>
-                </div>
-
-                {/* Job type */}
-                <div className="relative">
-                  <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
-                  <select
-                    name="type"
-                    className="w-full appearance-none pl-9 pr-4 py-3.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary shadow-sm transition cursor-pointer"
-                  >
-                    <option value="all">All Job Types</option>
-                    <option value="full-time">Full-Time</option>
-                    <option value="part-time">Part-Time</option>
-                    <option value="contract">Contract</option>
-                    <option value="remote">Remote Only</option>
-                    <option value="internship">Internship</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Search button */}
-              <button
-                type="submit"
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-black text-white hover:bg-primary-800 transition-all shadow-md hover:shadow-primary-200 hover:scale-[1.01]"
-              >
-                <Search className="h-4 w-4" />
-                Search Jobs on Career Portal
-                <ArrowRight className="h-4 w-4 text-gold" />
-              </button>
-            </form>
-
-            {/* Quick-filter tags */}
-            <div className="space-y-2">
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Trending Searches</p>
-              <div className="flex flex-wrap gap-2">
-                {['Software Engineer', 'Marketing Manager', 'Finance Analyst', 'Customer Support', 'React Developer', 'HR Manager'].map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => {
-                      const params = new URLSearchParams({ q: tag })
-                      window.open(`https://career.joinsophi.com/jobs?${params.toString()}`, '_blank')
-                    }}
-                    className="px-3 py-1.5 text-[11px] font-bold text-slate-600 bg-white border border-slate-200 rounded-full hover:border-primary hover:text-primary hover:bg-primary-50 transition-all shadow-sm"
-                  >
-                    {tag}
-                  </button>
+                {[
+                  { icon: Target,    label: 'ATS Score Audit' },
+                  { icon: BarChart3, label: 'Gap Analysis' },
+                  { icon: Sparkles,  label: 'Job Tailoring' },
+                  { icon: FilePlus,  label: 'Build from Scratch' },
+                ].map(({ icon: Icon, label }) => (
+                  <div key={label} className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 shadow-sm">
+                    <Icon className="h-4 w-4 text-gold shrink-0" />
+                    <span>{label}</span>
+                  </div>
                 ))}
-              </div>
+              </motion.div>
+
+              {/* Action Buttons */}
+              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
+                className="flex flex-col sm:flex-row gap-4 items-center pt-1"
+              >
+                <Link href="/login"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-primary px-7 py-3.5 text-sm font-black text-white transition-all hover:bg-primary-800 hover:shadow-xl hover:shadow-primary-200 shadow-md"
+                >
+                  <Sparkles className="h-4 w-4 text-gold" />
+                  <span>Transform CV Now</span>
+                  <ArrowRight className="h-4 w-4 text-gold" />
+                </Link>
+                <a href="#how-it-works"
+                  className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-white px-6 py-3.5 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-100 h-[48px] shadow-sm"
+                >
+                  <span>See How It Works</span>
+                </a>
+              </motion.div>
+
+              {/* Proof stats */}
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.4 }}
+                className="pt-4 border-t border-slate-200 flex items-center gap-6 text-xs font-bold text-slate-600"
+              >
+                <div><span className="text-base font-black text-primary">4,800+</span> CVs Optimized</div>
+                <div className="w-px h-6 bg-slate-300" />
+                <div><span className="text-base font-black text-primary">98%</span> ATS Pass Rate</div>
+                <div className="w-px h-6 bg-slate-300" />
+                <div><span className="text-base font-black text-primary">&lt; 60s</span> Delivery</div>
+              </motion.div>
             </div>
 
-            {/* Stats */}
-            <div className="flex items-center gap-5 pt-2 border-t border-slate-100 text-xs font-semibold text-slate-500">
-              <span>🏢 <strong className="text-slate-800">120+</strong> Companies</span>
-              <span>📄 <strong className="text-slate-800">500+</strong> Active Jobs</span>
-              <a href="https://career.joinsophi.com/recruiter" target="_blank" rel="noopener noreferrer"
-                className="ml-auto text-primary hover:underline font-bold"
+            {/* ── RIGHT SECTION: Career Portal Box (DARK CONTAINER) ── */}
+            <div className="lg:col-span-6 flex justify-center">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.15 }}
+                className="w-full max-w-lg rounded-3xl bg-slate-950 border border-slate-800 shadow-2xl shadow-slate-950/40 p-6 sm:p-8 space-y-6 relative overflow-hidden text-white"
               >
-                Post a Job →
-              </a>
+                {/* Subtle dark ambient glows inside the box */}
+                <div className="pointer-events-none absolute -top-16 -right-16 w-56 h-56 rounded-full bg-primary-900/40 blur-3xl" />
+                <div className="pointer-events-none absolute -bottom-16 -left-16 w-56 h-56 rounded-full bg-gold/10 blur-3xl" />
+
+                {/* Box Badge Header */}
+                <div className="flex items-center justify-between gap-2 border-b border-slate-800/80 pb-4">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-primary-900/80 border border-primary-700/60 px-3.5 py-1.5 text-xs font-black text-amber-300 tracking-wider">
+                    💼 CAREER PORTAL — <S>SOPHI</S> JOBS
+                  </div>
+                  <a href="https://career.joinsophi.com" target="_blank" rel="noopener noreferrer"
+                    className="text-[11px] font-bold text-slate-400 hover:text-amber-300 transition-colors underline underline-offset-2"
+                  >
+                    career.joinsophi.com ↗
+                  </a>
+                </div>
+
+                {/* Box Title & Description (LIGHT TEXT) */}
+                <div className="space-y-2">
+                  <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight">
+                    Find Your Next<br />
+                    <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-200 bg-clip-text text-transparent">
+                      Dream Opportunity
+                    </span>
+                  </h2>
+                  <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                    Search 500+ verified jobs across Pakistan & Gulf — matched to your <S>SOPHI</S> CV profile.
+                  </p>
+                </div>
+
+                {/* Dark-Themed Job Search Form */}
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    const fd = new FormData(e.currentTarget)
+                    const q = fd.get('q') as string
+                    const loc = fd.get('location') as string
+                    const type = fd.get('type') as string
+                    const params = new URLSearchParams()
+                    if (q) params.set('q', q)
+                    if (loc && loc !== 'all') params.set('location', loc)
+                    if (type && type !== 'all') params.set('type', type)
+                    window.open(
+                      `https://career.joinsophi.com/jobs${params.toString() ? '?' + params.toString() : ''}`,
+                      '_blank'
+                    )
+                  }}
+                  className="space-y-3 pt-1"
+                >
+                  {/* Job title / keyword input */}
+                  <div className="relative">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                    <input
+                      type="text"
+                      name="q"
+                      placeholder="Job title, skill, or keyword..."
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-sm font-medium text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400 transition"
+                    />
+                  </div>
+
+                  {/* Filters row */}
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Location filter */}
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
+                      <select
+                        name="location"
+                        className="w-full appearance-none pl-8 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-xs font-semibold text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400 cursor-pointer transition"
+                      >
+                        <option value="all">All Cities / Remote</option>
+                        <option value="Karachi">Karachi</option>
+                        <option value="Lahore">Lahore</option>
+                        <option value="Islamabad">Islamabad</option>
+                        <option value="Rawalpindi">Rawalpindi</option>
+                        <option value="Peshawar">Peshawar</option>
+                        <option value="Remote">Remote</option>
+                        <option value="Dubai">Dubai, UAE</option>
+                        <option value="Riyadh">Riyadh, KSA</option>
+                      </select>
+                    </div>
+
+                    {/* Job type filter */}
+                    <div className="relative">
+                      <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
+                      <select
+                        name="type"
+                        className="w-full appearance-none pl-8 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-xs font-semibold text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400 cursor-pointer transition"
+                      >
+                        <option value="all">All Job Types</option>
+                        <option value="full-time">Full-Time</option>
+                        <option value="part-time">Part-Time</option>
+                        <option value="contract">Contract</option>
+                        <option value="remote">Remote Only</option>
+                        <option value="internship">Internship</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Search CTA Button inside dark box */}
+                  <button
+                    type="submit"
+                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-gold py-3.5 text-sm font-black text-slate-950 hover:bg-amber-300 transition-all shadow-lg hover:scale-[1.01]"
+                  >
+                    <Search className="h-4 w-4" />
+                    Search Jobs on Career Portal
+                    <ArrowRight className="h-4 w-4 text-slate-950" />
+                  </button>
+                </form>
+
+                {/* Quick Trending Tags inside dark box */}
+                <div className="space-y-2 pt-1 border-t border-slate-800/80">
+                  <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Trending Searches</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {['Software Engineer', 'Marketing Manager', 'Finance Analyst', 'Customer Support', 'React Developer', 'HR Manager'].map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => {
+                          const params = new URLSearchParams({ q: tag })
+                          window.open(`https://career.joinsophi.com/jobs?${params.toString()}`, '_blank')
+                        }}
+                        className="px-2.5 py-1 text-[11px] font-bold text-slate-300 bg-slate-900 border border-slate-800 rounded-full hover:border-amber-400 hover:text-amber-300 transition-all"
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Dark Box Footer Stats */}
+                <div className="flex items-center gap-4 pt-1 text-xs font-semibold text-slate-300">
+                  <span>🏢 <strong className="text-white">120+</strong> Companies</span>
+                  <span>📄 <strong className="text-white">500+</strong> Active Jobs</span>
+                  <a href="https://career.joinsophi.com/recruiter" target="_blank" rel="noopener noreferrer"
+                    className="ml-auto text-amber-300 hover:underline font-bold"
+                  >
+                    Post a Job →
+                  </a>
+                </div>
+              </motion.div>
             </div>
-          </motion.div>
+
+          </div>
         </div>
       </section>
 
@@ -447,19 +428,19 @@ export default function LandingPage() {
       {/* ═══════════════════════════════════════════════════════
           HOW SOPHI WORKS — dark bg (high contrast)
       ══════════════════════════════════════════════════════════ */}
-      <section id="how-it-works" className="py-20 bg-slate-900 text-white">
+      <section id="how-it-works" className="py-20 bg-slate-950 text-white">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 space-y-14">
           <div className="text-center space-y-3">
             <span className="inline-block text-xs font-black uppercase tracking-widest text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3 py-1.5 rounded-full">
               Full Process Flowchart
             </span>
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
-              How <S>Sophi</S>{' '}
+              How <S>SOPHI</S>{' '}
               <span className="bg-gradient-to-r from-amber-300 to-yellow-200 bg-clip-text text-transparent">Transforms</span>{' '}
               Your Career
             </h2>
             <p className="text-slate-400 max-w-xl mx-auto text-sm">
-              From first upload to final download — every step your CV goes through inside <S>Sophi</S>.
+              From first upload to final download — every step your CV goes through inside <S>SOPHI</S>.
             </p>
           </div>
 
@@ -484,15 +465,15 @@ export default function LandingPage() {
                           Step {step.num}
                         </span>
                       </div>
-                      <h3 className="text-base font-black text-slate-900 leading-tight">{step.title}</h3>
-                      <p className="text-xs text-slate-600 leading-relaxed mt-1">{step.desc}</p>
+                      <h3 className="text-base font-black text-white leading-tight">{step.title}</h3>
+                      <p className="text-xs text-slate-300 leading-relaxed mt-1">{step.desc}</p>
                     </div>
                   </motion.div>
 
                   {/* Connector */}
                   {i < FLOW_STEPS.length - 1 && (
                     <div className="flex flex-col items-center py-2">
-                      <div className="w-px h-5 bg-slate-600" />
+                      <div className="w-px h-5 bg-slate-700" />
                       <ArrowDown className="w-4 h-4 text-slate-500" />
                     </div>
                   )}
@@ -503,7 +484,7 @@ export default function LandingPage() {
 
           <div className="text-center pt-2">
             <Link href="/how-it-works"
-              className="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-slate-900 bg-amber-400 hover:bg-amber-300 rounded-xl transition-all shadow-lg"
+              className="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-xl transition-all shadow-lg"
             >
               <Sparkles className="h-4 w-4" />
               Explore Full Process
@@ -518,15 +499,15 @@ export default function LandingPage() {
       <section id="features" className="py-20 bg-white border-b border-slate-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-16">
           <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-3 py-1 text-xs font-bold text-primary border border-primary-100">
-              <Sparkles className="h-3.5 w-3.5" />
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-3 py-1 text-xs font-bold text-primary border border-primary-200">
+              <Sparkles className="h-3.5 w-3.5 text-gold" />
               <span>Core Capabilities</span>
             </div>
             <h2 className="text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
               Everything You Need to Beat ATS & Land Interviews
             </h2>
             <p className="text-sm text-slate-600">
-              <S>Sophi</S> combines AI resume engineering, gap detection, and job-tailored keyword matching into one seamless platform.
+              <S>SOPHI</S> combines AI resume engineering, gap detection, and job-tailored keyword matching into one seamless platform.
             </p>
           </div>
 
@@ -602,7 +583,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-14">
           <div className="text-center space-y-3">
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              Complete <S>Sophi</S> AI Career Toolkit
+              Complete <S>SOPHI</S> AI Career Toolkit
             </h2>
             <p className="text-sm text-slate-400 max-w-md mx-auto">
               Our AI optimization pipeline leverages industry-standard recruitment benchmarks.
@@ -616,7 +597,7 @@ export default function LandingPage() {
                 <motion.div key={i}
                   initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.07 }}
-                  className="rounded-2xl border border-slate-800 bg-slate-900 p-6 space-y-4 hover:border-slate-700 hover:bg-slate-800/80 transition-all group"
+                  className="rounded-2xl border border-slate-800 bg-slate-900 p-6 space-y-4 hover:border-primary-700 hover:bg-slate-900/80 transition-all group"
                 >
                   <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${feat.color} group-hover:scale-110 transition-transform`}>
                     <Icon className="h-5 w-5" />
@@ -637,12 +618,12 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,theme(colors.blue.900/30),transparent)]" />
         <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-8">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-extrabold text-amber-400 backdrop-blur-md border border-white/10">
-            <Sparkles className="h-4 w-4" />
+            <Sparkles className="h-4 w-4 text-amber-300" />
             <span>Ready for Your Next Step?</span>
           </div>
 
           <h2 className="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl leading-tight">
-            Elevate Your Job Applications with <S>Sophi</S> AI
+            Elevate Your Job Applications with <S>SOPHI</S> AI
           </h2>
 
           <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
@@ -652,7 +633,7 @@ export default function LandingPage() {
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto text-left py-4">
             {['ATS Score Audit', 'Gap Analysis Report', 'Job-Specific Tailoring', 'Build or Revamp in 30s'].map((t) => (
               <div key={t} className="flex items-center gap-2.5 text-xs font-semibold text-slate-200 bg-white/5 p-3 rounded-xl border border-white/10">
-                <Check className="h-4 w-4 text-emerald-400 shrink-0" />
+                <Check className="h-4 w-4 text-amber-400 shrink-0" />
                 <span>{t}</span>
               </div>
             ))}
@@ -679,7 +660,7 @@ export default function LandingPage() {
               Frequently Asked Questions
             </h2>
             <p className="text-sm text-slate-500 max-w-md mx-auto">
-              Everything you need to know about the <S>Sophi</S> AI CV platform.
+              Everything you need to know about the <S>SOPHI</S> AI CV platform.
             </p>
           </div>
           <FAQAccordion />
@@ -693,7 +674,7 @@ export default function LandingPage() {
             <Logo width={64} height={64} showTagline={true} />
           </div>
           <p className="text-xs text-slate-400">
-            © {new Date().getFullYear()} JoinSophi.com — <S>Sophi</S> AI CV Platform. All rights reserved.
+            © {new Date().getFullYear()} JoinSophi.com — <S>SOPHI</S> AI CV Platform. All rights reserved.
           </p>
         </div>
       </footer>

@@ -22,10 +22,10 @@ const TOOLS_NAV = [
 ]
 
 const RESOURCES_NAV = [
-  { label: 'How It Works', href: '/how-it-works', icon: HelpCircle, desc: 'See how Sophi works' },
+  { label: 'How It Works', href: '/how-it-works', icon: HelpCircle, desc: 'See how SOPHI works' },
   { label: 'Pricing', href: '/pricing', icon: CreditCard, desc: 'Plans & credit packages' },
   { label: 'CV Templates', href: '/templates', icon: FileSearch, desc: 'Browse design templates' },
-  { label: 'About Sophi', href: '/about', icon: Info, desc: 'Our mission & story' },
+  { label: 'About SOPHI', href: '/about', icon: Info, desc: 'Our mission & story' },
 ]
 
 export default function Header() {
@@ -158,7 +158,7 @@ export default function Header() {
               </button>
 
               <div className="absolute top-full left-0 mt-1 w-72 rounded-2xl border border-slate-200 bg-white shadow-xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-3 py-1.5">Sophi AI Services</p>
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-3 py-1.5">SOPHI AI Services</p>
                 {TOOLS_NAV.map((item) => {
                   const Icon = item.icon
                   return (
