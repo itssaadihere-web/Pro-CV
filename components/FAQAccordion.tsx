@@ -45,16 +45,16 @@ export default function FAQAccordion() {
   };
 
   return (
-    <div className="space-y-4 max-w-3xl mx-auto">
+    <div className="space-y-3 max-w-3xl mx-auto">
       {faqs.map((faq) => {
         const isOpen = openId === faq.id;
         return (
-          <div 
-            key={faq.id} 
+          <div
+            key={faq.id}
             className={`border rounded-2xl transition-all overflow-hidden ${
-              isOpen 
-                ? 'bg-slate-900 text-white border-slate-800 shadow-lg' 
-                : 'bg-white text-slate-900 border-slate-200 hover:border-slate-300 shadow-sm'
+              isOpen
+                ? 'bg-primary-950 text-white border-primary-800 shadow-lg shadow-primary-950/20'
+                : 'bg-white text-slate-900 border-slate-200 hover:border-primary-200 hover:shadow-sm shadow-sm'
             }`}
           >
             <button
@@ -63,18 +63,20 @@ export default function FAQAccordion() {
               className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none"
               aria-expanded={isOpen}
             >
-              <span className={`text-lg font-bold pr-4 ${isOpen ? 'text-white' : 'text-slate-900'}`}>
+              <span className={`text-base font-bold pr-4 leading-snug ${isOpen ? 'text-white' : 'text-slate-900'}`}>
                 {faq.question}
               </span>
               <div className={`p-2 rounded-full transition-transform duration-300 flex-shrink-0 ${
-                isOpen ? 'bg-slate-800 text-amber-400 rotate-180' : 'bg-slate-100 text-slate-500'
+                isOpen
+                  ? 'bg-primary-800 text-gold rotate-180'
+                  : 'bg-primary-50 text-primary border border-primary-100'
               }`}>
-                <ChevronDown className="w-5 h-5" />
+                <ChevronDown className="w-4 h-4" />
               </div>
             </button>
 
             {isOpen && (
-              <div className="px-6 pb-6 pt-2 text-slate-300 text-base leading-relaxed border-t border-slate-800/60">
+              <div className="px-6 pb-6 pt-1 text-primary-100 text-sm leading-relaxed border-t border-primary-800/40">
                 {faq.answer}
               </div>
             )}
