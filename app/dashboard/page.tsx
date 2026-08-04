@@ -244,10 +244,22 @@ export default function DashboardPage() {
                   <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
                     Welcome back, {profile?.full_name || 'Professional'}! 👋
                   </h1>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#c5a059]/15 border border-[#c5a059]/30 px-3 py-0.5 text-[11px] font-extrabold text-[#c5a059]">
-                    <Sparkles className="h-3 w-3 text-[#c5a059]" />
-                    PRO ACCOUNT
-                  </span>
+                  {Boolean(profile?.has_paid || profile?.account_paid || profile?.paid_at || profile?.payment_ref) ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#c5a059]/15 border border-[#c5a059]/30 px-3 py-0.5 text-[11px] font-extrabold text-[#c5a059] shadow-sm">
+                      <Sparkles className="h-3 w-3 text-[#c5a059]" />
+                      PRO ACCOUNT
+                    </span>
+                  ) : (
+                    <Link
+                      href="/payment"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-slate-800/90 border border-slate-700 hover:border-amber-400/50 px-3 py-0.5 text-[11px] font-extrabold text-slate-300 hover:text-amber-300 transition-all shadow-sm group cursor-pointer"
+                      title="Click to upgrade to Pro Account"
+                    >
+                      <Zap className="h-3 w-3 text-slate-400 group-hover:text-amber-300" />
+                      <span>FREE ACCOUNT</span>
+                      <span className="text-[10px] text-amber-400 bg-amber-400/10 px-1.5 py-0.2 rounded font-black ml-0.5">UPGRADE →</span>
+                    </Link>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-3 text-xs text-slate-300 flex-wrap">
