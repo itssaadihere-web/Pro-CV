@@ -655,9 +655,6 @@ export default function LandingPage() {
           <FAQAccordion />
         </div>
       </section>
-
-      {/* SECTION 7: GLOBAL FOOTER */}
-      <Footer />
     </div>
   )
 }
