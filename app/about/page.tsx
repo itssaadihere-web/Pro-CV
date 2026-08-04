@@ -84,7 +84,7 @@ export default function AboutPage() {
             variants={fadeUp} initial="initial" animate="animate" transition={{ delay: 0.06 }}
             className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight"
           >
-            We Built SOPHI Because<br />
+            We Built <span className="text-[#c5a059] font-black">SOPHI</span> Because<br />
             <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-300 bg-clip-text text-transparent">
               Great Talent Deserves to Be Seen
             </span>
@@ -144,9 +144,9 @@ export default function AboutPage() {
           >
             <div className="rounded-3xl bg-gradient-to-br from-primary-950 to-slate-900 p-8 text-white space-y-5 shadow-2xl">
               <span className="inline-block text-xs font-black uppercase tracking-widest text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-3 py-1.5 rounded-full">Our Solution</span>
-              <h3 className="text-2xl font-black leading-tight">SOPHI Reverse-Engineers the ATS</h3>
+              <h3 className="text-2xl font-black leading-tight"><span className="text-[#c5a059] font-black">SOPHI</span> Reverse-Engineers the ATS</h3>
               <p className="text-slate-300 leading-relaxed text-sm">
-                SOPHI uses advanced LLMs to analyze your CV, inject precise keyword density, rewrite achievement bullets using the STAR method, and restructure your document to match ATS scoring criteria for your exact target industry.
+                <span className="text-[#c5a059] font-black">SOPHI</span> uses advanced LLMs to analyze your CV, inject precise keyword density, rewrite achievement bullets using the STAR method, and restructure your document to match ATS scoring criteria for your exact target industry.
               </p>
               <ul className="space-y-3 pt-2">
                 {[

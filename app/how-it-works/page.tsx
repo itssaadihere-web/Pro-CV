@@ -97,7 +97,7 @@ export default function HowItWorksPage() {
               initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
               className="text-slate-300 text-lg font-medium max-w-xl mx-auto"
             >
-              See exactly how SOPHI transforms your old CV into an ATS-optimized career document using advanced AI.
+              See exactly how <span className="text-[#c5a059] font-black">SOPHI</span> transforms your old CV into an ATS-optimized career document using advanced AI.
             </motion.p>
           </div>
         </section>

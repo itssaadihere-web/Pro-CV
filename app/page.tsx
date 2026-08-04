@@ -15,10 +15,13 @@ import Logo from '@/components/Logo'
 import Script from 'next/script'
 import { websiteSchema, softwareSchema, faqSchema } from '@/lib/schema'
 
-/* ─── Brand helper — renders "SOPHI" in uppercase brand style ─── */
-function S({ children }: { children?: React.ReactNode }) {
+/* Brand helper:
+   When on dark background (dark=true), font color is #c5a059 (brand gold).
+   When on light background, font color is text-primary (#0f2b48).
+*/
+function S({ children, dark }: { children?: React.ReactNode; dark?: boolean }) {
   return (
-    <span className="font-black text-primary tracking-wide">
+    <span className={`font-black tracking-wide ${dark ? 'text-[#c5a059]' : 'text-primary'}`}>
       SOPHI
     </span>
   )
@@ -77,41 +80,40 @@ const ADDITIONAL_FEATURES = [
     icon: Zap,
     title: 'STAR-Metric Bullets',
     description: 'Converts descriptors into quantifiable accomplishments: Action (Power Verb) + Context + Metric Result.',
-    color: 'bg-primary-100 text-primary-900',
+    color: 'bg-primary-900/50 text-[#c5a059] border border-primary-800',
   },
   {
     icon: Award,
     title: '2026 Executive Summary',
     description: 'A 3-line structural hook summarizing total years of experience, top value statements, and key proof figures.',
-    color: 'bg-amber-100 text-amber-900',
+    color: 'bg-primary-900/50 text-[#c5a059] border border-primary-800',
   },
   {
     icon: ShieldCheck,
     title: 'LinkedIn Profile Optimizer',
     description: 'Build custom headers, hook summaries, and keywords so recruiters discover your profile easily.',
-    color: 'bg-primary-100 text-primary-900',
+    color: 'bg-primary-900/50 text-[#c5a059] border border-primary-800',
   },
   {
     icon: FileText,
     title: 'AI Cover Letter Generator',
     description: 'Fully personalized, achievement-driven introductory letters customized against target job descriptions.',
-    color: 'bg-amber-100 text-amber-900',
+    color: 'bg-primary-900/50 text-[#c5a059] border border-primary-800',
   },
   {
     icon: Download,
     title: '49 PDF Templates Export',
     description: 'One-click downloads supporting ATS-Safe formatting, Modern spacing, and clean Minimalist layouts.',
-    color: 'bg-primary-100 text-primary-900',
+    color: 'bg-primary-900/50 text-[#c5a059] border border-primary-800',
   },
   {
     icon: Languages,
     title: 'Multi-Language Support',
     description: 'Optimize CVs in English (EN), Arabic (AR with RTL format), French (FR), or Spanish (ES).',
-    color: 'bg-amber-100 text-amber-900',
+    color: 'bg-primary-900/50 text-[#c5a059] border border-primary-800',
   },
 ]
 
-/* ─── Full process flowchart steps — Sophi brand navy/gold ─── */
 const FLOW_STEPS = [
   {
     num: '01',
@@ -121,7 +123,7 @@ const FLOW_STEPS = [
     color: 'from-primary-900 to-primary-950',
     bg: 'bg-slate-900/90',
     border: 'border-primary-800',
-    pill: 'bg-primary-800/80 text-amber-300',
+    pill: 'bg-primary-800/80 text-[#c5a059]',
   },
   {
     num: '02',
@@ -131,7 +133,7 @@ const FLOW_STEPS = [
     color: 'from-gold to-amber-600',
     bg: 'bg-slate-900/90',
     border: 'border-amber-500/30',
-    pill: 'bg-amber-500/20 text-amber-300',
+    pill: 'bg-amber-500/20 text-[#c5a059]',
   },
   {
     num: '03',
@@ -141,7 +143,7 @@ const FLOW_STEPS = [
     color: 'from-primary-800 to-primary-900',
     bg: 'bg-slate-900/90',
     border: 'border-primary-800',
-    pill: 'bg-primary-800/80 text-amber-300',
+    pill: 'bg-primary-800/80 text-[#c5a059]',
   },
   {
     num: '04',
@@ -151,7 +153,7 @@ const FLOW_STEPS = [
     color: 'from-gold to-amber-600',
     bg: 'bg-slate-900/90',
     border: 'border-amber-500/30',
-    pill: 'bg-amber-500/20 text-amber-300',
+    pill: 'bg-amber-500/20 text-[#c5a059]',
   },
   {
     num: '05',
@@ -161,7 +163,7 @@ const FLOW_STEPS = [
     color: 'from-primary-800 to-primary-950',
     bg: 'bg-slate-900/90',
     border: 'border-primary-800',
-    pill: 'bg-primary-800/80 text-amber-300',
+    pill: 'bg-primary-800/80 text-[#c5a059]',
   },
   {
     num: '06',
@@ -171,7 +173,7 @@ const FLOW_STEPS = [
     color: 'from-gold to-amber-600',
     bg: 'bg-slate-900/90',
     border: 'border-amber-500/30',
-    pill: 'bg-amber-500/20 text-amber-300',
+    pill: 'bg-amber-500/20 text-[#c5a059]',
   },
 ]
 
@@ -189,16 +191,14 @@ export default function LandingPage() {
 
       <Header />
 
-      {/* ═══════════════════════════════════════════════════════
-          HERO — Light background overall with Dark Career Box
-      ══════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden bg-slate-50 py-12 lg:py-20">
+      {/* SECTION 1: HERO - LIGHT BACKGROUND OVERALL */}
+      <section className="relative overflow-hidden bg-slate-50 py-12 lg:py-20 border-b border-slate-200/80">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.blue.50),white)] opacity-80" />
         
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-12 items-center">
 
-            {/* ── LEFT SECTION: Sophi CV Platform (Light BG Side) ── */}
+            {/* LEFT SECTION: Sophi CV Platform (Light BG Side) */}
             <div className="lg:col-span-6 space-y-7 text-left">
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
                 className="inline-flex items-center gap-2 rounded-full bg-primary-50 px-4 py-1.5 text-xs font-black text-primary border border-primary-200"
@@ -212,7 +212,7 @@ export default function LandingPage() {
                   className="text-4xl font-black tracking-tight text-slate-950 sm:text-5xl lg:text-6xl leading-[1.1]"
                 >
                   Build & Transform<br />
-                  CVs with <S>SOPHI</S> AI.<br />
+                  CVs with <S /> AI.<br />
                   <span className="bg-gradient-to-r from-primary via-primary-800 to-gold bg-clip-text text-transparent">
                     ATS-Optimized in 30s.
                   </span>
@@ -220,7 +220,7 @@ export default function LandingPage() {
                 <motion.p initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
                   className="text-sm sm:text-base leading-relaxed text-slate-600 max-w-xl"
                 >
-                  Audit your ATS score, analyze career gaps, tailor your CV for job roles, build a new resume from scratch, or revamp your document in 30 seconds — powered by <S>SOPHI</S>.
+                  Audit your ATS score, analyze career gaps, tailor your CV for job roles, build a new resume from scratch, or revamp your document in 30 seconds — powered by <S />.
                 </motion.p>
               </div>
 
@@ -271,7 +271,7 @@ export default function LandingPage() {
               </motion.div>
             </div>
 
-            {/* ── RIGHT SECTION: Career Portal Box (DARK CONTAINER) ── */}
+            {/* RIGHT SECTION: Career Portal Box (DARK CONTAINER) */}
             <div className="lg:col-span-6 flex justify-center">
               <motion.div
                 initial={{ opacity: 0, scale: 0.96, y: 20 }}
@@ -285,17 +285,17 @@ export default function LandingPage() {
 
                 {/* Box Badge Header */}
                 <div className="flex items-center justify-between gap-2 border-b border-slate-800/80 pb-4">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-primary-900/80 border border-primary-700/60 px-3.5 py-1.5 text-xs font-black text-amber-300 tracking-wider">
-                    💼 CAREER PORTAL — <S>SOPHI</S> JOBS
+                  <div className="inline-flex items-center gap-2 rounded-full bg-primary-900/80 border border-primary-700/60 px-3.5 py-1.5 text-xs font-black text-[#c5a059] tracking-wider">
+                    💼 CAREER PORTAL — <S dark /> JOBS
                   </div>
                   <a href="https://career.joinsophi.com" target="_blank" rel="noopener noreferrer"
-                    className="text-[11px] font-bold text-slate-400 hover:text-amber-300 transition-colors underline underline-offset-2"
+                    className="text-[11px] font-bold text-slate-400 hover:text-[#c5a059] transition-colors underline underline-offset-2"
                   >
                     career.joinsophi.com ↗
                   </a>
                 </div>
 
-                {/* Box Title & Description (LIGHT TEXT) */}
+                {/* Box Title & Description */}
                 <div className="space-y-2">
                   <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight">
                     Find Your Next<br />
@@ -304,7 +304,7 @@ export default function LandingPage() {
                     </span>
                   </h2>
                   <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
-                    Search 500+ verified jobs across Pakistan & Gulf — matched to your <S>SOPHI</S> CV profile.
+                    Search 500+ verified jobs across Pakistan & Gulf — matched to your <S dark /> CV profile.
                   </p>
                 </div>
 
@@ -412,7 +412,7 @@ export default function LandingPage() {
                   <span>🏢 <strong className="text-white">120+</strong> Companies</span>
                   <span>📄 <strong className="text-white">500+</strong> Active Jobs</span>
                   <a href="https://career.joinsophi.com/recruiter" target="_blank" rel="noopener noreferrer"
-                    className="ml-auto text-amber-300 hover:underline font-bold"
+                    className="ml-auto text-[#c5a059] hover:underline font-bold"
                   >
                     Post a Job →
                   </a>
@@ -425,22 +425,18 @@ export default function LandingPage() {
       </section>
 
 
-      {/* ═══════════════════════════════════════════════════════
-          HOW SOPHI WORKS — dark bg (high contrast)
-      ══════════════════════════════════════════════════════════ */}
+      {/* SECTION 2: HOW SOPHI WORKS — DARK BACKGROUND */}
       <section id="how-it-works" className="py-20 bg-slate-950 text-white">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 space-y-14">
           <div className="text-center space-y-3">
-            <span className="inline-block text-xs font-black uppercase tracking-widest text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3 py-1.5 rounded-full">
+            <span className="inline-block text-xs font-black uppercase tracking-widest text-[#c5a059] bg-[#c5a059]/10 border border-[#c5a059]/30 px-3.5 py-1.5 rounded-full">
               Full Process Flowchart
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
-              How <S>SOPHI</S>{' '}
-              <span className="bg-gradient-to-r from-amber-300 to-yellow-200 bg-clip-text text-transparent">Transforms</span>{' '}
-              Your Career
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
+              How <S dark /> Transforms Your Career
             </h2>
             <p className="text-slate-400 max-w-xl mx-auto text-sm">
-              From first upload to final download — every step your CV goes through inside <S>SOPHI</S>.
+              From first upload to final download — every step your CV goes through inside <S dark />.
             </p>
           </div>
 
@@ -484,7 +480,7 @@ export default function LandingPage() {
 
           <div className="text-center pt-2">
             <Link href="/how-it-works"
-              className="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-xl transition-all shadow-lg"
+              className="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-slate-950 bg-gold hover:bg-amber-300 rounded-xl transition-all shadow-lg"
             >
               <Sparkles className="h-4 w-4" />
               Explore Full Process
@@ -493,13 +489,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          CORE FEATURES — white bg (high contrast)
-      ══════════════════════════════════════════════════════════ */}
+      {/* SECTION 3: CORE FEATURES — LIGHT BACKGROUND */}
       <section id="features" className="py-20 bg-white border-b border-slate-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-16">
           <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-3 py-1 text-xs font-bold text-primary border border-primary-200">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-3.5 py-1 text-xs font-bold text-primary border border-primary-200">
               <Sparkles className="h-3.5 w-3.5 text-gold" />
               <span>Core Capabilities</span>
             </div>
@@ -507,7 +501,7 @@ export default function LandingPage() {
               Everything You Need to Beat ATS & Land Interviews
             </h2>
             <p className="text-sm text-slate-600">
-              <S>SOPHI</S> combines AI resume engineering, gap detection, and job-tailored keyword matching into one seamless platform.
+              <S /> combines AI resume engineering, gap detection, and job-tailored keyword matching into one seamless platform.
             </p>
           </div>
 
@@ -535,7 +529,7 @@ export default function LandingPage() {
                     </div>
                     <Link href={item.href} className="pt-6 mt-6 border-t border-slate-100 flex items-center gap-1 text-xs font-bold text-primary group-hover:translate-x-1 transition-transform">
                       <span>Explore Feature</span>
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-4 w-4 text-gold" />
                     </Link>
                   </motion.div>
                 )
@@ -565,7 +559,7 @@ export default function LandingPage() {
                       </div>
                       <Link href={item.href} className="pt-6 mt-6 border-t border-slate-100 flex items-center gap-1 text-xs font-bold text-primary group-hover:translate-x-1 transition-transform">
                         <span>Explore Feature</span>
-                        <ChevronRight className="h-4 w-4" />
+                        <ChevronRight className="h-4 w-4 text-gold" />
                       </Link>
                     </motion.div>
                   )
@@ -576,14 +570,12 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          ADDITIONAL FEATURES — slate-950 dark (high contrast)
-      ══════════════════════════════════════════════════════════ */}
+      {/* SECTION 4: ADDITIONAL FEATURES — DARK BACKGROUND */}
       <section className="py-20 bg-slate-950 text-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-14">
           <div className="text-center space-y-3">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              Complete <S>SOPHI</S> AI Career Toolkit
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl text-white">
+              Complete <S dark /> AI Career Toolkit
             </h2>
             <p className="text-sm text-slate-400 max-w-md mx-auto">
               Our AI optimization pipeline leverages industry-standard recruitment benchmarks.
@@ -611,70 +603,65 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          CTA — gradient (high contrast)
-      ══════════════════════════════════════════════════════════ */}
-      <section className="py-20 bg-gradient-to-br from-primary-950 via-primary-900 to-slate-950 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,theme(colors.blue.900/30),transparent)]" />
+      {/* SECTION 5: CTA BANNER — LIGHT BACKGROUND (Sophi Brand Navy/Gold Palette) */}
+      <section className="py-20 bg-primary-50 text-slate-900 border-y border-primary-200/80 relative overflow-hidden">
         <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-8">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-extrabold text-amber-400 backdrop-blur-md border border-white/10">
-            <Sparkles className="h-4 w-4 text-amber-300" />
-            <span>Ready for Your Next Step?</span>
+          <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-1.5 text-xs font-black text-primary border border-primary-200 shadow-sm">
+            <Sparkles className="h-4 w-4 text-gold" />
+            <span>READY FOR YOUR NEXT STEP?</span>
           </div>
 
-          <h2 className="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl leading-tight">
-            Elevate Your Job Applications with <S>SOPHI</S> AI
+          <h2 className="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl leading-tight text-slate-950">
+            Elevate Your Job Applications with <S /> AI
           </h2>
 
-          <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+          <p className="text-slate-600 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
             Get real-time ATS scoring, uncover experience gaps, build job-tailored resumes, or start fresh with our AI-guided builder.
           </p>
 
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto text-left py-4">
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto text-left py-2">
             {['ATS Score Audit', 'Gap Analysis Report', 'Job-Specific Tailoring', 'Build or Revamp in 30s'].map((t) => (
-              <div key={t} className="flex items-center gap-2.5 text-xs font-semibold text-slate-200 bg-white/5 p-3 rounded-xl border border-white/10">
-                <Check className="h-4 w-4 text-amber-400 shrink-0" />
+              <div key={t} className="flex items-center gap-2.5 text-xs font-bold text-slate-800 bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                <Check className="h-4 w-4 text-emerald-600 shrink-0" />
                 <span>{t}</span>
               </div>
             ))}
           </div>
 
-          <div className="pt-4 flex justify-center">
+          <div className="pt-2 flex justify-center">
             <Link href="/login"
-              className="flex items-center justify-center gap-2 rounded-xl bg-gold px-8 py-4 text-sm font-black text-slate-950 hover:bg-amber-400 transition-all hover:shadow-xl hover:shadow-gold/20"
+              className="flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-4 text-sm font-black text-white hover:bg-primary-800 transition-all hover:shadow-xl hover:shadow-primary-200 shadow-md"
             >
               <span>Get Started Now</span>
-              <ChevronRight className="h-4 w-4 text-slate-950" />
+              <ChevronRight className="h-4 w-4 text-gold" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          FAQ — white bg (high contrast after dark CTA)
-      ══════════════════════════════════════════════════════════ */}
-      <section className="py-20 bg-white border-t border-slate-200">
+      {/* SECTION 6: FAQ ACCORDION — DARK BACKGROUND */}
+      <section className="py-20 bg-slate-950 text-white">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="text-center space-y-2">
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+            <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
               Frequently Asked Questions
             </h2>
-            <p className="text-sm text-slate-500 max-w-md mx-auto">
-              Everything you need to know about the <S>SOPHI</S> AI CV platform.
+            <p className="text-sm text-slate-400 max-w-md mx-auto">
+              Everything you need to know about the <S dark /> AI CV platform.
             </p>
           </div>
           <FAQAccordion />
         </div>
       </section>
 
-      {/* Footer */}
+      {/* SECTION 7: FOOTER — LIGHT BACKGROUND */}
       <footer className="bg-white border-t border-slate-200 py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center">
             <Logo width={64} height={64} showTagline={true} />
           </div>
-          <p className="text-xs text-slate-400">
-            © {new Date().getFullYear()} JoinSophi.com — <S>SOPHI</S> AI CV Platform. All rights reserved.
+          <p className="text-xs text-slate-500 font-medium">
+            Copyright {new Date().getFullYear()} JoinSophi.com - <S /> AI CV Platform. All rights reserved.
           </p>
         </div>
       </footer>

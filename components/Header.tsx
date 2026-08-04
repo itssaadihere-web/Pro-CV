@@ -125,13 +125,13 @@ export default function Header() {
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/')
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/95 backdrop-blur-md shadow-sm">
+    <header className="sticky top-0 z-50 w-full bg-white backdrop-blur-md shadow-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
-        {/* Logo */}
-        <div className="flex items-center py-1 shrink-0">
-          <Link href="/" className="flex items-center hover:scale-105 transition-all bg-white rounded-2xl p-1 shadow-sm border border-slate-200/80">
-            <Logo width={52} height={52} showTagline={true} />
+        {/* Circular Prominent Logo - extending slightly below header ribbon */}
+        <div className="flex items-center shrink-0">
+          <Link href="/" className="relative z-10 flex items-center justify-center rounded-full bg-white p-2 shadow-md border-2 border-slate-100/90 hover:scale-105 transition-all -mb-4 mt-1">
+            <Logo width={68} height={68} showTagline={false} />
           </Link>
         </div>
 
