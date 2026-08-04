@@ -218,6 +218,9 @@ export default function DashboardPage() {
     )
   }
 
+  const emailUsername = profile?.email ? profile.email.split('@')[0] : 'Professional'
+  const displayName = (profile?.full_name && profile.full_name.trim()) ? profile.full_name.trim() : emailUsername
+
   return (
     <div className="min-h-screen bg-slate-50 pb-20 relative">
       <Header />
@@ -236,13 +239,13 @@ export default function DashboardPage() {
             <div className="flex items-center gap-5">
               {/* Avatar Badge */}
               <div className="flex-shrink-0 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-gold via-amber-400 to-amber-600 text-slate-950 font-black text-xl shadow-lg border-2 border-amber-300/30">
-                {(profile?.full_name || profile?.email || 'U').charAt(0).toUpperCase()}
+                {displayName.charAt(0).toUpperCase()}
               </div>
 
               <div className="space-y-1.5">
                 <div className="flex items-center gap-2.5 flex-wrap">
                   <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-                    Welcome back, {profile?.full_name || 'Professional'}! 👋
+                    Welcome back, {displayName}! 👋
                   </h1>
                   {Boolean(profile?.has_paid || profile?.account_paid || profile?.paid_at || profile?.payment_ref) ? (
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-[#c5a059]/15 border border-[#c5a059]/30 px-3 py-0.5 text-[11px] font-extrabold text-[#c5a059] shadow-sm">
