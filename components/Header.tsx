@@ -216,17 +216,6 @@ export default function Header() {
               </div>
             </div>
 
-            {/* Dashboard (logged in only) */}
-            {user && (
-              <Link
-                href="/dashboard"
-                className={`px-3 py-2 rounded-xl transition-all ${
-                  isActive('/dashboard') ? 'bg-primary text-white' : 'hover:bg-slate-100 hover:text-primary'
-                }`}
-              >
-                Dashboard
-              </Link>
-            )}
           </nav>
         )}
 
@@ -247,22 +236,14 @@ export default function Header() {
                   </Link>
                 )}
 
-                {/* Transform CV CTA */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (credits !== null && credits >= 30) {
-                      router.push('/transform-cv')
-                    } else {
-                      toast.error(`Insufficient Credits! Transform CV requires 30 Credits, but you have ${credits ?? 0}. Redirecting to payment...`)
-                      router.push('/payment')
-                    }
-                  }}
-                  className="flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-800 hover:shadow-md transition-all cursor-pointer"
+                {/* Dashboard Action Button in Navy Blue */}
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-800 hover:shadow-md transition-all cursor-pointer shadow-sm"
                 >
-                  <Sparkles className="h-4 w-4 text-gold" />
-                  Transform CV
-                </button>
+                  <LayoutDashboard className="h-4 w-4 text-gold" />
+                  <span>Dashboard</span>
+                </Link>
 
                 {/* Sign out */}
                 <button
