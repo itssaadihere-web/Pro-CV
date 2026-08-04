@@ -156,18 +156,18 @@ export default function PaymentPage() {
                   {paying ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Connecting to Safepay...</span>
+                      <span>Processing payment...</span>
                     </>
                   ) : (
                     <>
                       <CreditCard className="h-4 w-4 text-green-500" />
-                      <span>Pay with Safepay</span>
+                      <span>Proceed to Payment</span>
                     </>
                   )}
                 </button>
                 <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400">
                   <ShieldCheck className="h-4 w-4 text-green-500" />
-                  <span>Secure transaction processed by Safepay</span>
+                  <span>Secure transaction via encrypted checkout</span>
                 </div>
               </>
             )}

@@ -38,7 +38,7 @@ export default function KarachiCVBuilderPage() {
                 <CheckCircle className="w-5 h-5 text-emerald-500" /> Optimize for finance, tech, and corporate sectors
               </li>
               <li className="flex items-center gap-3 font-medium text-slate-700">
-                <CheckCircle className="w-5 h-5 text-emerald-500" /> Pay easily via Safepay
+                <CheckCircle className="w-5 h-5 text-emerald-500" /> Secure online payment — quick and easy
               </li>
             </ul>
 

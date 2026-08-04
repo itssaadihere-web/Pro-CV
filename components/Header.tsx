@@ -144,109 +144,86 @@ export default function Header() {
               href="https://career.joinsophi.com/jobs"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 px-3 py-2 rounded-xl hover:bg-slate-100 hover:text-primary transition-all"
+              className="px-3 py-2 rounded-xl hover:bg-slate-100 hover:text-primary transition-all"
             >
-              💼 Browse Jobs
+              Browse Jobs
             </a>
 
-            {/* AI Tools Dropdown */}
-            <div className="relative" ref={toolsRef}>
+            {/* AI Tools Dropdown — hover based */}
+            <div className="relative group" ref={toolsRef}>
               <button
-                onClick={() => { setToolsOpen(o => !o); setResourcesOpen(false) }}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-slate-100 hover:text-primary transition-all ${toolsOpen ? 'bg-slate-100 text-primary' : ''}`}
+                className={`px-3 py-2 rounded-xl hover:bg-slate-100 hover:text-primary transition-all group-hover:bg-slate-100 group-hover:text-primary ${toolsOpen ? 'bg-slate-100 text-primary' : ''}`}
               >
-                <Sparkles className="h-4 w-4 text-gold" />
                 AI Tools
-                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${toolsOpen ? 'rotate-180' : ''}`} />
               </button>
 
-              {toolsOpen && (
-                <div className="absolute top-full left-0 mt-2 w-72 rounded-2xl border border-slate-200 bg-white shadow-xl p-2 animate-fade-in z-50">
-                  <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-3 py-1.5">Sophi AI Services</p>
-                  {TOOLS_NAV.map((item) => {
-                    const Icon = item.icon
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setToolsOpen(false)}
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group ${
-                          isActive(item.href)
-                            ? 'bg-primary text-white'
-                            : 'hover:bg-slate-50 hover:text-primary'
-                        }`}
-                      >
-                        <div className={`flex h-8 w-8 items-center justify-center rounded-lg shrink-0 ${
-                          isActive(item.href) ? 'bg-white/20' : 'bg-slate-100 group-hover:bg-primary-50'
-                        }`}>
-                          <Icon className={`h-4 w-4 ${isActive(item.href) ? 'text-white' : 'text-primary'}`} />
-                        </div>
-                        <div>
-                          <span className="block text-xs font-bold leading-tight">
-                            {item.label}
-                            {item.highlight && <span className="ml-1.5 text-[10px] bg-gold/20 text-amber-700 font-black px-1.5 py-0.5 rounded-full">Popular</span>}
-                          </span>
-                          <span className={`block text-[11px] ${isActive(item.href) ? 'text-white/70' : 'text-slate-400'}`}>{item.desc}</span>
-                        </div>
-                      </Link>
-                    )
-                  })}
-                </div>
-              )}
+              <div className="absolute top-full left-0 mt-1 w-72 rounded-2xl border border-slate-200 bg-white shadow-xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-3 py-1.5">Sophi AI Services</p>
+                {TOOLS_NAV.map((item) => {
+                  const Icon = item.icon
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group/item ${
+                        isActive(item.href)
+                          ? 'bg-primary text-white'
+                          : 'hover:bg-slate-50 hover:text-primary'
+                      }`}
+                    >
+                      <div>
+                        <span className="block text-xs font-bold leading-tight">
+                          {item.label}
+                          {item.highlight && <span className="ml-1.5 text-[10px] bg-gold/20 text-amber-700 font-black px-1.5 py-0.5 rounded-full">Popular</span>}
+                        </span>
+                        <span className={`block text-[11px] ${isActive(item.href) ? 'text-white/70' : 'text-slate-400'}`}>{item.desc}</span>
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
             </div>
 
-            {/* Resources Dropdown */}
-            <div className="relative" ref={resourcesRef}>
+            {/* Resources Dropdown — hover based */}
+            <div className="relative group" ref={resourcesRef}>
               <button
-                onClick={() => { setResourcesOpen(o => !o); setToolsOpen(false) }}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-slate-100 hover:text-primary transition-all ${resourcesOpen ? 'bg-slate-100 text-primary' : ''}`}
+                className={`px-3 py-2 rounded-xl hover:bg-slate-100 hover:text-primary transition-all group-hover:bg-slate-100 group-hover:text-primary ${resourcesOpen ? 'bg-slate-100 text-primary' : ''}`}
               >
-                <BookOpen className="h-4 w-4" />
                 Resources
-                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${resourcesOpen ? 'rotate-180' : ''}`} />
               </button>
 
-              {resourcesOpen && (
-                <div className="absolute top-full left-0 mt-2 w-64 rounded-2xl border border-slate-200 bg-white shadow-xl p-2 animate-fade-in z-50">
-                  <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-3 py-1.5">Resources & Info</p>
-                  {RESOURCES_NAV.map((item) => {
-                    const Icon = item.icon
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setResourcesOpen(false)}
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group ${
-                          isActive(item.href)
-                            ? 'bg-primary text-white'
-                            : 'hover:bg-slate-50 hover:text-primary'
-                        }`}
-                      >
-                        <div className={`flex h-8 w-8 items-center justify-center rounded-lg shrink-0 ${
-                          isActive(item.href) ? 'bg-white/20' : 'bg-slate-100 group-hover:bg-primary-50'
-                        }`}>
-                          <Icon className={`h-4 w-4 ${isActive(item.href) ? 'text-white' : 'text-primary'}`} />
-                        </div>
-                        <div>
-                          <span className="block text-xs font-bold leading-tight">{item.label}</span>
-                          <span className={`block text-[11px] ${isActive(item.href) ? 'text-white/70' : 'text-slate-400'}`}>{item.desc}</span>
-                        </div>
-                      </Link>
-                    )
-                  })}
-                </div>
-              )}
+              <div className="absolute top-full left-0 mt-1 w-64 rounded-2xl border border-slate-200 bg-white shadow-xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-3 py-1.5">Resources & Info</p>
+                {RESOURCES_NAV.map((item) => {
+                  const Icon = item.icon
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
+                        isActive(item.href)
+                          ? 'bg-primary text-white'
+                          : 'hover:bg-slate-50 hover:text-primary'
+                      }`}
+                    >
+                      <div>
+                        <span className="block text-xs font-bold leading-tight">{item.label}</span>
+                        <span className={`block text-[11px] ${isActive(item.href) ? 'text-white/70' : 'text-slate-400'}`}>{item.desc}</span>
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
             </div>
 
             {/* Dashboard (logged in only) */}
             {user && (
               <Link
                 href="/dashboard"
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition-all ${
+                className={`px-3 py-2 rounded-xl transition-all ${
                   isActive('/dashboard') ? 'bg-primary text-white' : 'hover:bg-slate-100 hover:text-primary'
                 }`}
               >
-                <LayoutDashboard className="h-4 w-4" />
                 Dashboard
               </Link>
             )}
