@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Logo from './Logo';
 
 export default function Footer() {
   return (
@@ -8,8 +9,10 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-white">Sophi</h3>
-            <p className="text-sm text-slate-400 max-w-xs">
+            <Link href="/" className="inline-block hover:opacity-90 transition-opacity">
+              <Logo width={140} height={140} showTagline={true} light={true} />
+            </Link>
+            <p className="text-sm text-slate-400 max-w-xs leading-relaxed">
               AI-powered CV builder for professionals in Pakistan. Optimize your resume for ATS and get hired faster.
             </p>
           </div>
@@ -49,8 +52,8 @@ export default function Footer() {
 
         </div>
         
-        <div className="mt-12 pt-8 border-t border-slate-800 text-sm text-center text-slate-500">
-          <p>&copy; {new Date().getFullYear()} Sophi. All rights reserved.</p>
+        <div className="mt-12 pt-8 border-t border-slate-800 text-sm text-center">
+          <p className="text-white font-medium">&copy; 2025 All Rights Reserved.</p>
         </div>
       </div>
     </footer>

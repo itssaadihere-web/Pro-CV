@@ -12,6 +12,7 @@ import {
 import Header from '@/components/Header'
 import FAQAccordion from '@/components/FAQAccordion'
 import Logo from '@/components/Logo'
+import Footer from '@/components/Footer'
 import Script from 'next/script'
 import { websiteSchema, softwareSchema, faqSchema } from '@/lib/schema'
 
@@ -655,17 +656,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* SECTION 7: FOOTER — LIGHT BACKGROUND */}
-      <footer className="bg-white border-t border-slate-200 py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center">
-            <Logo width={64} height={64} showTagline={true} />
-          </div>
-          <p className="text-xs text-slate-500 font-medium">
-            Copyright {new Date().getFullYear()} JoinSophi.com - <S /> AI CV Platform. All rights reserved.
-          </p>
-        </div>
-      </footer>
+      {/* SECTION 7: GLOBAL FOOTER */}
+      <Footer />
     </div>
   )
 }
