@@ -289,13 +289,23 @@ export default function DashboardPage() {
 
               <div className="w-px h-10 bg-slate-800 hidden sm:block" />
 
-              <Link
-                href="/credit-history"
-                className="flex items-center gap-2 rounded-xl bg-gold px-4 py-2.5 text-xs font-black text-slate-950 hover:bg-amber-300 transition-all shadow-md hover:scale-105"
-              >
-                <History className="h-4 w-4 text-slate-950" />
-                <span>Credit History</span>
-              </Link>
+              <div className="flex items-center gap-2 flex-wrap">
+                <Link
+                  href="/credit-history"
+                  className="flex items-center gap-2 rounded-xl bg-gold px-3.5 py-2.5 text-xs font-black text-slate-950 hover:bg-amber-300 transition-all shadow-md hover:scale-105"
+                >
+                  <History className="h-4 w-4 text-slate-950" />
+                  <span>Credit History</span>
+                </Link>
+                <Link
+                  href="/dashboard/settings"
+                  className="flex items-center gap-2 rounded-xl bg-slate-800 border border-slate-700 px-3.5 py-2.5 text-xs font-bold text-white hover:bg-slate-700 transition-all shadow-md hover:scale-105"
+                  title="Account Settings"
+                >
+                  <Settings className="h-4 w-4 text-[#c5a059]" />
+                  <span>Settings</span>
+                </Link>
+              </div>
             </div>
 
           </div>
