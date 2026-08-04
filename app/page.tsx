@@ -603,26 +603,27 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* SECTION 5: CTA BANNER — LIGHT BACKGROUND (Sophi Brand Navy/Gold Palette) */}
-      <section className="py-20 bg-primary-50 text-slate-900 border-y border-primary-200/80 relative overflow-hidden">
+      {/* SECTION 5: CTA BANNER — BRAND NAVY & GOLD (High Contrast) */}
+      <section className="py-20 bg-slate-950 text-white relative overflow-hidden border-y border-slate-800">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(197,160,89,0.08)_0%,transparent_70%)] pointer-events-none" />
         <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-8">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-1.5 text-xs font-black text-primary border border-primary-200 shadow-sm">
-            <Sparkles className="h-4 w-4 text-gold" />
+          <div className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-1.5 text-xs font-black text-[#c5a059] border border-[#c5a059]/30 shadow-sm">
+            <Sparkles className="h-4 w-4 text-[#c5a059]" />
             <span>READY FOR YOUR NEXT STEP?</span>
           </div>
 
-          <h2 className="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl leading-tight text-slate-950">
-            Elevate Your Job Applications with <S /> AI
+          <h2 className="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl leading-tight text-white">
+            Elevate Your Job Applications with <S dark /> AI
           </h2>
 
-          <p className="text-slate-600 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+          <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
             Get real-time ATS scoring, uncover experience gaps, build job-tailored resumes, or start fresh with our AI-guided builder.
           </p>
 
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto text-left py-2">
             {['ATS Score Audit', 'Gap Analysis Report', 'Job-Specific Tailoring', 'Build or Revamp in 30s'].map((t) => (
-              <div key={t} className="flex items-center gap-2.5 text-xs font-bold text-slate-800 bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
-                <Check className="h-4 w-4 text-emerald-600 shrink-0" />
+              <div key={t} className="flex items-center gap-2.5 text-xs font-bold text-slate-200 bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 shadow-sm">
+                <Check className="h-4 w-4 text-[#c5a059] shrink-0" />
                 <span>{t}</span>
               </div>
             ))}
@@ -630,24 +631,24 @@ export default function LandingPage() {
 
           <div className="pt-2 flex justify-center">
             <Link href="/login"
-              className="flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-4 text-sm font-black text-white hover:bg-primary-800 transition-all hover:shadow-xl hover:shadow-primary-200 shadow-md"
+              className="flex items-center justify-center gap-2 rounded-xl bg-gold px-8 py-4 text-sm font-black text-slate-950 hover:bg-amber-300 transition-all hover:shadow-xl hover:shadow-gold/20 shadow-md"
             >
               <span>Get Started Now</span>
-              <ChevronRight className="h-4 w-4 text-gold" />
+              <ChevronRight className="h-4 w-4 text-slate-950" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* SECTION 6: FAQ ACCORDION — DARK BACKGROUND */}
-      <section className="py-20 bg-slate-950 text-white">
+      {/* SECTION 6: FAQ ACCORDION — LIGHT BACKGROUND */}
+      <section className="py-20 bg-white text-slate-900 border-t border-slate-200">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="text-center space-y-2">
-            <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
               Frequently Asked Questions
             </h2>
-            <p className="text-sm text-slate-400 max-w-md mx-auto">
-              Everything you need to know about the <S dark /> AI CV platform.
+            <p className="text-sm text-slate-500 max-w-md mx-auto">
+              Everything you need to know about the <S /> AI CV platform.
             </p>
           </div>
           <FAQAccordion />
