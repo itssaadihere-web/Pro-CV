@@ -1,5 +1,6 @@
 'use client'
 
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -184,6 +185,23 @@ const fadeUp = {
 }
 
 export default function LandingPage() {
+  const [portalStats, setPortalStats] = useState<{ jobs: number; companies: number } | null>(null)
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/portal-stats')
+        if (res.ok) {
+          const data = await res.json()
+          setPortalStats(data)
+        }
+      } catch (err) {
+        console.error('Failed to fetch portal stats:', err)
+      }
+    }
+    loadStats()
+  }, [])
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 relative">
       <Script id="schema-website" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
@@ -219,84 +237,83 @@ export default function LandingPage() {
                   </span>
                 </motion.h1>
                 <motion.p initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
-                  className="text-sm sm:text-base leading-relaxed text-slate-600 max-w-xl"
+                  className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl font-medium"
                 >
                   Audit your ATS score, analyze career gaps, tailor your CV for job roles, build a new resume from scratch, or revamp your document in 30 seconds — powered by <S />.
                 </motion.p>
               </div>
 
-              {/* Feature pills */}
+              {/* 4 Primary Action Pills */}
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.25 }}
                 className="grid grid-cols-2 gap-2.5 max-w-md"
               >
-                {[
-                  { icon: Target,    label: 'ATS Score Audit' },
-                  { icon: BarChart3, label: 'Gap Analysis' },
-                  { icon: Sparkles,  label: 'Job Tailoring' },
-                  { icon: FilePlus,  label: 'Build from Scratch' },
-                ].map(({ icon: Icon, label }) => (
-                  <div key={label} className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 shadow-sm">
-                    <Icon className="h-4 w-4 text-gold shrink-0" />
-                    <span>{label}</span>
-                  </div>
-                ))}
+                <Link href="/ats-checker" className="flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-3.5 py-2.5 text-xs font-extrabold text-slate-800 shadow-2xs hover:border-primary hover:text-primary transition-all">
+                  <CheckCircle2 className="h-4 w-4 text-gold shrink-0" />
+                  <span>ATS Score Audit</span>
+                </Link>
+                <Link href="/ats-checker" className="flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-3.5 py-2.5 text-xs font-extrabold text-slate-800 shadow-2xs hover:border-primary hover:text-primary transition-all">
+                  <BarChart3 className="h-4 w-4 text-gold shrink-0" />
+                  <span>Gap Analysis</span>
+                </Link>
+                <Link href="/tailor-cv" className="flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-3.5 py-2.5 text-xs font-extrabold text-slate-800 shadow-2xs hover:border-primary hover:text-primary transition-all">
+                  <Target className="h-4 w-4 text-gold shrink-0" />
+                  <span>Job Tailoring</span>
+                </Link>
+                <Link href="/choice" className="flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-3.5 py-2.5 text-xs font-extrabold text-slate-800 shadow-2xs hover:border-primary hover:text-primary transition-all">
+                  <FileText className="h-4 w-4 text-gold shrink-0" />
+                  <span>Build from Scratch</span>
+                </Link>
               </motion.div>
 
-              {/* Action Buttons */}
+              {/* Primary Call to Actions */}
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
-                className="flex flex-col sm:flex-row gap-4 items-center pt-1"
+                className="flex flex-wrap items-center gap-4 pt-1"
               >
-                <Link href="/login"
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-primary px-7 py-3.5 text-sm font-black text-white transition-all hover:bg-primary-800 hover:shadow-xl hover:shadow-primary-200 shadow-md"
+                <Link
+                  href="/transform-cv"
+                  className="flex items-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-black text-white hover:bg-primary-800 transition-all shadow-lg hover:scale-105"
                 >
                   <Sparkles className="h-4 w-4 text-gold" />
                   <span>Transform CV Now</span>
-                  <ArrowRight className="h-4 w-4 text-gold" />
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
-                <a href="#how-it-works"
-                  className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-white px-6 py-3.5 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-100 h-[48px] shadow-sm"
+                
+                <a
+                  href="#how-it-works"
+                  className="flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3.5 text-sm font-bold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-all shadow-2xs"
                 >
-                  <span>See How It Works</span>
+                  See How It Works
                 </a>
-              </motion.div>
-
-              {/* Proof stats */}
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.4 }}
-                className="pt-4 border-t border-slate-200 flex items-center gap-6 text-xs font-bold text-slate-600"
-              >
-                <div><span className="text-base font-black text-primary">4,800+</span> CVs Optimized</div>
-                <div className="w-px h-6 bg-slate-300" />
-                <div><span className="text-base font-black text-primary">98%</span> ATS Pass Rate</div>
-                <div className="w-px h-6 bg-slate-300" />
-                <div><span className="text-base font-black text-primary">&lt; 60s</span> Delivery</div>
               </motion.div>
             </div>
 
-            {/* RIGHT SECTION: Career Portal Box (DARK CONTAINER) */}
-            <div className="lg:col-span-6 flex justify-center">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.96, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.15 }}
-                className="w-full max-w-lg rounded-3xl bg-slate-950 border border-slate-800 shadow-2xl shadow-slate-950/40 p-6 sm:p-8 space-y-6 relative overflow-hidden text-white"
+            {/* RIGHT SECTION: Dark-Themed SOPHI Career Portal Search Container */}
+            <div className="lg:col-span-6">
+              <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }}
+                className="rounded-3xl border border-slate-800 bg-slate-950 p-6 sm:p-8 text-white shadow-2xl space-y-6 relative overflow-hidden"
               >
-                {/* Subtle dark ambient glows inside the box */}
-                <div className="pointer-events-none absolute -top-16 -right-16 w-56 h-56 rounded-full bg-primary-900/40 blur-3xl" />
-                <div className="pointer-events-none absolute -bottom-16 -left-16 w-56 h-56 rounded-full bg-gold/10 blur-3xl" />
+                {/* Decorative background glow inside box */}
+                <div className="pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full bg-amber-500/10 blur-3xl" />
 
-                {/* Box Badge Header */}
-                <div className="flex items-center justify-between gap-2 border-b border-slate-800/80 pb-4">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-primary-900/80 border border-primary-700/60 px-3.5 py-1.5 text-xs font-black text-[#c5a059] tracking-wider">
-                    💼 CAREER PORTAL — <S dark /> JOBS
+                {/* Box Header Badge */}
+                <div className="flex items-center justify-between border-b border-slate-800/90 pb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 rounded-md bg-amber-400/10 border border-amber-400/30 px-2.5 py-1 text-[11px] font-black text-amber-300 tracking-wider">
+                      <Briefcase className="h-3 w-3 text-amber-300" />
+                      CAREER PORTAL — SOPHI JOBS
+                    </span>
                   </div>
-                  <a href="https://career.joinsophi.com" target="_blank" rel="noopener noreferrer"
-                    className="text-[11px] font-bold text-slate-400 hover:text-[#c5a059] transition-colors underline underline-offset-2"
+                  <a
+                    href="https://career.joinsophi.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] font-extrabold text-slate-400 hover:text-white transition-colors"
                   >
                     career.joinsophi.com ↗
                   </a>
                 </div>
 
-                {/* Box Title & Description */}
+                {/* Main Heading inside dark box */}
                 <div className="space-y-2">
                   <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight">
                     Find Your Next<br />
@@ -305,7 +322,7 @@ export default function LandingPage() {
                     </span>
                   </h2>
                   <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
-                    Search 500+ verified jobs across Pakistan & Gulf — matched to your <S dark /> CV profile.
+                    Search {portalStats !== null ? `${portalStats.jobs}+` : '0+'} verified jobs across Pakistan & Gulf — matched to your <S dark /> CV profile.
                   </p>
                 </div>
 
@@ -328,7 +345,6 @@ export default function LandingPage() {
                   }}
                   className="space-y-3 pt-1"
                 >
-                  {/* Job title / keyword input */}
                   <div className="relative">
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
                     <input
@@ -338,10 +354,7 @@ export default function LandingPage() {
                       className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-sm font-medium text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400 transition"
                     />
                   </div>
-
-                  {/* Filters row */}
                   <div className="grid grid-cols-2 gap-3">
-                    {/* Location filter */}
                     <div className="relative">
                       <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
                       <select
@@ -359,8 +372,6 @@ export default function LandingPage() {
                         <option value="Riyadh">Riyadh, KSA</option>
                       </select>
                     </div>
-
-                    {/* Job type filter */}
                     <div className="relative">
                       <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
                       <select
@@ -376,8 +387,6 @@ export default function LandingPage() {
                       </select>
                     </div>
                   </div>
-
-                  {/* Search CTA Button inside dark box */}
                   <button
                     type="submit"
                     className="w-full flex items-center justify-center gap-2 rounded-xl bg-gold py-3.5 text-sm font-black text-slate-950 hover:bg-amber-300 transition-all shadow-lg hover:scale-[1.01]"
@@ -410,8 +419,8 @@ export default function LandingPage() {
 
                 {/* Dark Box Footer Stats */}
                 <div className="flex items-center gap-4 pt-1 text-xs font-semibold text-slate-300">
-                  <span>🏢 <strong className="text-white">120+</strong> Companies</span>
-                  <span>📄 <strong className="text-white">500+</strong> Active Jobs</span>
+                  <span>🏢 <strong className="text-white">{portalStats !== null ? `${portalStats.companies}+` : '0+'}</strong> Companies</span>
+                  <span>📄 <strong className="text-white">{portalStats !== null ? `${portalStats.jobs}+` : '0+'}</strong> Active Jobs</span>
                   <a href="https://career.joinsophi.com/recruiter" target="_blank" rel="noopener noreferrer"
                     className="ml-auto text-[#c5a059] hover:underline font-bold"
                   >
