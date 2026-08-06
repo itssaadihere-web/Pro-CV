@@ -222,36 +222,27 @@ export default function LandingPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-12 items-center">
 
-            {/* LEFT SECTION: Sophi CV Platform (Light BG Side) */}
             <div className="lg:col-span-6 space-y-7 text-left">
-              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-                className="inline-flex items-center gap-2 rounded-full bg-primary-50 px-4 py-1.5 text-xs font-black text-primary border border-primary-200"
-              >
+              <div className="inline-flex items-center gap-2 rounded-full bg-primary-50 px-4 py-1.5 text-xs font-black text-primary border border-primary-200">
                 <Sparkles className="h-4 w-4 text-gold" />
                 <span>NEXT-GEN AI CV PLATFORM v2.5</span>
-              </motion.div>
+              </div>
 
               <div className="space-y-4">
-                <motion.h1 initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-                  className="text-4xl font-black tracking-tight text-slate-950 sm:text-5xl lg:text-6xl leading-[1.1]"
-                >
+                <h1 className="text-4xl font-black tracking-tight text-slate-950 sm:text-5xl lg:text-6xl leading-[1.1]">
                   Build & Transform <br />
                   CVs with <S /> AI. <br />
                   <span className="bg-gradient-to-r from-primary via-primary-800 to-gold bg-clip-text text-transparent">
                     ATS-Optimized in 30s.
                   </span>
-                </motion.h1>
-                <motion.p initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
-                  className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl font-medium"
-                >
+                </h1>
+                <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl font-medium">
                   Audit your ATS score, analyze career gaps, tailor your CV for job roles, build a new resume from scratch, or revamp your document in 30 seconds — powered by <S />.
-                </motion.p>
+                </p>
               </div>
 
               {/* 4 Primary Action Pills */}
-              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.25 }}
-                className="grid grid-cols-2 gap-2.5 max-w-md"
-              >
+              <div className="grid grid-cols-2 gap-2.5 max-w-md">
                 <Link href="/ats-checker" className="flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-3.5 py-2.5 text-xs font-extrabold text-slate-800 shadow-2xs hover:border-primary hover:text-primary transition-all">
                   <CheckCircle2 className="h-4 w-4 text-gold shrink-0" />
                   <span>ATS Score Audit</span>
@@ -268,12 +259,10 @@ export default function LandingPage() {
                   <FileText className="h-4 w-4 text-gold shrink-0" />
                   <span>Build from Scratch</span>
                 </Link>
-              </motion.div>
+              </div>
 
               {/* Primary Call to Actions */}
-              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
-                className="flex flex-wrap items-center gap-4 pt-1"
-              >
+              <div className="flex flex-wrap items-center gap-4 pt-1">
                 <Link
                   href="/transform-cv"
                   className="flex items-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-black text-white hover:bg-primary-800 transition-all shadow-lg hover:scale-105"
@@ -289,7 +278,7 @@ export default function LandingPage() {
                 >
                   See How It Works
                 </a>
-              </motion.div>
+              </div>
             </div>
 
             {/* RIGHT SECTION: Dark-Themed SOPHI Career Portal Search Container */}
