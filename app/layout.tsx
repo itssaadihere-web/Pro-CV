@@ -101,10 +101,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <head>
-        <link rel="preconnect" href="https://joinsophi.com" />
-        <link rel="dns-prefetch" href="https://joinsophi.com" />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-slate-800 bg-slate-50`}
       >
@@ -116,16 +112,30 @@ export default function RootLayout({
         <Toaster position="top-center" reverseOrder={false} />
         {children}
         <ConditionalFooter />
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-8YEPSJ9MP3"
-          strategy="lazyOnload"
-        />
-        <Script id="google-analytics" strategy="lazyOnload">
+        <Script id="google-analytics-lazy" strategy="afterInteractive">
           {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-8YEPSJ9MP3', { page_path: window.location.pathname });
+            (function() {
+              var loaded = false;
+              function loadGtag() {
+                if (loaded) return;
+                loaded = true;
+                var script = document.createElement('script');
+                script.async = true;
+                script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8YEPSJ9MP3';
+                document.head.appendChild(script);
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                window.gtag = gtag;
+                gtag('js', new Date());
+                gtag('config', 'G-8YEPSJ9MP3', { page_path: window.location.pathname });
+              }
+              if (typeof window !== 'undefined') {
+                ['scroll', 'mousemove', 'touchstart', 'keydown', 'click'].forEach(function(evt) {
+                  window.addEventListener(evt, loadGtag, { once: true, passive: true });
+                });
+                setTimeout(loadGtag, 4500);
+              }
+            })();
           `}
         </Script>
         <Analytics />

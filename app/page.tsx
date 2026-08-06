@@ -73,9 +73,9 @@ const CORE_HIGHLIGHTS = [
   },
   {
     icon: Zap,
-    badge: '30-Sec AI Revamp',
-    title: 'Transform CV in 30 Seconds',
-    description: 'Upload your current PDF or Word document and let advanced AI restructure and optimize it into an interview-winning CV in 30 seconds.',
+    badge: 'AI Revamp',
+    title: 'Transform Existing CV',
+    description: 'Upload your current PDF or Word document and let advanced AI restructure and optimize it into an interview-winning CV.',
     badgeBg: 'bg-primary-50 text-primary-900 border-primary-200',
     iconBg: 'bg-primary-950 text-white',
     href: '/transform-cv',
@@ -233,11 +233,11 @@ export default function LandingPage() {
                   Build & Transform <br />
                   CVs with <S /> AI. <br />
                   <span className="bg-gradient-to-r from-primary via-primary-800 to-gold bg-clip-text text-transparent">
-                    ATS-Optimized in 30s.
+                    ATS-Optimized CVs.
                   </span>
                 </h1>
                 <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl font-medium">
-                  Audit your ATS score, analyze career gaps, tailor your CV for job roles, build a new resume from scratch, or revamp your document in 30 seconds — powered by <S />.
+                  Audit your ATS score, analyze career gaps, tailor your CV for job roles, build a new resume from scratch, or revamp your document — powered by <S />.
                 </p>
               </div>
 
@@ -627,7 +627,7 @@ export default function LandingPage() {
           </p>
 
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto text-left py-2">
-            {['ATS Score Audit', 'Gap Analysis Report', 'Job-Specific Tailoring', 'Build or Revamp in 30s'].map((t) => (
+            {['ATS Score Audit', 'Gap Analysis Report', 'Job-Specific Tailoring', 'Build or Revamp'].map((t) => (
               <div key={t} className="flex items-center gap-2.5 text-xs font-bold text-slate-200 bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 shadow-sm">
                 <Check className="h-4 w-4 text-[#c5a059] shrink-0" />
                 <span>{t}</span>
