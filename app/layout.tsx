@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     default: 'Sophi — AI CV Builder Pakistan | ATS-Optimized Resume in Minutes',
     template: '%s | Sophi — AI CV Builder'
   },
-  description: 'Upload or build your CV with AI to get an ATS-optimized resume in 30 seconds. Gap analysis, job tailoring & LinkedIn optimizer for career success.',
+  description: 'Upload or build your CV with AI to get an ATS-optimized resume. Gap analysis, job tailoring & LinkedIn optimizer for career success.',
   keywords: [
     'AI CV builder Pakistan', 'ATS resume builder', 'CV maker online Pakistan',
     'professional CV writer', 'ATS optimized resume', 'AI resume writer',
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     url: 'https://joinsophi.com',
     siteName: 'Sophi',
     title: 'Sophi — AI CV Builder Pakistan | ATS-Optimized Resume in Minutes',
-    description: 'Upload or build your CV with AI to get an ATS-optimized resume in 30 seconds. Gap analysis, job tailoring & LinkedIn optimizer for career success.',
+    description: 'Upload or build your CV with AI to get an ATS-optimized resume. Gap analysis, job tailoring & LinkedIn optimizer for career success.',
     images: [
       {
         url: 'https://joinsophi.com/og/home.png',
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Sophi — AI CV Builder Pakistan | ATS-Optimized Resume in Minutes',
-    description: 'Upload or build your CV with AI to get an ATS-optimized resume in 30 seconds. Gap analysis, job tailoring & LinkedIn optimizer for career success.',
+    description: 'Upload or build your CV with AI to get an ATS-optimized resume. Gap analysis, job tailoring & LinkedIn optimizer for career success.',
     site: '@JoinSophi',
     creator: '@JoinSophi',
     images: ['https://joinsophi.com/og/home.png']

@@ -12,6 +12,22 @@ export const metadata: Metadata = {
     title: 'Career Advice & ATS Resume Writing Blog | Sophi',
     description: 'Expert tips on passing ATS resume screeners, tailoring CVs for jobs, optimizing LinkedIn profiles, and landing career opportunities.',
     url: 'https://joinsophi.com/blog',
+    siteName: 'Sophi',
+    type: 'website',
+    images: [
+      {
+        url: 'https://joinsophi.com/og/home.png',
+        width: 1200,
+        height: 630,
+        alt: 'Sophi Career Advice & ATS Resume Writing Blog',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Career Advice & ATS Resume Writing Blog | Sophi',
+    description: 'Expert tips on passing ATS resume screeners, tailoring CVs for jobs, optimizing LinkedIn profiles, and landing career opportunities.',
+    images: ['https://joinsophi.com/og/home.png'],
   },
 };
 

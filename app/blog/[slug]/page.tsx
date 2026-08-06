@@ -34,16 +34,37 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     return { title: 'Post Not Found' };
   }
 
+  const imageUrl = post.featured_image || 'https://joinsophi.com/og/home.png';
+
   return {
     title: `${post.title} | Sophi Blog`,
     description: post.meta_description,
+    alternates: {
+      canonical: `https://joinsophi.com/blog/${post.slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.meta_description,
+      url: `https://joinsophi.com/blog/${post.slug}`,
+      siteName: 'Sophi',
       type: 'article',
       authors: [post.author_name],
       publishedTime: post.published_at,
-    }
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.meta_description,
+      images: [imageUrl],
+    },
   };
 }
 
