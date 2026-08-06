@@ -4,7 +4,7 @@ export const organizationSchema = {
   "name": "Sophi",
   "alternateName": "JoinSophi",
   "url": "https://joinsophi.com",
-  "logo": "https://joinsophi.com/logo.png",
+  "logo": "https://joinsophi.com/images/logo.svg",
   "description": "AI-powered CV builder for Pakistani professionals. ATS-optimized resumes, cover letters, and LinkedIn optimization powered by advanced AI.",
   "foundingDate": "2024",
   "contactPoint": {
@@ -180,7 +180,7 @@ export function blogPostSchema(post: {
       "name": "Sophi",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://joinsophi.com/logo.png"
+        "url": "https://joinsophi.com/images/logo.svg"
       }
     },
     "image": post.imageUrl,

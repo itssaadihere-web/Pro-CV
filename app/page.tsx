@@ -10,12 +10,17 @@ import {
   FilePlus, CheckCircle2, Check, Upload, ArrowDown, Search,
   Scissors, Link2, Cpu, MapPin, Briefcase,
 } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import Header from '@/components/Header'
-import FAQAccordion from '@/components/FAQAccordion'
 import Logo from '@/components/Logo'
 import Footer from '@/components/Footer'
 import Script from 'next/script'
 import { websiteSchema, softwareSchema, faqSchema } from '@/lib/schema'
+
+const FAQAccordion = dynamic(() => import('@/components/FAQAccordion'), {
+  loading: () => <div className="h-64 rounded-2xl bg-slate-100 animate-pulse" />,
+  ssr: true,
+})
 
 /* Brand helper:
    When on dark background (dark=true), font color is #c5a059 (brand gold).
@@ -230,8 +235,8 @@ export default function LandingPage() {
                 <motion.h1 initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
                   className="text-4xl font-black tracking-tight text-slate-950 sm:text-5xl lg:text-6xl leading-[1.1]"
                 >
-                  Build & Transform<br />
-                  CVs with <S /> AI.<br />
+                  Build & Transform <br />
+                  CVs with <S /> AI. <br />
                   <span className="bg-gradient-to-r from-primary via-primary-800 to-gold bg-clip-text text-transparent">
                     ATS-Optimized in 30s.
                   </span>

@@ -5,15 +5,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://joinsophi.com'
 
   const staticPages = [
-    { url: baseUrl, priority: 1.0, changeFrequency: 'weekly' as const },
+    { url: baseUrl, priority: 1.0, changeFrequency: 'daily' as const },
+    { url: `${baseUrl}/ats-checker`, priority: 0.9, changeFrequency: 'weekly' as const },
+    { url: `${baseUrl}/linkedin-optimizer`, priority: 0.9, changeFrequency: 'weekly' as const },
+    { url: `${baseUrl}/tailor-cv`, priority: 0.9, changeFrequency: 'weekly' as const },
+    { url: `${baseUrl}/transform-cv`, priority: 0.9, changeFrequency: 'weekly' as const },
     { url: `${baseUrl}/how-it-works`, priority: 0.9, changeFrequency: 'monthly' as const },
     { url: `${baseUrl}/pricing`, priority: 0.9, changeFrequency: 'monthly' as const },
     { url: `${baseUrl}/templates`, priority: 0.8, changeFrequency: 'monthly' as const },
+    { url: `${baseUrl}/cv-builder-karachi`, priority: 0.8, changeFrequency: 'monthly' as const },
+    { url: `${baseUrl}/cv-builder-lahore`, priority: 0.8, changeFrequency: 'monthly' as const },
+    { url: `${baseUrl}/cv-builder-islamabad`, priority: 0.8, changeFrequency: 'monthly' as const },
     { url: `${baseUrl}/blog`, priority: 0.8, changeFrequency: 'daily' as const },
     { url: `${baseUrl}/about`, priority: 0.6, changeFrequency: 'monthly' as const },
-    { url: `${baseUrl}/contact`, priority: 0.5, changeFrequency: 'yearly' as const },
-    { url: `${baseUrl}/privacy`, priority: 0.3, changeFrequency: 'yearly' as const },
-    { url: `${baseUrl}/terms`, priority: 0.3, changeFrequency: 'yearly' as const },
+    { url: `${baseUrl}/privacy-policy`, priority: 0.3, changeFrequency: 'yearly' as const },
+    { url: `${baseUrl}/terms-and-conditions`, priority: 0.3, changeFrequency: 'yearly' as const },
+    { url: `${baseUrl}/refund-policy`, priority: 0.3, changeFrequency: 'yearly' as const },
   ]
 
   let blogPages: any[] = [];

@@ -2,6 +2,18 @@ import React from 'react';
 import Header from '@/components/Header';
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Career Advice & ATS Resume Writing Blog | Sophi',
+  description: 'Expert tips on passing ATS resume screeners, tailoring CVs for jobs, optimizing LinkedIn profiles, and landing career opportunities.',
+  alternates: { canonical: 'https://joinsophi.com/blog' },
+  openGraph: {
+    title: 'Career Advice & ATS Resume Writing Blog | Sophi',
+    description: 'Expert tips on passing ATS resume screeners, tailoring CVs for jobs, optimizing LinkedIn profiles, and landing career opportunities.',
+    url: 'https://joinsophi.com/blog',
+  },
+};
 
 // Force dynamic rendering so new blogs appear immediately
 export const dynamic = 'force-dynamic';

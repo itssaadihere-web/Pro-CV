@@ -6,10 +6,13 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error'] } : false,
+  },
   experimental: {
     serverComponentsExternalPackages: ['@sparticuz/chromium', 'puppeteer-core', 'pdf-parse', 'mammoth'],
-    optimizeCss: true,
-    optimizePackageImports: ['lucide-react'],
+    optimizePackageImports: ['lucide-react', 'framer-motion', 'react-hot-toast'],
   },
   images: {
     formats: ['image/avif', 'image/webp'],
@@ -24,12 +27,30 @@ const nextConfig = {
         hostname: '*.supabase.co',
       }
     ],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    deviceSizes: [360, 480, 640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   compress: true,
   async headers() {
     return [
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        source: '/fonts/(.*)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        source: '/images/(.*)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
       {
         source: '/(.*)',
         headers: [
@@ -37,15 +58,9 @@ const nextConfig = {
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
         ],
       },
-      {
-        source: '/:path((?!_next/static).*)',
-        headers: [
-          { key: 'Cache-Control', value: 'public, max-age=3600, stale-while-revalidate=86400' }
-        ]
-      }
     ]
   },
   async redirects() {
