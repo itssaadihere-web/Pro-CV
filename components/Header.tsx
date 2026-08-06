@@ -22,6 +22,7 @@ const TOOLS_NAV = [
 ]
 
 const RESOURCES_NAV = [
+  { label: 'Career Advice & CV Tips', href: '/blog', icon: BookOpen, desc: 'ATS tips & career articles' },
   { label: 'How It Works', href: '/how-it-works', icon: HelpCircle, desc: 'See how SOPHI works' },
   { label: 'Pricing', href: '/pricing', icon: CreditCard, desc: 'Plans & credit packages' },
   { label: 'CV Templates', href: '/templates', icon: FileSearch, desc: 'Browse design templates' },
