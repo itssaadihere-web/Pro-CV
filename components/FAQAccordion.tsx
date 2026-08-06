@@ -11,34 +11,49 @@ interface FAQItem {
 
 const faqs: FAQItem[] = [
   {
-    id: 'what-is-sophi',
-    question: 'What is SOPHI and how does it work?',
-    answer: 'SOPHI is an AI-powered CV builder tailored for Pakistani and Gulf job markets. Simply upload your existing resume, and our specialized AI rewrites it into a high-scoring, ATS-optimized CV, complete with an executive summary, achievement metrics, cover letter, and LinkedIn profile tips — delivered in under 60 seconds.'
+    id: 'ats-rejection-reasons',
+    question: 'What are the most common reasons an ATS rejects a resume before a human sees it?',
+    answer: 'Applicant Tracking Systems (ATS) automatically filter out resumes due to missing role-specific keywords, multi-column graphic layouts, tables/text boxes that scramble text extraction, unparseable PDF headers/footers, and non-standard section titles. SOPHI AI restructures your resume into single-column ATS-safe formatting with 100% parseable text.'
   },
   {
-    id: 'ats-importance',
-    question: 'What is an ATS score and why does it matter?',
-    answer: 'An Applicant Tracking System (ATS) is automated software used by over 90% of employers to filter job applications before recruiters read them. If your CV lacks correct keywords or uses incompatible formatting, it gets auto-rejected. SOPHI scores your CV against real ATS criteria and restructures it to ensure it reaches human recruiters.'
+    id: 'ats-formatting-rules',
+    question: 'How do I format my resume so that applicant tracking systems can read it correctly?',
+    answer: 'To ensure 100% ATS readability, use a clean single-column layout, standard web-safe fonts (Geist, Inter, Arial), standard headings ("Work Experience", "Education", "Skills"), and STAR-metric bullet points (Action Verb + Context + Result). SOPHI AI automatically formats your document to pass 100% of corporate ATS screeners.'
   },
   {
-    id: 'sophi-features',
-    question: 'What features are included in SOPHI?',
-    answer: 'SOPHI includes complete ATS score auditing, experience gap analysis, job-tailored resume generation, AI cover letter writing, LinkedIn profile optimization, and step-by-step CV creation from scratch or 30-second transformation of existing resumes.'
+    id: 'pakistan-keywords',
+    question: 'Which keywords should I include to pass ATS screening for corporate jobs in Pakistan?',
+    answer: 'Include role-specific hard skills (Financial Modeling, React.js, FMCG Supply Chain, Digital Strategy), quantitative achievement metrics, tool proficiencies (SAP ERP, Excel, Python, CRM), and terms matched from job descriptions. SOPHI AI analyzes top employer requirements across Karachi, Lahore, and Islamabad to auto-inject high-ranking keywords.'
   },
   {
-    id: 'delivery-time',
-    question: 'How fast does SOPHI generate my CV?',
-    answer: 'Generation is instant! As soon as you upload your resume or enter your details, our AI generates your optimized resume, cover letter, and ATS score report directly on screen in under 30 seconds. You can download your polished documents immediately as PDF files.'
+    id: 'check-ats-compatibility',
+    question: 'How do I check if my resume is ATS-compatible before submitting an application?',
+    answer: 'Use SOPHI\'s free ATS CV Checker at joinsophi.com/ats-checker. SOPHI evaluates your resume across 5 dimensions: keyword density, formatting compliance, semantic match, experience depth, and section structure, generating an instant score and quick fixes in 30 seconds.'
   },
   {
-    id: 'formatting-guarantee',
-    question: 'Will my CV formatting work for corporate and tech companies?',
-    answer: 'Yes! SOPHI uses clean, ATS-compliant single-column and multi-section layouts recommended by top HR professionals across Karachi, Lahore, Islamabad, and UAE tech hubs.'
+    id: 'job-tailoring-customization',
+    question: 'How do I customize my CV for job roles on Pakistani portals like Rozee.pk or Sophi Careers?',
+    answer: 'Paste any target job description into SOPHI Job Tailor at joinsophi.com/tailor-cv. SOPHI AI automatically realigns your summary, experience bullet points, and skills section to match target role requirements in under 30 seconds.'
+  },
+  {
+    id: 'linkedin-sections-importance',
+    question: 'What are the most important sections of a LinkedIn profile that recruiters look at first?',
+    answer: 'Recruiters focus first on your Headline (target title + core keywords), About Summary (3-line achievement hook with career proof figures), Work Experience (STAR accomplishment bullets), and Top Skills. SOPHI LinkedIn Optimizer generates these high-converting profile sections automatically.'
+  },
+  {
+    id: 'explaining-employment-gaps',
+    question: 'How do I explain a gap in my employment history when applying for jobs in Pakistan?',
+    answer: 'Frame employment gaps around freelance projects, consulting, upskilling, certifications, or personal development. Focus on continuous professional growth in your executive summary. SOPHI AI automatically formats gap years using value-oriented framing.'
+  },
+  {
+    id: 'ats-format-compatibility',
+    question: 'What CV format is most compatible with ATS systems?',
+    answer: 'The single-column chronological PDF or DOCX format is 100% compatible with ATS systems like Taleo, Workday, Greenhouse, and Lever. SOPHI provides 49 recruiter-approved single-column templates designed for maximum ATS parsing accuracy.'
   }
 ];
 
 export default function FAQAccordion() {
-  const [openId, setOpenId] = useState<string | null>('what-is-sophi');
+  const [openId, setOpenId] = useState<string | null>('ats-rejection-reasons');
 
   const toggle = (id: string) => {
     setOpenId(openId === id ? null : id);

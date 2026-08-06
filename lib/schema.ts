@@ -67,58 +67,74 @@ export const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "What is Sophi?",
+      "name": "What are the most common reasons an ATS rejects a resume before a human ever sees it?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Sophi is an AI-powered CV platform for Pakistani professionals. You can upload an existing CV or build from scratch to get a fully ATS-optimized career document including professional summary, achievement bullets, LinkedIn optimizer, cover letter, and gap analysis."
+        "text": "An ATS (Applicant Tracking System) rejects resumes primarily due to missing industry keywords, complex multi-column formatting, graphics/tables that block text parsing, unparseable PDF headers/footers, and non-standard section titles. Sophi AI restructures your resume into single-column ATS-safe formatting and injects required keywords to prevent auto-rejection."
       }
     },
     {
       "@type": "Question",
-      "name": "How does Sophi's AI improve my CV?",
+      "name": "How do I format my resume so that applicant tracking systems can read it correctly?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Sophi uses advanced AI to analyze your existing CV across 5 ATS dimensions: keyword density, formatting compliance, semantic relevance, skills alignment, and achievement clarity. It then rewrites every bullet using the STAR-Metric formula, injects 500+ industry-specific keywords, and generates a 2026-formula professional summary."
+        "text": "To format a resume for ATS compliance, use a clean single-column layout, standard web-safe fonts (Geist, Inter, Arial), standard section headings (Work Experience, Education, Skills), STAR-metric bullet points (Action Verb + Context + Result), and export as a clean text-searchable PDF. Sophi AI automatically formats your CV to pass 100% of corporate ATS screeners."
       }
     },
     {
       "@type": "Question",
-      "name": "What is an ATS score and why does it matter?",
+      "name": "Which keywords should I include in my resume to pass ATS screening for corporate jobs in Pakistan?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "An ATS (Applicant Tracking System) score measures how well your CV passes automated screening software that 98% of large companies use. A low ATS score means your CV gets filtered out before any human sees it. Sophi scores your CV across 5 dimensions and rewrites it to maximize your score."
+        "text": "For corporate jobs in Pakistan (Karachi, Lahore, Islamabad), include role-specific hard skills (e.g. Financial Analysis, React.js, FMCG Supply Chain, Project Management), quantitative metrics (e.g. Increased revenue by 35%), tool proficiencies (SAP, Excel, Python), and exact terms matched from job descriptions. Sophi AI analyzes top employer requirements across Pakistan to auto-inject high-ranking keywords."
       }
     },
     {
       "@type": "Question",
-      "name": "What features are included in Sophi?",
+      "name": "How do I check if my resume is ATS-compatible before submitting a job application?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Sophi includes complete ATS score auditing, experience gap analysis, job-tailored resume generation, AI cover letter writing, LinkedIn profile optimization, and step-by-step CV creation from scratch or 30-second transformation of existing resumes."
+        "text": "You can check ATS compatibility using Sophi's free ATS CV Checker at joinsophi.com/ats-checker. Sophi evaluates your document across 5 dimensions: keyword density, formatting safety, section structure, experience depth, and skills match, providing an instant score and quick-fix recommendations."
       }
     },
     {
       "@type": "Question",
-      "name": "How fast does Sophi generate my CV?",
+      "name": "What is the difference between a resume that passes ATS and one that gets filtered out?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Sophi typically completes your full CV transformation in under 30 seconds. You receive an instant PDF download on the dashboard and a copy delivered to your email."
+        "text": "A passing resume contains 80%+ keyword alignment with the job posting, uses recruiter-preferred single-column ATS layouts, and quantifies achievements using STAR metrics. Filtered-out resumes use heavy graphics, columns, generic bullet points, or lack target job description keywords."
       }
     },
     {
       "@type": "Question",
-      "name": "Is Sophi available in Urdu?",
+      "name": "How do I customize my CV for different job roles advertised on Pakistani job portals like Rozee.pk or Sophi Careers?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Sophi's interface is in English, but the platform supports CV output in English, Arabic, French, and Spanish — covering major job markets for Pakistani professionals. Urdu support is on the roadmap."
+        "text": "Use Sophi's Job Tailoring Tool at joinsophi.com/tailor-cv. Paste the job description from Rozee.pk, LinkedIn, or Sophi Careers, and Sophi AI will realign your summary, work experience bullets, and skills section to match the job requirements in under 30 seconds."
       }
     },
     {
       "@type": "Question",
-      "name": "What CV file formats does Sophi accept?",
+      "name": "What are the most important sections of a LinkedIn profile that recruiters in Pakistan look at first?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Sophi accepts PDF and DOCX (Microsoft Word) files up to 5MB. These cover the two most common CV formats used by Pakistani professionals."
+        "text": "Pakistani corporate and tech recruiters focus first on your Headline (must include target job title and core keywords), About Summary (3-line hook with career highlights), Work Experience (STAR accomplishment bullets), and Featured Skills. Sophi LinkedIn Optimizer generates these high-converting profile sections automatically."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I explain a gap in my employment history when applying for jobs in Pakistan?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Frame employment gaps positively by highlighting freelance projects, upskilling, certifications, or consulting work during that timeframe. Focus on continuous professional growth in your executive summary. Sophi AI automatically formats gap years using value-oriented framing."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What CV format is most compatible with ATS systems?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The chronological single-column PDF or DOCX format is 100% compatible with ATS systems like Taleo, Workday, Greenhouse, and Lever. Sophi AI uses 49 recruiter-approved, single-column templates designed specifically for ATS parsing safety."
       }
     }
   ]
