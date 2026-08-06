@@ -112,7 +112,18 @@ export default function RootLayout({
         <Toaster position="top-center" reverseOrder={false} />
         {children}
         <ConditionalFooter />
-        <GoogleAnalytics gaId="G-8YEPSJ9MP3" />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-8YEPSJ9MP3"
+          strategy="lazyOnload"
+        />
+        <Script id="google-analytics" strategy="lazyOnload">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-8YEPSJ9MP3', { page_path: window.location.pathname });
+          `}
+        </Script>
         <Analytics />
         <SpeedInsights />
       </body>
