@@ -14,35 +14,36 @@ Write a comprehensive, SEO-optimized blog post. The article must be genuinely us
 OUTPUT RULES:
 1. Return ONLY a single valid JSON object. No markdown fences. No text before or after. Start directly with {
 2. The "content" field must be valid HTML — all headings as proper <h2> and <h3> tags. Never use plain text headings or <strong> as headings.
-3. Keep the JSON compact — do not add unnecessary whitespace inside string values.
-4. If you are approaching the response length limit: complete the current H2 section cleanly, close with the CTA block and closing paragraph, then close the JSON properly. A complete 1,800-word article is better than a truncated 2,500-word one.
+3. CRITICAL — JSON validity: the "content" field is a JSON string. Use SINGLE quotes for every HTML attribute inside it (e.g. <div class='tldr-box'>, <a href='https://joinsophi.com'>) so you never need to escape a double quote. If you must render a literal apostrophe or quotation mark in visible text, use the HTML entities &rsquo; / &ldquo; / &rdquo; rather than a raw ' or " character. Before finalizing, mentally re-check that the content string contains no unescaped double quotes and no raw newlines (use \\n).
+4. Keep the JSON compact — do not add unnecessary whitespace inside string values.
+5. Hard truncation rule: if you are approaching the response length limit, stop expanding — complete the current H2 section cleanly, close with CTA block 2 and the closing paragraph, then close the JSON properly. A complete, slightly shorter article that is valid JSON is always better than a longer one that gets cut off mid-string.
 
 ARTICLE STRUCTURE REQUIREMENTS:
 
-Word count: 800–1,000 words. Concise, crisp, punchy, and to the point — cut length in half. No fluff or filler.
+Word count: 1,500–1,800 words total. This budget already accounts for the TL;DR box, six Quick Answer callouts, and the FAQ section below — don't try to compress the whole article down further than this, and don't pad individual paragraphs to hit a higher number. Rough allocation: ~120 words for the TL;DR + intro, ~180–220 words per H2 section (including its Quick Answer callout), ~250 words for the FAQ section.
+
+Keyword density: use "Pakistan" or "Pakistani" naturally — aim for 4–8 mentions across the whole article, not clustered in one section. Weave LSI/secondary keywords into sentences contextually; never list them, never repeat the exact primary keyword phrase more than once per section. If a sentence only exists to insert a keyword, cut it — natural readability always wins over keyword count.
 
 TL;DR box at the very top of the content:
-<div class="tldr-box"><p><strong>TL;DR:</strong></p><ul><li>Point 1 — specific takeaway</li><li>Point 2 — specific takeaway</li><li>Point 3 — specific takeaway</li></ul></div>
+<div class='tldr-box'><p><strong>TL;DR:</strong></p><ul><li>Point 1 — specific takeaway</li><li>Point 2 — specific takeaway</li><li>Point 3 — specific takeaway</li></ul></div>
 
 After each <h2> section heading: add a Quick Answer callout immediately below the heading:
-<div class="quick-answer"><strong>Quick Answer:</strong> [40-word direct answer to the section question — the exact answer a reader would want without scrolling further]</div>
+<div class='quick-answer'><strong>Quick Answer:</strong> [35-40 word direct answer to the section question — the exact answer a reader would want without scrolling further]</div>
 
-Inline image placement: In the middle of the article (between H2 section 3 and H2 section 4), insert exactly this:
-<img src="https://picsum.photos/seed/career-growth/800/400" alt="Career growth and resume optimization illustration" class="w-full h-auto rounded-3xl my-10 shadow-sm object-cover" />
+Inline image placement: in the middle of the article (between H2 section 3 and H2 section 4), insert exactly this (note: alt text should reference the primary keyword, not be generic):
+<img src='https://picsum.photos/seed/career-growth/800/400' alt='[primary keyword]-focused resume tips for Pakistani job seekers' class='w-full h-auto rounded-3xl my-10 shadow-sm object-cover' />
 
-Sophi CTA block — must appear in EXACTLY TWO places:
-(1) After H2 section 2 closes
-(2) As the very last element before the closing </article> or end of content
-Use this exact HTML each time:
-<div class="cta-block"><p>Ready to transform your CV in 60 seconds? <a href="https://joinsophi.com">Try Sophi AI CV Builder</a> — ATS-optimized in under a minute for just 1500 PKR. No fluff, no waiting.</p></div>
+Sophi CTA block — must appear in EXACTLY TWO places, worded slightly differently each time so it doesn't read as duplicated boilerplate:
+(1) After H2 section 2 closes — use this exact HTML:
+<div class='cta-block'><p>Ready to transform your CV in 60 seconds? <a href='https://joinsophi.com'>Try Sophi AI CV Builder</a> — ATS-optimized in under a minute for just 1500 PKR. No fluff, no waiting.</p></div>
+(2) As the very last element before the closing content — use this exact HTML:
+<div class='cta-block'><p>Don't let a weak CV cost you the interview. <a href='https://joinsophi.com'>Build your ATS-ready resume with Sophi</a> in 60 seconds — starting at 1500 PKR.</p></div>
 
-Internal links — include both at least once naturally in the body text:
+Internal links — include both at least once naturally in the body text (not just inside CTA blocks):
 - joinsophi.com (CV Builder)
 - career.joinsophi.com (Career Portal)
 
-Pakistan mentions: Include the word "Pakistan" or "Pakistani" at least 4 times throughout the article. Include at least one Pakistan-specific example or statistic per H2 section.
-
-LSI keywords: Do not list them — weave them contextually throughout the article.
+Pakistan-specific content: include at least one concrete Pakistan-specific example, statistic, or named context (e.g. a Pakistani job board, salary range in PKR, a specific industry hiring trend) per H2 section — not just the word "Pakistan" itself.
 
 H2 SECTIONS REQUIRED IN THIS EXACT ORDER:
 <h2>1. What Is ATS Optimization and Why Does It Matter for Pakistani Job Seekers?</h2>
@@ -56,16 +57,16 @@ H2 SECTIONS REQUIRED IN THIS EXACT ORDER:
 [CTA BLOCK 2 goes here]
 
 FAQ SECTION FORMAT — use schema markup:
-<div class="faq-section">
-  <div class="faq-item">
+<div class='faq-section'>
+  <div class='faq-item'>
     <h3>Question 1?</h3>
     <p>Answer — 40–60 words, direct.</p>
   </div>
-  <div class="faq-item">
+  <div class='faq-item'>
     <h3>Question 2?</h3>
     <p>Answer — 40–60 words, direct.</p>
   </div>
-  <div class="faq-item">
+  <div class='faq-item'>
     <h3>Question 3?</h3>
     <p>Answer — 40–60 words, direct.</p>
   </div>
@@ -73,9 +74,11 @@ FAQ SECTION FORMAT — use schema markup:
 
 CRITICAL OUTPUT JSON SCHEMA:
 {
-  "title": "Article title — specific, includes primary keyword, includes Pakistan where natural",
+  "title": "Article title — 50-60 characters, specific, includes primary keyword near the start, includes Pakistan where natural",
+  "url_slug": "lowercase-hyphenated-slug-under-60-chars-with-primary-keyword",
   "description": "Meta description — exactly 150–155 characters. Must include primary keyword and a clear benefit.",
   "primary_keyword": "The exact keyword phrase being targeted",
+  "secondary_keywords": ["3-5 related keyword phrases actually used in the body copy"],
   "featured_image_keyword": "resume,office",
   "inline_image_keyword": "career,laptop",
   "content": "<full HTML article content — includes all sections, both CTAs, inline image, FAQ>"
