@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/generate-blog?secret=Blog@sophi_321",
+      "schedule": "0 9 * * *"
+    }
+  ]
+}
