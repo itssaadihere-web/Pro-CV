@@ -44,7 +44,7 @@ export default function LahoreCVBuilderPage() {
 
             <div className="pt-4">
               <Link href="/login" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary-800 transition-all shadow-lg">
-                Revamp Your CV Now — 1500 PKR <ArrowRight className="w-5 h-5" />
+                Revamp Your CV Now <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
           </div>

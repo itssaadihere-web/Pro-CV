@@ -101,6 +101,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <link rel="preconnect" href="https://joinsophi.com" />
+        <link rel="dns-prefetch" href="https://joinsophi.com" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-slate-800 bg-slate-50`}
       >
