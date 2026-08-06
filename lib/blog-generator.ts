@@ -19,7 +19,7 @@ OUTPUT RULES:
 
 ARTICLE STRUCTURE REQUIREMENTS:
 
-Word count: 2,000–2,500 words. Quality and specificity over raw length.
+Word count: 800–1,000 words. Concise, crisp, punchy, and to the point — cut length in half. No fluff or filler.
 
 TL;DR box at the very top of the content:
 <div class="tldr-box"><p><strong>TL;DR:</strong></p><ul><li>Point 1 — specific takeaway</li><li>Point 2 — specific takeaway</li><li>Point 3 — specific takeaway</li></ul></div>
