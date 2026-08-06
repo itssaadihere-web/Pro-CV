@@ -175,7 +175,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                   <div className="relative space-y-4">
                     <div className="inline-flex items-center gap-1.5 rounded-full bg-[#c5a059]/15 border border-[#c5a059]/30 px-3.5 py-1 text-xs font-black text-[#c5a059]">
                       <Sparkles className="h-3.5 w-3.5 text-[#c5a059]" />
-                      <span>SOPHI AI CV REVAMP — 1500 PKR</span>
+                      <span>SOPHI AI CV REVAMP</span>
                     </div>
 
                     <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight">
@@ -183,7 +183,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                     </h3>
 
                     <p className="text-slate-300 text-sm leading-relaxed max-w-2xl font-medium">
-                      Over 90% of job applications get silently auto-rejected by ATS screening software. Revamp your document into an executive, ATS-optimized CV for only <strong className="text-amber-300 font-extrabold">1500 PKR</strong>! Includes 150 credits for job tailoring & cover letters.
+                      Over 90% of job applications get silently auto-rejected by ATS screening software. Revamp your document into an executive, ATS-optimized CV instantly! Includes job tailoring & cover letter generation.
                     </p>
 
                     <div className="pt-2 flex flex-col sm:flex-row items-center gap-4">
@@ -192,12 +192,12 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                         className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-gold hover:bg-amber-300 text-slate-950 font-black text-sm rounded-xl transition-all shadow-xl hover:scale-105"
                       >
                         <Sparkles className="h-4 w-4 text-slate-950" />
-                        <span>Revamp My CV — 1500 PKR</span>
+                        <span>Revamp My CV Now</span>
                         <ArrowRight className="h-4 w-4 text-slate-950" />
                       </Link>
 
                       <span className="text-xs text-slate-400 font-medium">
-                        ✓ 150 Credits Included • Instant Optimization
+                        ✓ ATS Score Optimization • Instant Delivery
                       </span>
                     </div>
                   </div>
@@ -214,7 +214,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                 
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-[#c5a059]/15 border border-[#c5a059]/30 px-3 py-1 text-[11px] font-black text-[#c5a059] mb-4">
                   <Sparkles className="h-3 w-3 text-[#c5a059]" />
-                  <span>REVAMP PACKAGE — 1500 PKR</span>
+                  <span>SOPHI AI CV REVAMP</span>
                 </div>
 
                 <h3 className="text-xl sm:text-2xl font-black mb-3 text-white leading-tight">
@@ -222,18 +222,18 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                 </h3>
                 
                 <p className="text-xs sm:text-sm text-slate-300 mb-6 leading-relaxed font-medium">
-                  90% of large companies use ATS systems. Find out if your CV is getting auto-rejected and revamp it for only <strong className="text-amber-300 font-bold">1500 PKR</strong>.
+                  90% of large companies use ATS systems. Find out if your CV is getting auto-rejected and revamp it instantly with AI.
                 </p>
                 
                 <Link
                   href="/transform-cv"
                   className="block w-full text-center py-3.5 bg-gold hover:bg-amber-300 text-slate-950 font-black text-xs sm:text-sm rounded-xl transition-all shadow-md hover:scale-105"
                 >
-                  Revamp My CV — 1500 PKR
+                  Revamp My CV Now
                 </Link>
                 
                 <div className="mt-3 text-center text-[11px] text-slate-400 font-medium">
-                  Includes 150 Credits • Takes &lt; 60 seconds
+                  Instant AI Optimization
                 </div>
               </div>
 
