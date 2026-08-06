@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Logo from './Logo'
+import { LinkedinIcon, InstagramIcon, FacebookIcon } from './SocialIcons'
 
 const TOOLS_NAV = [
   { label: 'Transform CV', href: '/transform-cv', icon: Sparkles, desc: 'AI-powered CV revamp', highlight: true },
@@ -348,6 +349,21 @@ export default function Header() {
               <Link href="/login" className="w-full text-center rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white">Get Started Free</Link>
             </div>
           )}
+
+          <div className="pt-4 mt-2 border-t border-slate-100 flex items-center justify-between px-3">
+            <span className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Follow Sophi</span>
+            <div className="flex items-center gap-3">
+              <a href="https://www.linkedin.com/company/joinsophi/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-slate-500 hover:text-[#c5a059]">
+                <LinkedinIcon className="h-4 w-4" />
+              </a>
+              <a href="https://www.instagram.com/joinsophi/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-slate-500 hover:text-[#c5a059]">
+                <InstagramIcon className="h-4 w-4" />
+              </a>
+              <a href="https://www.facebook.com/profile.php?id=61591961077475" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-slate-500 hover:text-[#c5a059]">
+                <FacebookIcon className="h-4 w-4" />
+              </a>
+            </div>
+          </div>
         </div>
       )}
     </header>
