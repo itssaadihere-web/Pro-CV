@@ -2,12 +2,11 @@
 
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
-import { getClientSupabase } from '@/lib/supabase'
 import { useEffect, useState, useRef } from 'react'
 import {
-  FileText, LogOut, PlusCircle, Zap, ChevronDown,
+  FileText, LogOut, Zap,
   LayoutDashboard, Sparkles, BarChart3, Scissors,
-  Link2, FileSearch, Menu, X, History, CreditCard,
+  Link2, FileSearch, Menu, X, CreditCard,
   BookOpen, Info, HelpCircle
 } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -33,7 +32,6 @@ const RESOURCES_NAV = [
 export default function Header() {
   const router = useRouter()
   const pathname = usePathname()
-  const supabase = getClientSupabase()
   const [user, setUser] = useState<any>(null)
   const [credits, setCredits] = useState<number | null>(null)
   const [toolsOpen, setToolsOpen] = useState(false)
@@ -56,64 +54,76 @@ export default function Header() {
   useEffect(() => { setMobileOpen(false) }, [pathname])
 
   useEffect(() => {
-    async function fetchUserCredits(userId: string, email?: string) {
-      try {
-        const { initializeWelcomeCredits } = await import('@/lib/creditService')
-        const activeCredits = await initializeWelcomeCredits(userId, supabase, email)
-        setCredits(activeCredits)
-      } catch {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('cv_credits')
-          .eq('id', userId)
-          .maybeSingle()
-        setCredits(profile?.cv_credits ?? 0)
-      }
-    }
-
-    async function getSession() {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user || null)
-      if (session?.user) await fetchUserCredits(session.user.id, session.user.email)
-    }
-
-    getSession()
-
-    const handleCreditsUpdate = (event: any) => {
-      if (typeof event.detail === 'number') {
-        setCredits(event.detail)
-      } else if (user?.id) {
-        fetchUserCredits(user.id, user.email)
-      }
-    }
-    window.addEventListener('creditsUpdated', handleCreditsUpdate)
-
+    let subscription: any = null
     let realtimeChannel: any = null
-    if (user?.id) {
-      realtimeChannel = supabase
-        .channel(`public:profiles:id=eq.${user.id}`)
-        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` },
-          (payload: any) => {
-            if (payload.new && typeof payload.new.cv_credits === 'number') setCredits(payload.new.cv_credits)
-          })
-        .subscribe()
+    let isCancelled = false
+
+    async function initAuth() {
+      const { getClientSupabase } = await import('@/lib/supabase')
+      const supabase = getClientSupabase()
+
+      async function fetchUserCredits(userId: string, email?: string) {
+        try {
+          const { initializeWelcomeCredits } = await import('@/lib/creditService')
+          const activeCredits = await initializeWelcomeCredits(userId, supabase, email)
+          if (!isCancelled) setCredits(activeCredits)
+        } catch {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('cv_credits')
+            .eq('id', userId)
+            .maybeSingle()
+          if (!isCancelled) setCredits(profile?.cv_credits ?? 0)
+        }
+      }
+
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!isCancelled) {
+        setUser(session?.user || null)
+        if (session?.user) await fetchUserCredits(session.user.id, session.user.email)
+      }
+
+      const handleCreditsUpdate = (event: any) => {
+        if (typeof event.detail === 'number') {
+          setCredits(event.detail)
+        } else if (session?.user?.id) {
+          fetchUserCredits(session.user.id, session.user.email)
+        }
+      }
+      window.addEventListener('creditsUpdated', handleCreditsUpdate)
+
+      if (session?.user?.id) {
+        realtimeChannel = supabase
+          .channel(`public:profiles:id=eq.${session.user.id}`)
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${session.user.id}` },
+            (payload: any) => {
+              if (payload.new && typeof payload.new.cv_credits === 'number' && !isCancelled) setCredits(payload.new.cv_credits)
+            })
+          .subscribe()
+      }
+
+      const authState = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+        if (isCancelled) return
+        setUser(currentSession?.user || null)
+        if (currentSession?.user) await fetchUserCredits(currentSession.user.id, currentSession.user.email)
+        else setCredits(null)
+      })
+      subscription = authState.data.subscription
     }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setUser(session?.user || null)
-      if (session?.user) await fetchUserCredits(session.user.id, session.user.email)
-      else setCredits(null)
-    })
+    initAuth()
 
     return () => {
-      if (realtimeChannel) supabase.removeChannel(realtimeChannel)
-      subscription.unsubscribe()
-      window.removeEventListener('creditsUpdated', handleCreditsUpdate)
+      isCancelled = true
+      if (realtimeChannel) realtimeChannel.unsubscribe?.()
+      if (subscription) subscription.unsubscribe?.()
     }
-  }, [supabase, pathname, user?.id])
+  }, [pathname])
 
   const handleSignOut = async () => {
     try {
+      const { getClientSupabase } = await import('@/lib/supabase')
+      const supabase = getClientSupabase()
       await supabase.auth.signOut()
       toast.success('Logged out successfully')
       router.push('/')
@@ -162,7 +172,6 @@ export default function Header() {
               <div className="absolute top-full left-0 mt-1 w-72 rounded-2xl border border-slate-200 bg-white shadow-xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
                 <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-3 py-1.5">SOPHI AI Services</p>
                 {TOOLS_NAV.map((item) => {
-                  const Icon = item.icon
                   return (
                     <Link
                       key={item.href}
@@ -197,7 +206,6 @@ export default function Header() {
               <div className="absolute top-full left-0 mt-1 w-64 rounded-2xl border border-slate-200 bg-white shadow-xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
                 <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-3 py-1.5">Resources & Info</p>
                 {RESOURCES_NAV.map((item) => {
-                  const Icon = item.icon
                   return (
                     <Link
                       key={item.href}
