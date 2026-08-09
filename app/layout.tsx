@@ -14,12 +14,14 @@ const geistSans = localFont({
   variable: "--font-geist-sans",
   weight: "100 900",
   display: "swap",
+  preload: true,
 });
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
   display: "swap",
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -101,6 +103,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://connect.facebook.net" />
+        <link rel="dns-prefetch" href="https://connect.facebook.net" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-slate-800 bg-slate-50`}
       >
@@ -112,32 +120,31 @@ export default function RootLayout({
         <Toaster position="top-center" reverseOrder={false} />
         {children}
         <ConditionalFooter />
-        <Script id="google-analytics-lazy" strategy="afterInteractive">
+        
+        <Script id="meta-pixel" strategy="lazyOnload">
           {`
-            (function() {
-              var loaded = false;
-              function loadGtag() {
-                if (loaded) return;
-                loaded = true;
-                var script = document.createElement('script');
-                script.async = true;
-                script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8YEPSJ9MP3';
-                document.head.appendChild(script);
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                window.gtag = gtag;
-                gtag('js', new Date());
-                gtag('config', 'G-8YEPSJ9MP3', { page_path: window.location.pathname });
-              }
-              if (typeof window !== 'undefined') {
-                ['scroll', 'mousemove', 'touchstart', 'keydown', 'click'].forEach(function(evt) {
-                  window.addEventListener(evt, loadGtag, { once: true, passive: true });
-                });
-                setTimeout(loadGtag, 4500);
-              }
-            })();
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '2230341081076587');
+            fbq('track', 'PageView');
           `}
         </Script>
+        <noscript>
+          <img
+            height="1"
+            width="1"
+            style={{ display: 'none' }}
+            src="https://www.facebook.com/tr?id=2230341081076587&ev=PageView&noscript=1"
+            alt=""
+          />
+        </noscript>
+        <GoogleAnalytics gaId="G-8YEPSJ9MP3" />
         <Analytics />
         <SpeedInsights />
       </body>
