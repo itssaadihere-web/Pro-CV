@@ -10,6 +10,7 @@ export const organizationSchema = {
   "contactPoint": {
     "@type": "ContactPoint",
     "contactType": "customer support",
+    "email": "support@joinsophi.com",
     "availableLanguage": ["English", "Urdu"]
   },
   "sameAs": [

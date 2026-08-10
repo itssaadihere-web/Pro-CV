@@ -80,9 +80,6 @@ export default function Footer() {
             <h3 className="text-lg font-semibold text-white">Contact & Connect</h3>
             <address className="not-italic text-sm space-y-2 text-slate-400">
               <p>
-                <a href="tel:+923362500595" className="hover:text-[#c5a059] transition-colors">+92 336 2500 595</a>
-              </p>
-              <p>
                 <a href="mailto:support@joinsophi.com" className="hover:text-[#c5a059] transition-colors">support@joinsophi.com</a>
               </p>
             </address>

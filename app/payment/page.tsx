@@ -177,7 +177,7 @@ export default function PaymentPage() {
         {/* FAQ Support */}
         <div className="mt-8 text-center text-xs text-slate-500 flex items-center justify-center gap-1.5">
           <HelpCircle className="h-4 w-4 text-slate-400" />
-          <span>Need help? Contact support on WhatsApp at +92-XXX-XXXXXXX</span>
+          <span>Need help? Contact support via email at support@joinsophi.com</span>
         </div>
       </div>
     </div>

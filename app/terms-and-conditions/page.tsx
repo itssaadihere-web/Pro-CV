@@ -44,7 +44,6 @@ export default function TermsAndConditionsPage() {
           <h2 className="text-2xl font-bold text-slate-900 mt-8 mb-4">7. Contact Information</h2>
           <p>
             For any questions or concerns regarding these Terms and Conditions, please contact us at:<br /><br />
-            <strong>Phone:</strong> +92 336 2500 595<br />
             <strong>Email:</strong> support@joinsophi.com
           </p>
         </div>
