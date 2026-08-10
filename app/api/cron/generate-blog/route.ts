@@ -18,12 +18,6 @@ export async function GET(request: Request) {
   }
 
   try {
-    const blogData = await generateBlogPostWithGemini();
-    
-    if (!blogData) {
-      return NextResponse.json({ error: 'Failed to generate blog content' }, { status: 500 });
-    }
-
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -32,6 +26,28 @@ export async function GET(request: Request) {
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Fetch up to 30 existing blog titles to prevent topic repetition
+    let existingTitles: string[] = [];
+    try {
+      const { data: posts } = await supabase
+        .from('blog_posts')
+        .select('title')
+        .order('published_at', { ascending: false })
+        .limit(30);
+      
+      if (posts) {
+        existingTitles = posts.map(p => p.title);
+      }
+    } catch (err) {
+      console.warn('Could not fetch existing blog titles for deduplication:', err);
+    }
+
+    const blogData = await generateBlogPostWithGemini(existingTitles);
+    
+    if (!blogData) {
+      return NextResponse.json({ error: 'Failed to generate blog content' }, { status: 500 });
+    }
 
     // Generate a URL-friendly slug
     const slug = blogData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
