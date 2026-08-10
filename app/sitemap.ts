@@ -6,6 +6,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticPages = [
     { url: baseUrl, priority: 1.0, changeFrequency: 'daily' as const },
+    { url: `${baseUrl}/login`, priority: 0.9, changeFrequency: 'weekly' as const },
     { url: `${baseUrl}/ats-checker`, priority: 0.9, changeFrequency: 'weekly' as const },
     { url: `${baseUrl}/linkedin-optimizer`, priority: 0.9, changeFrequency: 'weekly' as const },
     { url: `${baseUrl}/tailor-cv`, priority: 0.9, changeFrequency: 'weekly' as const },

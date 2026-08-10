@@ -1,16 +1,35 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
+import Script from 'next/script';
+import { createBreadcrumbSchema } from '@/lib/schema';
 
 export const metadata: Metadata = {
-  title: 'Tailor CV to Job Description | AI Resume Alignment | Sophi',
-  description: 'Paste any target job description and let AI tailor your bullet points, skills, and summary for maximum ATS match and recruiter response.',
-  alternates: { canonical: 'https://joinsophi.com/tailor-cv' },
-  openGraph: {
-    title: 'Tailor CV to Job Description | AI Resume Alignment | Sophi',
-    description: 'Paste any target job description and let AI tailor your bullet points, skills, and summary for maximum ATS match and recruiter response.',
-    url: 'https://joinsophi.com/tailor-cv',
+  title: 'AI Resume & CV Tailoring for Job Descriptions | Sophi',
+  description: 'Tailor your CV for specific job postings in seconds. Sophi AI injects target industry keywords and formats your experience to outrank rival candidates.',
+  alternates: {
+    canonical: 'https://joinsophi.com/tailor-cv'
   },
+  openGraph: {
+    title: 'AI Resume & CV Tailoring for Job Descriptions | Sophi',
+    description: 'Tailor your CV for specific job postings in seconds. Sophi AI injects target industry keywords and formats your experience to outrank rival candidates.',
+    url: 'https://joinsophi.com/tailor-cv',
+    siteName: 'Sophi'
+  }
 };
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+const breadcrumbSchema = createBreadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'Tailor CV', url: '/tailor-cv' }
+]);
+
+export default function TailorCvLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <Script
+        id="schema-breadcrumb-tailor"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      {children}
+    </>
+  );
 }

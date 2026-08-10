@@ -7,7 +7,7 @@ export default function Footer() {
   return (
     <footer className="bg-slate-900 text-slate-300 py-12 border-t border-slate-800 print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 items-start">
           
           <div className="space-y-4">
             <Link href="/" className="inline-flex items-center justify-center rounded-full bg-white p-2.5 shadow-md border-2 border-slate-700 hover:scale-105 transition-all">
@@ -53,23 +53,26 @@ export default function Footer() {
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Legal</h3>
+            <h3 className="text-lg font-semibold text-white">Sophi Platform</h3>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/privacy-policy" className="hover:text-[#c5a059] transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms-and-conditions" className="hover:text-[#c5a059] transition-colors">
-                  Terms & Conditions
-                </Link>
-              </li>
-              <li>
-                <Link href="/refund-policy" className="hover:text-[#c5a059] transition-colors">
-                  Return & Refund Policy
-                </Link>
-              </li>
+              <li><Link href="/ats-checker" className="hover:text-[#c5a059] transition-colors">ATS CV Checker</Link></li>
+              <li><Link href="/templates" className="hover:text-[#c5a059] transition-colors">CV Templates</Link></li>
+              <li><Link href="/pricing" className="hover:text-[#c5a059] transition-colors">Pricing & Plans</Link></li>
+              <li><Link href="/tailor-cv" className="hover:text-[#c5a059] transition-colors">Job CV Tailoring</Link></li>
+              <li><Link href="/linkedin-optimizer" className="hover:text-[#c5a059] transition-colors">LinkedIn Optimizer</Link></li>
+              <li><Link href="/how-it-works" className="hover:text-[#c5a059] transition-colors">How It Works</Link></li>
+              <li><Link href="/login" className="hover:text-[#c5a059] transition-colors">Sign In / Account</Link></li>
+            </ul>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white">Legal & Info</h3>
+            <ul className="space-y-2 text-sm">
+              <li><Link href="/about" className="hover:text-[#c5a059] transition-colors">About Sophi</Link></li>
+              <li><Link href="/blog" className="hover:text-[#c5a059] transition-colors">Career Advice & Blog</Link></li>
+              <li><Link href="/privacy-policy" className="hover:text-[#c5a059] transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms-and-conditions" className="hover:text-[#c5a059] transition-colors">Terms & Conditions</Link></li>
+              <li><Link href="/refund-policy" className="hover:text-[#c5a059] transition-colors">Return & Refund Policy</Link></li>
             </ul>
           </div>
 

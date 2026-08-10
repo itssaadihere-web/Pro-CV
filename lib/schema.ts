@@ -23,6 +23,7 @@ export const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "Sophi",
+  "alternateName": ["JoinSophi", "Sophi AI", "joinsophi.com", "Sophi CV"],
   "url": "https://joinsophi.com",
   "potentialAction": {
     "@type": "SearchAction",
@@ -33,6 +34,83 @@ export const websiteSchema = {
     "query-input": "required name=search_term_string"
   }
 };
+
+export const siteNavigationSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Sophi Main Navigation",
+  "itemListElement": [
+    {
+      "@type": "SiteNavigationElement",
+      "position": 1,
+      "name": "Sign In / Login",
+      "description": "Log in to your Sophi AI account to manage CVs, ATS reports, and career documents.",
+      "url": "https://joinsophi.com/login"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "position": 2,
+      "name": "ATS Score Checker",
+      "description": "Check your resume ATS compatibility score and get instant AI recommendations.",
+      "url": "https://joinsophi.com/ats-checker"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "position": 3,
+      "name": "CV Templates",
+      "description": "Explore 49 ATS-optimized, recruiter-approved professional CV templates.",
+      "url": "https://joinsophi.com/templates"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "position": 4,
+      "name": "Pricing & Packages",
+      "description": "Affordable AI CV builder pricing and credit packages for job seekers.",
+      "url": "https://joinsophi.com/pricing"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "position": 5,
+      "name": "Job CV Tailoring",
+      "description": "Tailor your CV for specific job descriptions to pass ATS screeners.",
+      "url": "https://joinsophi.com/tailor-cv"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "position": 6,
+      "name": "LinkedIn Profile Optimizer",
+      "description": "Optimize your LinkedIn profile headline, summary, and experience sections.",
+      "url": "https://joinsophi.com/linkedin-optimizer"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "position": 7,
+      "name": "How Sophi Works",
+      "description": "Learn how Sophi AI transforms resumes into ATS-optimized job applications.",
+      "url": "https://joinsophi.com/how-it-works"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "position": 8,
+      "name": "Sophi Careers",
+      "description": "AI-matched jobs for Pakistani and Gulf professionals on Sophi Careers.",
+      "url": "https://career.joinsophi.com"
+    }
+  ]
+};
+
+export function createBreadcrumbSchema(items: { name: string; url: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": items.map((item, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "name": item.name,
+      "item": item.url.startsWith("http") ? item.url : `https://joinsophi.com${item.url}`
+    }))
+  };
+}
 
 export const softwareSchema = {
   "@context": "https://schema.org",

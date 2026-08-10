@@ -1,16 +1,35 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
+import Script from 'next/script';
+import { createBreadcrumbSchema } from '@/lib/schema';
 
 export const metadata: Metadata = {
-  title: 'How Sophi Works — 3-Step AI CV Transformation',
-  description: 'Learn how Sophi AI audits ATS scores, identifies career gaps, restructures bullets with STAR-method metrics, and delivers interview-ready CVs.',
-  alternates: { canonical: 'https://joinsophi.com/how-it-works' },
-  openGraph: {
-    title: 'How Sophi Works — 3-Step AI CV Transformation',
-    description: 'Learn how Sophi AI audits ATS scores, identifies career gaps, restructures bullets with STAR-method metrics, and delivers interview-ready CVs.',
-    url: 'https://joinsophi.com/how-it-works',
+  title: 'How Sophi AI Works | Next-Gen CV Platform',
+  description: 'Discover how Sophi AI scans your resume, evaluates ATS compliance, rewrites accomplishments using STAR metrics, and delivers recruiter-ready CVs.',
+  alternates: {
+    canonical: 'https://joinsophi.com/how-it-works'
   },
+  openGraph: {
+    title: 'How Sophi AI Works | Next-Gen CV Platform',
+    description: 'Discover how Sophi AI scans your resume, evaluates ATS compliance, rewrites accomplishments using STAR metrics, and delivers recruiter-ready CVs.',
+    url: 'https://joinsophi.com/how-it-works',
+    siteName: 'Sophi'
+  }
 };
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+const breadcrumbSchema = createBreadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'How It Works', url: '/how-it-works' }
+]);
+
+export default function HowItWorksLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <Script
+        id="schema-breadcrumb-howitworks"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      {children}
+    </>
+  );
 }

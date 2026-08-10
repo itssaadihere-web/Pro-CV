@@ -13,10 +13,7 @@ import { websiteSchema, softwareSchema, faqSchema } from '@/lib/schema'
 import CareerPortalSearch from '@/components/CareerPortalSearch'
 import AnimatedSection from '@/components/AnimatedSection'
 
-const FAQAccordion = dynamic(() => import('@/components/FAQAccordion'), {
-  loading: () => <div className="h-64 rounded-2xl bg-slate-100 animate-pulse" />,
-  ssr: true,
-})
+import FAQAccordion from '@/components/FAQAccordion'
 
 function S({ children, dark }: { children?: React.ReactNode; dark?: boolean }) {
   return (
@@ -482,6 +479,18 @@ export default function LandingPage() {
           <FAQAccordion />
         </div>
       </section>
+
+      {/* JSON-LD Structured Data for Software Application & FAQs */}
+      <Script
+        id="schema-software"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }}
+      />
+      <Script
+        id="schema-faq"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
     </div>
   )
 }

@@ -1,16 +1,35 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
+import Script from 'next/script';
+import { createBreadcrumbSchema } from '@/lib/schema';
 
 export const metadata: Metadata = {
-  title: '49 Professional ATS CV Templates | Sophi',
-  description: 'Browse recruiter-tested, ATS-compliant CV templates. Export high-impact PDF resumes styled for executive, corporate, and tech roles.',
-  alternates: { canonical: 'https://joinsophi.com/templates' },
-  openGraph: {
-    title: '49 Professional ATS CV Templates | Sophi',
-    description: 'Browse recruiter-tested, ATS-compliant CV templates. Export high-impact PDF resumes styled for executive, corporate, and tech roles.',
-    url: 'https://joinsophi.com/templates',
+  title: '49 Professional ATS CV Templates | Sophi AI',
+  description: 'Explore 49 recruiter-tested, single-column ATS resume templates. Instantly switch between modern, classic, and executive styles.',
+  alternates: {
+    canonical: 'https://joinsophi.com/templates'
   },
+  openGraph: {
+    title: '49 Professional ATS CV Templates | Sophi AI',
+    description: 'Explore 49 recruiter-tested, single-column ATS resume templates. Instantly switch between modern, classic, and executive styles.',
+    url: 'https://joinsophi.com/templates',
+    siteName: 'Sophi'
+  }
 };
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+const breadcrumbSchema = createBreadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'Templates', url: '/templates' }
+]);
+
+export default function TemplatesLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <Script
+        id="schema-breadcrumb-templates"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      {children}
+    </>
+  );
 }

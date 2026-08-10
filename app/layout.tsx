@@ -5,7 +5,7 @@ import { Toaster } from "react-hot-toast";
 import ConditionalFooter from "@/components/ConditionalFooter";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import Script from 'next/script';
-import { organizationSchema } from '@/lib/schema';
+import { organizationSchema, websiteSchema, siteNavigationSchema } from '@/lib/schema';
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -39,6 +39,16 @@ export const metadata: Metadata = {
   authors: [{ name: 'Sophi', url: 'https://joinsophi.com' }],
   creator: 'Sophi',
   publisher: 'Sophi',
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' }
+    ],
+    shortcut: ['/favicon.ico'],
+    apple: [
+      { url: '/icon.svg', type: 'image/svg+xml' }
+    ]
+  },
   robots: {
     index: true,
     follow: true,
@@ -116,6 +126,16 @@ export default function RootLayout({
           id="schema-organization"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <Script
+          id="schema-website"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+        <Script
+          id="schema-sitenavigation"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteNavigationSchema) }}
         />
         <Toaster position="top-center" reverseOrder={false} />
         {children}
