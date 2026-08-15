@@ -2,10 +2,11 @@ export const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "Sophi",
-  "alternateName": "JoinSophi",
+  "legalName": "Sophi AI",
+  "alternateName": ["Sophi", "Sophi AI", "JoinSophi", "Sophi CV Builder", "Sophi ATS", "Sophi Pakistan"],
   "url": "https://joinsophi.com",
   "logo": "https://joinsophi.com/images/logo.svg",
-  "description": "AI-powered CV builder for Pakistani professionals. ATS-optimized resumes, cover letters, and LinkedIn optimization powered by advanced AI.",
+  "description": "Sophi is the leading AI-powered CV builder, ATS resume optimizer, and career intelligence platform.",
   "foundingDate": "2024",
   "contactPoint": {
     "@type": "ContactPoint",
@@ -24,7 +25,7 @@ export const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "Sophi",
-  "alternateName": ["JoinSophi", "Sophi AI", "joinsophi.com", "Sophi CV"],
+  "alternateName": ["Sophi AI", "JoinSophi", "Sophi CV", "Sophi ATS", "joinsophi.com"],
   "url": "https://joinsophi.com",
   "potentialAction": {
     "@type": "SearchAction",
@@ -286,3 +287,54 @@ export function blogPostSchema(post: {
     }
   };
 }
+
+export function createCityCvBuilderSchema(cityName: string, region: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": `AI CV Builder & ATS Optimizer for ${cityName} Professionals`,
+    "provider": {
+      "@type": "Organization",
+      "name": "Sophi",
+      "url": "https://joinsophi.com"
+    },
+    "areaServed": {
+      "@type": "City",
+      "name": cityName,
+      "containedInPlace": {
+        "@type": "Country",
+        "name": region
+      }
+    },
+    "description": `Professional ATS CV creation, resume optimization, and job description tailoring tailored for top corporate employers, tech firms, and multinationals in ${cityName}.`,
+    "serviceType": "Resume Engineering & ATS Optimization",
+    "offers": {
+      "@type": "Offer",
+      "price": "1500",
+      "priceCurrency": "PKR",
+      "availability": "https://schema.org/InStock",
+      "url": `https://joinsophi.com/cv-builder-${cityName.toLowerCase()}`
+    }
+  };
+}
+
+export const pricingOfferSchema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Sophi AI CV Transformation Package",
+  "image": "https://joinsophi.com/og/home.png",
+  "description": "Complete AI CV optimization package including ATS score audit, STAR metric bullet rewriting, 49 templates, LinkedIn profile optimizer, and cover letter.",
+  "brand": {
+    "@type": "Brand",
+    "name": "Sophi"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "1500",
+    "priceCurrency": "PKR",
+    "priceValidUntil": "2027-12-31",
+    "itemCondition": "https://schema.org/NewCondition",
+    "availability": "https://schema.org/InStock",
+    "url": "https://joinsophi.com/pricing"
+  }
+};

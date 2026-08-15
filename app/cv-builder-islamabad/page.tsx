@@ -1,64 +1,62 @@
-'use client'
+import { Metadata } from 'next';
+import Script from 'next/script';
+import CityCvBuilderClient from '@/components/CityCvBuilderClient';
+import { createCityCvBuilderSchema, createBreadcrumbSchema } from '@/lib/schema';
 
-import React from 'react';
-import Header from '@/components/Header';
-import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { ArrowRight, Sparkles, CheckCircle } from 'lucide-react';
+export const metadata: Metadata = {
+  title: 'AI CV Builder Islamabad — ATS Resume Writer & Executive CVs | Sophi',
+  description: 'ATS resume builder for Islamabad & Rawalpindi. Designed for NGOs, government development projects, IT firms & corporate roles in Blue Area & I-8.',
+  keywords: [
+    'CV builder Islamabad', 'resume maker Islamabad', 'NGO resume writer Islamabad',
+    'Blue Area CV maker', 'Sophi CV Islamabad'
+  ],
+  alternates: {
+    canonical: 'https://joinsophi.com/cv-builder-islamabad'
+  },
+  openGraph: {
+    title: 'AI CV Builder & ATS Resume Writer Islamabad | Sophi',
+    description: 'Land NGO, tech & corporate interviews in Islamabad. AI resume tailoring & ATS score optimization.',
+    url: 'https://joinsophi.com/cv-builder-islamabad',
+    siteName: 'Sophi',
+    type: 'website',
+    images: [{ url: 'https://joinsophi.com/og/home.png', width: 1200, height: 630, alt: 'CV Builder Islamabad' }]
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AI CV Builder Islamabad | Sophi',
+    description: 'Land NGO, tech & corporate interviews in Islamabad.',
+    images: ['https://joinsophi.com/og/home.png']
+  }
+};
 
-export default function IslamabadCVBuilderPage() {
+export default function IslamabadPage() {
+  const citySchema = createCityCvBuilderSchema('Islamabad', 'Pakistan');
+  const breadcrumb = createBreadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'CV Builder Islamabad', url: '/cv-builder-islamabad' }
+  ]);
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
-      <Header />
-      
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8">
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-3.5 py-1.5 text-xs font-extrabold text-primary"
-            >
-              <span>🇵🇰 Specifically Optimized for Islamabad Job Market</span>
-            </motion.div>
-            
-            <h1 className="text-4xl font-black tracking-tight text-slate-900 sm:text-5xl leading-[1.1]">
-              Professional AI CV Builder in Islamabad
-            </h1>
-            
-            <p className="text-lg text-slate-600 leading-relaxed">
-              Targeting telecom giants in Blue Area or multinational NGOs? Make sure your CV gets past their strict digital HR filters. Sophi uses AI to rewrite your CV specifically for Islamabad's premium job market.
-            </p>
-
-            <ul className="space-y-3">
-              <li className="flex items-center gap-3 font-medium text-slate-700">
-                <CheckCircle className="w-5 h-5 text-emerald-500" /> Bypass local corporate ATS systems
-              </li>
-              <li className="flex items-center gap-3 font-medium text-slate-700">
-                <CheckCircle className="w-5 h-5 text-emerald-500" /> Optimize for telecom, NGO, and corporate sectors
-              </li>
-              <li className="flex items-center gap-3 font-medium text-slate-700">
-                <CheckCircle className="w-5 h-5 text-emerald-500" /> Secure online payment — quick and easy
-              </li>
-            </ul>
-
-            <div className="pt-4">
-              <Link href="/login" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary-800 transition-all shadow-lg">
-                Revamp Your CV Now <ArrowRight className="w-5 h-5" />
-              </Link>
-            </div>
-          </div>
-          
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-tr from-primary-100 to-gold-100 rounded-3xl transform rotate-3" />
-            <img 
-              src="/images/cv_hero.png" 
-              alt="Professional CV Builder Islamabad" 
-              className="relative rounded-3xl border border-white shadow-xl w-full object-cover"
-            />
-          </div>
-        </div>
-      </main>
-    </div>
+    <>
+      <Script
+        id="islamabad-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(citySchema) }}
+      />
+      <Script
+        id="islamabad-breadcrumb"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+      />
+      <CityCvBuilderClient
+        cityName="Islamabad"
+        badgeText="🇵🇰 Optimized for Islamabad & Rawalpindi"
+        heading="Professional AI CV Builder in Islamabad"
+        description="Applying for international NGOs, telecommunications in Blue Area, tech startups in I-8 & National Incubation Center, or development sector roles? Sophi AI formats your document to meet international executive recruitment standards."
+        landmarks="Blue Area, I-8, NIC & Diplomatic Enclave"
+        sectors="NGOs, Development Sector, Telecom, Tech & Government Contracting"
+        imageAlt="Professional CV Builder Islamabad"
+      />
+    </>
   );
 }
