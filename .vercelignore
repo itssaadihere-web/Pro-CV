@@ -1,0 +1,16 @@
+# Large files & local archives
+CV Templates/
+CV Templates.zip
+
+# Database & SQL scripts
+migration_*.sql
+schema.sql
+
+# Test & maintenance scripts
+send-receipt.js
+db.js
+test-sfpy.js
+
+# Build info & caches
+*.tsbuildinfo
+.next/

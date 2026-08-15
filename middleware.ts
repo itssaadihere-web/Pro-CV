@@ -1,4 +1,4 @@
-import { getMiddlewareSupabase } from '@/lib/supabase-server'
+import { getMiddlewareSupabase } from '@/lib/supabase-middleware'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 

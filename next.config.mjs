@@ -11,11 +11,6 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error'] } : false,
   },
   experimental: {
-    optimizeCss: {
-      inlineFonts: true,
-      preload: 'media',
-      pruneSource: false,
-    },
     serverComponentsExternalPackages: ['@sparticuz/chromium', 'puppeteer-core', 'pdf-parse', 'mammoth'],
     optimizePackageImports: ['lucide-react', 'framer-motion', 'react-hot-toast'],
   },
