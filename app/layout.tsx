@@ -101,7 +101,8 @@ export const metadata: Metadata = {
   verification: {
     google: 'GOOGLE_SEARCH_CONSOLE_TOKEN',
     other: {
-      'msvalidate.01': 'A26A4092BA4395B941A91E71E6180738' // CRITICAL for ChatGPT indexing
+      'msvalidate.01': 'A26A4092BA4395B941A91E71E6180738', // CRITICAL for ChatGPT indexing
+      'google-adsense-account': 'ca-pub-7315986629947930'
     }
   }
 };
@@ -114,6 +115,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        <meta name="google-adsense-account" content="ca-pub-7315986629947930" />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7315986629947930"
+          crossOrigin="anonymous"
+        />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://connect.facebook.net" />
