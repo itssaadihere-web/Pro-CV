@@ -173,11 +173,6 @@ function LinkedInOptimizerContent() {
           profileText: profileInputMode !== 'url' ? profileText : undefined,
           jobUrl: jobInputMode === 'url' ? jobUrl : undefined,
           jobText: jobInputMode === 'text' ? jobText : undefined,
-          idealProfile: {
-            headline: 'Executive Professional | Strategic Growth Specialist',
-            about: 'Results-oriented leader driving organizational growth and performance excellence.',
-            skills: ['Strategic Planning', 'Leadership', 'Data Analytics', 'Cross-Functional Team Management'],
-          },
           userId: session.user.id,
         }),
       })
