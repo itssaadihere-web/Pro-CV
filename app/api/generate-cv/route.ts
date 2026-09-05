@@ -223,7 +223,8 @@ OUTPUT JSON SCHEMA — return exactly this structure, all fields required. Array
     "missing_keywords": ["Keyword A", "Keyword B"],
     "recommended_certifications": ["Certification 1"],
     "quick_wins": [
-      "Action 1 to perform immediately",
+      "Action 1 to perform immediately"
+    ]
   }
 }`
 
