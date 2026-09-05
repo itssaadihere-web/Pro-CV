@@ -55,6 +55,49 @@ interface TailorResult {
   templateId?: string
 }
 
+function getCvDisplayLabel(cv: PortalCv, idx: number, total: number): string {
+  let name = ''
+  let position = ''
+
+  if (cv.generated_cv) {
+    try {
+      const parsed = JSON.parse(cv.generated_cv)
+      if (parsed.personal) {
+        name = (parsed.personal.full_name || '').trim()
+        position = (parsed.personal.job_title || '').trim()
+      }
+    } catch {
+      const nameMatch = cv.generated_cv.match(/^([^\n]+)/)
+      if (nameMatch) name = nameMatch[1].trim()
+    }
+  }
+
+  const titlePart = name && position
+    ? `${name} - ${position}`
+    : name
+    ? `${name}`
+    : position
+    ? `${position}`
+    : cv.target_industry
+    ? `CV (${cv.target_industry})`
+    : `Transformed CV #${total - idx}`
+
+  const dateObj = new Date(cv.created_at)
+  const dateFormatted = dateObj.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  })
+  const timeFormatted = dateObj.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  })
+
+  return `📄 ${titlePart} — (${dateFormatted} at ${timeFormatted})`
+}
+
+
 function TailorCvContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -384,9 +427,10 @@ function TailorCvContent() {
             >
               {portalCvs.map((cv, idx) => (
                 <option key={cv.id} value={cv.id}>
-                  📄 {cv.target_industry ? `CV (${cv.target_industry})` : `Transformed CV #${portalCvs.length - idx}`} — ({new Date(cv.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})
+                  {getCvDisplayLabel(cv, idx, portalCvs.length)}
                 </option>
               ))}
+
             </select>
           </div>
 
