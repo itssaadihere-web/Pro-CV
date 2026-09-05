@@ -195,14 +195,125 @@ OUTPUT SCHEMA — return exactly this structure, all fields required:
       }
     }
 
-    // 4. Log service activity into service_activities table if userId present
+    // 4. Merge tailored content into the existing CV JSON so the exact layout/template is preserved
+    let baseCvJson: any = null
+    try {
+      if (selectedJob.generated_cv) {
+        baseCvJson = JSON.parse(selectedJob.generated_cv)
+      }
+    } catch {
+      baseCvJson = null
+    }
+
+    if (!baseCvJson || typeof baseCvJson !== 'object') {
+      baseCvJson = {
+        personal: {
+          full_name: 'Candidate',
+          job_title: result.targetJobTitle || 'Professional',
+        },
+        summary: result.tailoredSummary || '',
+        core_competencies: result.tailoredSkills || result.matchedKeywords || [],
+        experience: (result.tailoredExperiences || []).map((exp: any) => ({
+          job_title: exp.position || 'ROLE',
+          company: exp.company || 'Company',
+          start_date: exp.startDate || '',
+          end_date: exp.endDate || '',
+          bullets: exp.tailoredBullets || []
+        })),
+        education: [],
+        certifications: []
+      }
+    } else {
+      // Update designated fields with newly tailored content
+      if (baseCvJson.personal) {
+        if (result.targetJobTitle) {
+          baseCvJson.personal.job_title = result.targetJobTitle
+        }
+      }
+      if (result.tailoredSummary) {
+        baseCvJson.summary = result.tailoredSummary
+      }
+      if (result.tailoredSkills && Array.isArray(result.tailoredSkills) && result.tailoredSkills.length > 0) {
+        baseCvJson.core_competencies = result.tailoredSkills
+      }
+      if (result.atsScore) {
+        baseCvJson.ats_score_overall = result.atsScore
+      }
+      if (result.tailoredCoverLetter) {
+        baseCvJson.cover_letter = result.tailoredCoverLetter
+      }
+
+      // Map tailored experience bullets into original experience items without touching company/dates/design
+      if (Array.isArray(baseCvJson.experience) && Array.isArray(result.tailoredExperiences)) {
+        baseCvJson.experience = baseCvJson.experience.map((origExp: any, idx: number) => {
+          const matched = result.tailoredExperiences.find(
+            (te: any) =>
+              (te.company && origExp.company && te.company.toLowerCase().includes(origExp.company.toLowerCase())) ||
+              (te.position && origExp.job_title && te.position.toLowerCase().includes(origExp.job_title.toLowerCase()))
+          ) || result.tailoredExperiences[idx]
+
+          if (matched && Array.isArray(matched.tailoredBullets) && matched.tailoredBullets.length > 0) {
+            return {
+              ...origExp,
+              bullets: matched.tailoredBullets
+            }
+          }
+          return origExp
+        })
+      }
+    }
+
+    const templateToUse = selectedJob.template_used || 'min-14-white-blue-minimalist-corporate-ats'
+    let tailoredJobId = selectedJob.id
+
+    // Create a new completed cv_job entry representing the tailored CV
+    try {
+      const { data: newJob, error: newJobErr } = await serviceSupabase
+        .from('cv_jobs')
+        .insert({
+          user_id: userId || selectedJob.user_id,
+          status: 'completed',
+          target_industry: result.targetIndustry || selectedJob.target_industry || 'Professional Services',
+          target_job_description: jobDescription,
+          original_file_path: selectedJob.original_file_path || 'tailored_cv',
+          original_cv: selectedJob.original_cv || selectedJob.generated_cv,
+          generated_cv: JSON.stringify(baseCvJson),
+          cover_letter: result.tailoredCoverLetter || selectedJob.cover_letter,
+          ats_score: {
+            overall: result.atsScore || 90,
+            matchedKeywords: result.matchedKeywords || [],
+            missingKeywordsResolved: result.missingKeywordsResolved || []
+          },
+          template_used: templateToUse,
+          completed_at: new Date().toISOString()
+        })
+        .select('id')
+        .single()
+
+      if (!newJobErr && newJob) {
+        tailoredJobId = newJob.id
+      }
+    } catch (insertErr) {
+      console.warn('⚠️ Non-fatal: Could not create separate tailored cv_job:', insertErr)
+    }
+
+    result.tailoredJobId = tailoredJobId
+    result.templateId = templateToUse
+
+    // 5. Log service activity into service_activities table if userId present
     if (userId) {
       await logServiceActivity(
         userId,
         'TAILOR_CV',
         `Job-Specific CV Tailor (${result.targetJobTitle || 'Tailored Position'})`,
         `/tailor-cv?activityId=ID_PLACEHOLDER`,
-        { cvJobId: selectedJob.id, atsScore: result.atsScore, result },
+        {
+          cvJobId: selectedJob.id,
+          tailoredJobId,
+          templateId: templateToUse,
+          atsScore: result.atsScore,
+          result
+        },
         serviceSupabase
       )
     }
@@ -212,6 +323,8 @@ OUTPUT SCHEMA — return exactly this structure, all fields required:
       data: result,
       remainingCredits,
       cvJobId: selectedJob.id,
+      tailoredJobId,
+      templateId: templateToUse,
     })
   } catch (error: any) {
     console.error('Error in CV Tailor route:', error)

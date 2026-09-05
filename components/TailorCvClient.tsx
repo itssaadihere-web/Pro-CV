@@ -21,7 +21,9 @@ import {
   Award,
   History,
   RotateCcw,
-  HelpCircle
+  HelpCircle,
+  Download,
+  ExternalLink
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -49,6 +51,8 @@ interface TailorResult {
   tailoredBullets: string[]
   tailoredCoverLetter: string
   keyAdjustments: string[]
+  tailoredJobId?: string
+  templateId?: string
 }
 
 function TailorCvContent() {
@@ -189,6 +193,48 @@ function TailorCvContent() {
     }
   }
 
+  const [downloadingPdf, setDownloadingPdf] = useState(false)
+
+  const handleDownloadTailoredPdf = async (jobIdToDownload: string, templateToUse?: string) => {
+    if (!jobIdToDownload) {
+      toast.error('No tailored CV job found to export.')
+      return
+    }
+    setDownloadingPdf(true)
+    try {
+      const res = await fetch('/api/export-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobId: jobIdToDownload,
+          templateId: templateToUse || tailorResult?.templateId || 'min-14-white-blue-minimalist-corporate-ats',
+          color: 'classic'
+        })
+      })
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null)
+        throw new Error(errData?.error || 'Failed to generate tailored CV PDF')
+      }
+
+      const blob = await res.blob()
+      const blobUrl = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = blobUrl
+      a.download = `Tailored-CV-${(tailorResult?.targetJobTitle || 'Professional').replace(/[^a-zA-Z0-9]/g, '_')}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000)
+      toast.success('Successfully downloaded your tailored CV with exact design preserved!')
+    } catch (err: any) {
+      console.error(err)
+      toast.error(err.message || 'Error exporting tailored PDF.')
+    } finally {
+      setDownloadingPdf(false)
+    }
+  }
+
   const handleCopy = async (key: string, textToCopy: string) => {
     try {
       await navigator.clipboard.writeText(textToCopy)
@@ -259,7 +305,14 @@ function TailorCvContent() {
             </button>
           </div>
 
-          <TailorResultsDisplay tailorResult={tailorResult} copiedKey={copiedKey} handleCopy={handleCopy} />
+          <TailorResultsDisplay
+            tailorResult={tailorResult}
+            copiedKey={copiedKey}
+            handleCopy={handleCopy}
+            downloadingPdf={downloadingPdf}
+            onDownloadPdf={handleDownloadTailoredPdf}
+            selectedCvId={selectedCvId}
+          />
         </div>
       ) : tailorResult && !savedActivityDate ? (
         <div className="space-y-6">
@@ -267,14 +320,21 @@ function TailorCvContent() {
             <button
               type="button"
               onClick={handleTailorNewJob}
-              className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-slate-800 transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-slate-800 transition-colors cursor-pointer"
             >
               <RotateCcw className="h-4 w-4 text-gold" />
               <span>Tailor Another Job Opening (5 Cr)</span>
             </button>
           </div>
 
-          <TailorResultsDisplay tailorResult={tailorResult} copiedKey={copiedKey} handleCopy={handleCopy} />
+          <TailorResultsDisplay
+            tailorResult={tailorResult}
+            copiedKey={copiedKey}
+            handleCopy={handleCopy}
+            downloadingPdf={downloadingPdf}
+            onDownloadPdf={handleDownloadTailoredPdf}
+            selectedCvId={selectedCvId}
+          />
         </div>
       ) : portalCvs.length === 0 ? (
         <motion.div
@@ -282,6 +342,7 @@ function TailorCvContent() {
           animate={{ opacity: 1, scale: 1 }}
           className="bg-white p-8 md:p-10 rounded-2xl shadow-sm border border-indigo-100 text-center space-y-6"
         >
+
           <div className="h-16 w-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto">
             <AlertCircle className="h-8 w-8" />
           </div>
@@ -381,17 +442,26 @@ function TailorResultsDisplay({
   tailorResult,
   copiedKey,
   handleCopy,
+  downloadingPdf,
+  onDownloadPdf,
+  selectedCvId,
 }: {
   tailorResult: TailorResult
   copiedKey: string | null
   handleCopy: (key: string, text: string) => void
+  downloadingPdf?: boolean
+  onDownloadPdf?: (jobId: string, templateId?: string) => void
+  selectedCvId?: string
 }) {
+  const effectiveJobId = tailorResult.tailoredJobId || selectedCvId || ''
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
+      {/* 1. Header ATS Status */}
       <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 text-white shadow-lg border border-indigo-900 flex flex-col sm:flex-row items-center justify-between gap-6">
         <div className="space-y-1.5 text-center sm:text-left">
           <div className="inline-flex items-center gap-1.5 text-emerald-400 text-xs font-extrabold uppercase tracking-wide">
@@ -414,6 +484,57 @@ function TailorResultsDisplay({
           </div>
         </div>
       </div>
+
+      {/* 2. Download Newly Tailored CV Banner (Preserving Design) */}
+      <div className="rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 p-6 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-5 border border-emerald-500/30">
+        <div className="space-y-1.5 text-center md:text-left">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-white">
+            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-200" />
+            <span>Exact Design Preserved</span>
+          </span>
+          <h3 className="text-lg font-black text-white">
+            Download Your Tailored CV PDF
+          </h3>
+          <p className="text-xs text-emerald-100 max-w-xl leading-relaxed">
+            Your tailored job title, summary, STAR-metric bullets, and keywords are automatically formatted into your original template design.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
+          {onDownloadPdf && effectiveJobId && (
+            <button
+              type="button"
+              onClick={() => onDownloadPdf(effectiveJobId, tailorResult.templateId)}
+              disabled={downloadingPdf}
+              className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-xs font-black text-emerald-900 shadow-md hover:bg-emerald-50 transition-all disabled:opacity-50 cursor-pointer"
+            >
+              {downloadingPdf ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin text-emerald-700" />
+                  <span>Generating Tailored PDF...</span>
+                </>
+              ) : (
+                <>
+                  <Download className="h-4 w-4 text-emerald-700" />
+                  <span>Download Tailored CV (PDF)</span>
+                </>
+              )}
+            </button>
+          )}
+
+          {effectiveJobId && (
+            <Link
+              href={`/result/${effectiveJobId}`}
+              target="_blank"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-950/50 border border-white/25 px-4 py-3 text-xs font-bold text-white hover:bg-emerald-950/80 transition-all"
+            >
+              <ExternalLink className="h-4 w-4 text-emerald-300" />
+              <span>Open in Result Viewer</span>
+            </Link>
+          )}
+        </div>
+      </div>
+
 
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
         <h3 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-2">
