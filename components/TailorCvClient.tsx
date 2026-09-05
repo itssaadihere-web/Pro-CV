@@ -133,10 +133,18 @@ function TailorCvContent() {
             .maybeSingle()
 
           if (!actErr && activity && activity.metadata?.result) {
-            setTailorResult(activity.metadata.result)
+            const resData = { ...activity.metadata.result }
+            if (!resData.tailoredJobId && activity.metadata.tailoredJobId) {
+              resData.tailoredJobId = activity.metadata.tailoredJobId
+            }
+            if (!resData.tailoredJobId && activity.metadata.cvJobId) {
+              resData.tailoredJobId = activity.metadata.cvJobId
+            }
+            if (!resData.templateId && activity.metadata.templateId) {
+              resData.templateId = activity.metadata.templateId
+            }
+            setTailorResult(resData)
             setSavedActivityDate(activity.created_at)
-            setLoading(false)
-            return
           }
         }
 
@@ -148,7 +156,7 @@ function TailorCvContent() {
 
         const userCredits = profile?.cv_credits ?? 0
 
-        if (userCredits < 5) {
+        if (!activityId && userCredits < 5) {
           toast.error(`Insufficient credits! Job CV Tailoring requires 5 Credits, but you currently have ${userCredits} Credits. Redirecting to payment...`)
           router.push('/payment')
           return
@@ -156,7 +164,7 @@ function TailorCvContent() {
 
         const { data: jobs, error: jobsErr } = await supabase
           .from('cv_jobs')
-          .select('id, target_industry, created_at, generated_cv, cover_letter, target_job_description, status')
+          .select('id, target_industry, created_at, generated_cv, cover_letter, target_job_description, status, template_used')
           .eq('user_id', session.user.id)
           .order('created_at', { ascending: false })
 
@@ -173,6 +181,7 @@ function TailorCvContent() {
 
     initPage()
   }, [router, supabase, activityId])
+
 
   const handleTailorNewJob = () => {
     setTailorResult(null)
@@ -338,14 +347,26 @@ function TailorCvContent() {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={handleTailorNewJob}
-              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-indigo-700 transition-colors"
-            >
-              <RotateCcw className="h-4 w-4" />
-              <span>Tailor for Another Job Opening (5 Cr)</span>
-            </button>
+            <div className="flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={() => handleDownloadTailoredPdf(tailorResult.tailoredJobId || selectedCvId, tailorResult.templateId)}
+                disabled={downloadingPdf}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 transition-colors cursor-pointer"
+              >
+                {downloadingPdf ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4 text-emerald-100" />}
+                <span>Download CV (PDF)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleTailorNewJob}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-indigo-700 transition-colors cursor-pointer"
+              >
+                <RotateCcw className="h-4 w-4" />
+                <span>Tailor Another Job (5 Cr)</span>
+              </button>
+            </div>
           </div>
 
           <TailorResultsDisplay
@@ -359,15 +380,32 @@ function TailorCvContent() {
         </div>
       ) : tailorResult && !savedActivityDate ? (
         <div className="space-y-6">
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={handleTailorNewJob}
-              className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-slate-800 transition-colors cursor-pointer"
-            >
-              <RotateCcw className="h-4 w-4 text-gold" />
-              <span>Tailor Another Job Opening (5 Cr)</span>
-            </button>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+            <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>Tailoring Complete: <strong className="text-slate-900">{tailorResult.targetJobTitle || 'Target Role'}</strong></span>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={() => handleDownloadTailoredPdf(tailorResult.tailoredJobId || selectedCvId, tailorResult.templateId)}
+                disabled={downloadingPdf}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 transition-colors cursor-pointer"
+              >
+                {downloadingPdf ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4 text-emerald-100" />}
+                <span>Download Tailored CV (PDF)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleTailorNewJob}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                <RotateCcw className="h-4 w-4 text-gold" />
+                <span>Tailor Another Job (5 Cr)</span>
+              </button>
+            </div>
           </div>
 
           <TailorResultsDisplay
@@ -379,6 +417,7 @@ function TailorCvContent() {
             selectedCvId={selectedCvId}
           />
         </div>
+
       ) : portalCvs.length === 0 ? (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -545,10 +584,10 @@ function TailorResultsDisplay({
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
-          {onDownloadPdf && effectiveJobId && (
+          {onDownloadPdf && (
             <button
               type="button"
-              onClick={() => onDownloadPdf(effectiveJobId, tailorResult.templateId)}
+              onClick={() => onDownloadPdf(effectiveJobId || selectedCvId || '', tailorResult.templateId)}
               disabled={downloadingPdf}
               className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-xs font-black text-emerald-900 shadow-md hover:bg-emerald-50 transition-all disabled:opacity-50 cursor-pointer"
             >
@@ -577,6 +616,7 @@ function TailorResultsDisplay({
             </Link>
           )}
         </div>
+
       </div>
 
 
