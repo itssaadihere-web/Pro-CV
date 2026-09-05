@@ -1,39 +1,14 @@
-export async function generateGeminiCompletion(
-  systemPrompt: string,
-  userPrompt: string
-): Promise<string> {
-  const geminiKey = process.env.GEMINI_API_KEY
-  if (!geminiKey) {
-    throw new Error('GEMINI_API_KEY is not configured in .env.local')
-  }
-
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        system_instruction: {
-          parts: [{ text: systemPrompt }],
-        },
-        contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-        generationConfig: {
-          temperature: 0.2,
-          maxOutputTokens: 8192,
-          responseMimeType: 'application/json',
-        },
-      }),
+async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 3): Promise<Response> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    const res = await fetch(url, options)
+    if (res.status === 429 && attempt < maxRetries) {
+      console.warn(`[Kimi API Attempt ${attempt}] Rate limited (429). Retrying in ${attempt * 3} seconds...`)
+      await new Promise((r) => setTimeout(r, attempt * 3000))
+      continue
     }
-  )
-
-  if (!res.ok) {
-    const errText = await res.text()
-    throw new Error(`Gemini API failed with status ${res.status}: ${errText}`)
+    return res
   }
-
-  const data = await res.json()
-  const content = data.candidates?.[0]?.content?.parts?.[0]?.text || ''
-  return content
+  return fetch(url, options)
 }
 
 export async function generateKimiCompletion(
@@ -44,60 +19,64 @@ export async function generateKimiCompletion(
     reasoningEffort?: 'low' | 'high' | 'max'
   }
 ): Promise<string> {
-  // If GEMINI_API_KEY is available, use Gemini 2.5 Flash for guaranteed fast (<15s) and 100% valid JSON responses
-  if (process.env.GEMINI_API_KEY) {
-    try {
-      return await generateGeminiCompletion(systemPrompt, userPrompt)
-    } catch (geminiErr) {
-      console.warn('⚠️ Gemini completion error, attempting Moonshot fallback:', geminiErr)
-    }
-  }
-
   const apiKey = process.env.MOONSHOT_API_KEY || process.env.KIMI_API_KEY
   const apiBase = process.env.KIMI_API_BASE || 'https://api.moonshot.ai/v1'
-  const model = options?.model || process.env.KIMI_MODEL || 'kimi-k2.6'
+  const model = options?.model || process.env.KIMI_MODEL || 'kimi-k3'
+  const reasoningEffort = options?.reasoningEffort || 'low'
 
   if (!apiKey) {
-    throw new Error('Neither GEMINI_API_KEY nor KIMI_API_KEY is available')
+    throw new Error('MOONSHOT_API_KEY or KIMI_API_KEY is not configured in .env.local')
   }
 
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), 20000)
+  const isK3 = model.startsWith('kimi-k3')
+
+  const requestBody: Record<string, any> = {
+    model,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt },
+    ],
+  }
+
+  if (isK3) {
+    requestBody.reasoning_effort = reasoningEffort
+    requestBody.max_completion_tokens = 8192
+  } else {
+    requestBody.temperature = 1.0
+    requestBody.max_tokens = 8192
+  }
 
   try {
-    const response = await fetch(`${apiBase}/chat/completions`, {
+    const response = await fetchWithRetry(`${apiBase}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`,
       },
-      signal: controller.signal,
-      body: JSON.stringify({
-        model,
-        temperature: 1.0,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-        max_tokens: 8192,
-      }),
+      body: JSON.stringify(requestBody),
     })
-
-    clearTimeout(timeoutId)
 
     if (!response.ok) {
       const errorText = await response.text()
-      throw new Error(`Moonshot API failed with status ${response.status}: ${errorText}`)
+      throw new Error(`Kimi AI Engine failed (${response.status}): ${errorText}`)
     }
 
     const data = await response.json()
-    const message = data.choices?.[0]?.message?.content || ''
-    return message
+    if (!data.choices || data.choices.length === 0) {
+      throw new Error('Kimi AI Engine returned empty choices payload')
+    }
+
+    const message = data.choices[0].message
+    if (message.reasoning_content) {
+      console.log('🧠 Kimi K3 Reasoning Trace length:', message.reasoning_content.length)
+    }
+
+    return message.content || ''
   } catch (err: any) {
-    clearTimeout(timeoutId)
-    console.error('AI Completion Error:', err)
+    console.error('AI Completion Error (Kimi K3):', err)
     throw err
   }
 }
+
 
 

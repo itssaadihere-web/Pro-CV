@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { generateKimiCompletion } from '@/lib/kimi'
 import { getServiceSupabase } from '@/lib/supabase-server'
 
-export const maxDuration = 120 // Allow 120s execution window for Kimi K3 high-reasoning output
+export const maxDuration = 300 // Allow 300s execution window for Kimi K3 high-reasoning output
 
 const KIMI_SYSTEM_PROMPT = `You are an elite CV Architect, Academic Profiling Expert, and ATS Optimization Specialist with deep expertise in global recruitment algorithms, higher education standards, and professional branding for 2025–2026.
 
@@ -358,20 +358,32 @@ Please run the full transformation and output all sections as specified in your 
   }
 }
 
-function parseKimiOutput(text: string) {
+function extractJsonFromText(text: string): any {
   let cleaned = text.trim()
-  if (cleaned.startsWith('```json')) {
-    cleaned = cleaned.replace(/^```json/, '').replace(/```$/, '').trim()
-  } else if (cleaned.startsWith('```')) {
-    cleaned = cleaned.replace(/^```/, '').replace(/```$/, '').trim()
+  try {
+    return JSON.parse(cleaned)
+  } catch {}
+
+  const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/)
+  if (fenceMatch) {
+    try {
+      return JSON.parse(fenceMatch[1].trim())
+    } catch {}
   }
 
-  let kimiData: any = null
-  try {
-    kimiData = JSON.parse(cleaned)
-  } catch (err) {
-    console.warn('⚠️ Kimi output was not direct JSON, attempting regex format parsing...')
+  const firstBrace = text.indexOf('{')
+  const lastBrace = text.lastIndexOf('}')
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    try {
+      return JSON.parse(text.slice(firstBrace, lastBrace + 1))
+    } catch {}
   }
+
+  return null
+}
+
+function parseKimiOutput(text: string) {
+  const kimiData = extractJsonFromText(text)
 
   if (kimiData && typeof kimiData === 'object') {
     const overall = kimiData.ats_score_overall ?? 80
