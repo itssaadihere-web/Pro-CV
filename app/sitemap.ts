@@ -7,8 +7,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticPages = [
     { url: baseUrl, priority: 1.0, changeFrequency: 'daily' as const, lastModified: now },
+    { url: `${baseUrl}/ai-cv-builder-app`, priority: 1.0, changeFrequency: 'daily' as const, lastModified: now },
     { url: `${baseUrl}/ats-checker`, priority: 0.9, changeFrequency: 'daily' as const, lastModified: now },
     { url: `${baseUrl}/pricing`, priority: 0.9, changeFrequency: 'weekly' as const, lastModified: now },
+    { url: `${baseUrl}/sophi-vs-rezi`, priority: 0.9, changeFrequency: 'weekly' as const, lastModified: now },
+    { url: `${baseUrl}/sophi-vs-kickresume`, priority: 0.9, changeFrequency: 'weekly' as const, lastModified: now },
     { url: `${baseUrl}/linkedin-optimizer`, priority: 0.9, changeFrequency: 'weekly' as const, lastModified: now },
     { url: `${baseUrl}/tailor-cv`, priority: 0.9, changeFrequency: 'weekly' as const, lastModified: now },
     { url: `${baseUrl}/transform-cv`, priority: 0.9, changeFrequency: 'weekly' as const, lastModified: now },

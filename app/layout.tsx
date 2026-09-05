@@ -171,6 +171,16 @@ export default function RootLayout({
             alt=""
           />
         </noscript>
+        {/* Trustpilot Integration & Domain Verification */}
+        <Script id="trustpilot-widget" strategy="lazyOnload">
+          {`
+            (function(w,d,s,r,n){w.TrustpilotObject=n;w[n]=w[n]||function(){(w[n].q=w[n].q||[]).push(arguments)};
+            a=d.createElement(s);a.async=1;a.src=r;a.type='text/java'+s;f=d.getElementsByTagName(s)[0];
+            f.parentNode.insertBefore(a,f)})(window,document,'script', 'https://invitejs.trustpilot.com/tp.min.js', 'tp');
+            tp('register', 'jFzskdRd84eBsZA3');
+          `}
+        </Script>
+
         <GoogleAnalytics gaId="G-8YEPSJ9MP3" />
         <Analytics />
         <SpeedInsights />

@@ -338,3 +338,159 @@ export const pricingOfferSchema = {
     "url": "https://joinsophi.com/pricing"
   }
 };
+
+export const aiCvBuilderAppSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Sophi AI CV Builder App",
+  "operatingSystem": "All Web Browsers, iOS, Android, Windows, macOS",
+  "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": "Career & Resume Builder",
+  "url": "https://joinsophi.com/ai-cv-builder-app",
+  "image": "https://joinsophi.com/og/home.png",
+  "description": "Sophi is an AI CV builder and ATS resume optimizer app that creates interview-winning, ATS-compliant resumes with STAR-metric bullet points, LinkedIn optimization, and 49 recruiter-approved templates.",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.9",
+    "reviewCount": "512",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "url": "https://joinsophi.com/ai-cv-builder-app"
+  },
+  "featureList": [
+    "5-Dimension ATS Compliance Score Checker",
+    "STAR-Formula AI Accomplishment Bullet Rewriter",
+    "Job Description Keyword Tailoring (1-Click)",
+    "49 Single-Column Recruiter-Approved CV Templates",
+    "LinkedIn Profile Optimizer (Headline & Summary)",
+    "AI Cover Letter Generator tailored to job postings",
+    "Multi-Language CV Generation (EN, AR, FR, ES)",
+    "Instant PDF & DOCX Export"
+  ]
+};
+
+export const aiCvBuilderHowToSchema = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Create an ATS-Optimized Resume with Sophi AI CV Builder App",
+  "description": "Follow these 4 simple steps to build or revamp a job-winning, ATS-compliant CV using Sophi AI.",
+  "totalTime": "PT3M",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "position": 1,
+      "name": "Upload or Start Fresh",
+      "text": "Upload your existing CV in PDF/Word format for an instant AI audit, or launch the step-by-step wizard to build a new CV from scratch.",
+      "url": "https://joinsophi.com/choice"
+    },
+    {
+      "@type": "HowToStep",
+      "position": 2,
+      "name": "Add Target Job Description",
+      "text": "Paste your target job posting so the Sophi AI engine can extract missing high-impact keywords, hard skills, and certification requirements.",
+      "url": "https://joinsophi.com/tailor-cv"
+    },
+    {
+      "@type": "HowToStep",
+      "position": 3,
+      "name": "AI Refinement & STAR-Metric Rewriting",
+      "text": "Let Sophi rewrite your work experience bullets using the STAR formula (Action Verb + Context + Measurable Result) to maximize ATS scores.",
+      "url": "https://joinsophi.com/ai-cv-builder-app"
+    },
+    {
+      "@type": "HowToStep",
+      "position": 4,
+      "name": "Download ATS-Friendly PDF & Cover Letter",
+      "text": "Select from 49 recruiter-approved single-column ATS templates and download your finished resume, cover letter, and LinkedIn summary in 1 click.",
+      "url": "https://joinsophi.com/templates"
+    }
+  ]
+};
+
+export const aiCvBuilderFaqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the best AI CV builder app for passing ATS screening?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sophi AI is the top-rated AI CV builder app designed specifically for ATS (Applicant Tracking System) compliance. It evaluates your CV across 5 dimensions, rewrites bullet points into measurable STAR metrics, and guarantees clean single-column PDF templates that parse 100% cleanly in systems like Workday, Taleo, Greenhouse, and Lever."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does an AI CV builder app improve my resume?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "An AI CV builder analyzes your career history against millions of recruiter benchmarks. It replaces passive phrasing with strong action verbs, injects critical missing industry keywords, quantifies accomplishments with metrics, fixes layout and formatting flaws, and tailors your resume directly to specific job descriptions."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Sophi AI CV builder free to try?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, you can run a free ATS score audit on your existing CV, explore 49 ATS templates, and view AI recommendations without entering payment details at joinsophi.com/ats-checker."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What makes Sophi better than Rezi, Kickresume, or Canva?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Unlike Canva (whose graphic templates often fail ATS text parsing) and basic builders, Sophi combines real-time ATS score auditing, STAR-metric bullet rewriting, 1-click job description tailoring, and LinkedIn profile optimization at a fraction of the cost, with deep optimization for global, Gulf, and Pakistani job markets."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can an AI CV Builder help me write a tailored cover letter and LinkedIn profile?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. When Sophi generates your ATS-optimized resume, it also produces a matching custom cover letter tailored to your target job description and an optimized LinkedIn headline and summary."
+      }
+    }
+  ]
+};
+
+export function createComparisonSchema(competitorName: string, competitorUrl: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": `Sophi vs ${competitorName}: Best AI CV & Resume Builder Comparison`,
+    "description": `Detailed comparison between Sophi AI and ${competitorName}. Compare ATS scoring, pricing, AI rewriting, job tailoring, and templates.`,
+    "url": `https://joinsophi.com/sophi-vs-${competitorName.toLowerCase()}`,
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": `Sophi vs ${competitorName} Feature Comparison`,
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "ATS Compatibility & 5-Dimension Scoring",
+          "description": `Sophi provides real-time 5-dimension ATS scoring, whereas ${competitorName} provides standard checks.`
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "STAR-Metric Bullet Rewriting",
+          "description": "Sophi structures all work experience using Action Verb + Context + Metric Result formulas."
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Affordability & Regional Value",
+          "description": "Sophi offers flexible, accessible pricing starting at PKR 1500 / $5, compared to expensive monthly subscriptions."
+        }
+      ]
+    }
+  };
+}
+

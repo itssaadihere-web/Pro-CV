@@ -55,13 +55,15 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-white">Sophi Platform</h3>
             <ul className="space-y-2 text-sm">
+              <li><Link href="/ai-cv-builder-app" className="hover:text-[#c5a059] transition-colors font-medium text-white">AI CV Builder App</Link></li>
               <li><Link href="/ats-checker" className="hover:text-[#c5a059] transition-colors">ATS CV Checker</Link></li>
               <li><Link href="/templates" className="hover:text-[#c5a059] transition-colors">CV Templates</Link></li>
               <li><Link href="/pricing" className="hover:text-[#c5a059] transition-colors">Pricing & Plans</Link></li>
               <li><Link href="/tailor-cv" className="hover:text-[#c5a059] transition-colors">Job CV Tailoring</Link></li>
               <li><Link href="/linkedin-optimizer" className="hover:text-[#c5a059] transition-colors">LinkedIn Optimizer</Link></li>
+              <li><Link href="/sophi-vs-rezi" className="hover:text-[#c5a059] transition-colors text-slate-400">Sophi vs Rezi</Link></li>
+              <li><Link href="/sophi-vs-kickresume" className="hover:text-[#c5a059] transition-colors text-slate-400">Sophi vs Kickresume</Link></li>
               <li><Link href="/how-it-works" className="hover:text-[#c5a059] transition-colors">How It Works</Link></li>
-              <li><Link href="/login" className="hover:text-[#c5a059] transition-colors">Sign In / Account</Link></li>
             </ul>
           </div>
 
