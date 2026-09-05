@@ -125,15 +125,16 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://connect.facebook.net" />
         <link rel="dns-prefetch" href="https://connect.facebook.net" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(w,d,s,r,n){w.TrustpilotObject=n;w[n]=w[n]||function(){(w[n].q=w[n].q||[]).push(arguments)};a=d.createElement(s);a.async=1;a.src=r;a.type='text/java'+s;f=d.getElementsByTagName(s)[0];f.parentNode.insertBefore(a,f)})(window,document,'script','https://invitejs.trustpilot.com/tp.min.js','tp');tp('register','jFzskdRd84eBsZA3');`
-          }}
-        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-slate-800 bg-slate-50`}
       >
+        <Script
+          id="trustpilot-widget"
+          strategy="beforeInteractive"
+        >
+          {`(function(w,d,s,r,n){w.TrustpilotObject=n;w[n]=w[n]||function(){(w[n].q=w[n].q||[]).push(arguments)};a=d.createElement(s);a.async=1;a.src=r;a.type='text/java'+s;f=d.getElementsByTagName(s)[0];f.parentNode.insertBefore(a,f)})(window,document,'script','https://invitejs.trustpilot.com/tp.min.js','tp');tp('register','jFzskdRd84eBsZA3');`}
+        </Script>
         <Script
           id="schema-organization"
           type="application/ld+json"
@@ -175,7 +176,6 @@ export default function RootLayout({
             src="https://www.facebook.com/tr?id=2230341081076587&ev=PageView&noscript=1"
             alt=""
           />
-        </noscript>
         </noscript>
 
         <GoogleAnalytics gaId="G-8YEPSJ9MP3" />
