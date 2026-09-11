@@ -7,7 +7,7 @@ import {
   FileText, LogOut, Zap,
   LayoutDashboard, Sparkles, BarChart3, Scissors,
   Link2, FileSearch, Menu, X, CreditCard,
-  BookOpen, Info, HelpCircle
+  BookOpen, Info, HelpCircle, Mail
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Logo from './Logo'
@@ -27,6 +27,7 @@ const RESOURCES_NAV = [
   { label: 'Pricing', href: '/pricing', icon: CreditCard, desc: 'Plans & credit packages' },
   { label: 'CV Templates', href: '/templates', icon: FileSearch, desc: 'Browse design templates' },
   { label: 'About SOPHI', href: '/about', icon: Info, desc: 'Our mission & story' },
+  { label: 'Contact Us', href: '/contact', icon: Mail, desc: 'Customer & tech support' },
 ]
 
 export default function Header() {

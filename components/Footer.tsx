@@ -71,6 +71,7 @@ export default function Footer() {
             <h3 className="text-lg font-semibold text-white">Legal & Info</h3>
             <ul className="space-y-2 text-sm">
               <li><Link href="/about" className="hover:text-[#c5a059] transition-colors">About Sophi</Link></li>
+              <li><Link href="/contact" className="hover:text-[#c5a059] transition-colors text-[#c5a059] font-medium">Contact Us & Support</Link></li>
               <li><Link href="/blog" className="hover:text-[#c5a059] transition-colors">Career Advice & Blog</Link></li>
               <li><Link href="/privacy-policy" className="hover:text-[#c5a059] transition-colors">Privacy Policy</Link></li>
               <li><Link href="/terms-and-conditions" className="hover:text-[#c5a059] transition-colors">Terms & Conditions</Link></li>
@@ -81,6 +82,11 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-white">Contact & Connect</h3>
             <address className="not-italic text-sm space-y-2 text-slate-400">
+              <p>
+                <Link href="/contact" className="hover:text-[#c5a059] transition-colors font-medium text-slate-200">
+                  Customer Support Portal →
+                </Link>
+              </p>
               <p>
                 <a href="mailto:support@joinsophi.com" className="hover:text-[#c5a059] transition-colors">support@joinsophi.com</a>
               </p>
