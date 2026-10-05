@@ -28,8 +28,7 @@ function ATSCheckerContent() {
     const initATSPage = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        toast.error('Please sign in to access ATS Score Evaluator.');
-        router.push('/login');
+        // Allow unauthenticated visitors / search engine crawlers to view the landing page
         return;
       }
 
@@ -51,22 +50,10 @@ function ATSCheckerContent() {
         } finally {
           setLoadingSavedReport(false);
         }
-      } else {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('cv_credits')
-          .eq('id', session.user.id)
-          .maybeSingle();
-
-        const userCredits = profile?.cv_credits ?? 0;
-        if (userCredits < 10) {
-          toast.error(`Insufficient credits! ATS Score Evaluator requires 10 Credits, but you currently have ${userCredits} Credits. Redirecting to payment...`);
-          router.push('/payment');
-        }
       }
     };
     initATSPage();
-  }, [reportId, supabase, router]);
+  }, [reportId, supabase]);
 
   const handleFileUpload = async (file: File) => {
     if (!file) return;
@@ -207,10 +194,10 @@ function ATSCheckerContent() {
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center space-y-4 mb-12">
           <h1 className="text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
-            ATS Score Evaluator & Resume Checker
+            Free ATS Score Checker & Resume Evaluator
           </h1>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Upload your CV or paste content to see how applicant tracking systems score your resume across 5 compliance dimensions (10 Credits).
+            Upload your CV or paste content to see how applicant tracking systems score your resume across 5 compliance dimensions. Check your ATS score free and identify missing keywords in seconds.
           </p>
         </div>
 

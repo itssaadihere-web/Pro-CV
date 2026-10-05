@@ -7,14 +7,23 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: '*',
         allow: '/',
         disallow: [
+          '/dashboard',
           '/dashboard/',
+          '/transform-cv',
           '/transform-cv/',
+          '/new-cv',
           '/new-cv/',
+          '/upload',
           '/upload/',
+          '/result',
           '/result/',
+          '/payment',
           '/payment/',
+          '/api',
           '/api/',
+          '/cv-render',
           '/cv-render/',
+          '/credit-history',
         ]
       },
       {

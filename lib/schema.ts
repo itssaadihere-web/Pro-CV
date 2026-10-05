@@ -494,3 +494,81 @@ export function createComparisonSchema(competitorName: string, competitorUrl: st
   };
 }
 
+export const atsTemplatesFaqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is an ATS friendly resume format?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "An ATS friendly resume format uses a clean, single-column reverse-chronological layout with standard section headings (Work Experience, Skills, Education), standard fonts (Arial, Calibri, Helvetica, Georgia), and no complex tables, text boxes, or embedded images that disrupt Applicant Tracking System (ATS) parsing."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between an applicant tracking system resume template and a graphic CV template?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Graphic templates often use multi-column columns, floating text boxes, progress bars, and icons that automated ATS scanners like Workday, Taleo, Greenhouse, and Lever fail to parse accurately. An applicant tracking system resume template organizes data linearly so the parser can seamlessly extract your job title, dates, company name, skills, and quantified metrics."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use a free ATS resume template in PDF format?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Modern ATS parsers can read vector-based PDF files perfectly as long as they are generated with live text (not scanned images) and single-column structures. Sophi AI templates export ATS-compliant, recruiter-approved PDFs that score 95%+ on automated parsers."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What sections should be included in an ATS format CV?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A standard ATS format CV must include: Contact Information (Name, Phone, Email, Location, LinkedIn URL), Professional Summary, Core Competencies (Keyword-rich skills list), Professional Experience (Reverse-chronological with STAR bullet points), Education, and optional Certifications or Projects."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does an ATS resume maker improve my hiring chances?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "An ATS resume maker and CV builder formats your career history automatically into recruiter-tested layouts, rewrites bullet points into measurable achievements (Action Verb + Context + Result), and tests your keyword density against job descriptions before you submit."
+      }
+    }
+  ]
+};
+
+export const teachingCvPakistanSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the best CV format for a teaching job in Pakistan?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The best CV format for teaching jobs in Pakistan is a reverse-chronological academic CV featuring your Teaching Philosophy, Subjects & Grade Levels Taught, Qualifications (B.Ed, M.Ed, M.Phil, or Master's degrees recognized by HEC), Pedagogical Certifications, and Classroom Achievements."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do private schools in Pakistan (Beaconhouse, City School, Roots) use ATS resume screening?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, major private educational networks like Beaconhouse School System, The City School, Roots Millennium, Lahore Grammar School (LGS), and Army Public Schools (APS) receive thousands of applications and increasingly use digital applicant tracking and keyword screening for teacher recruitments."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What key skills should be included in a CV for teaching in Pakistan?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Essential teaching skills include: Curriculum Planning (Cambridge O/A Levels, Matric/FSc, or Federal Board), Classroom Management, Lesson Plan Development, Student Assessment, Differentiated Instruction, EdTech & Digital Classrooms (Google Classroom, Zoom, MS Teams), and Parent-Teacher Communication."
+      }
+    }
+  ]
+};
+

@@ -27,14 +27,22 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL('https://joinsophi.com'),
   title: {
-    default: 'Sophi — #1 AI CV Builder Pakistan | ATS-Optimized Resumes',
+    default: 'Sophi — Free ATS Resume Builder & AI CV Maker | 100% ATS Optimized',
     template: '%s | Sophi AI'
   },
-  description: 'Sophi is Pakistan\'s leading AI CV Builder. Upload or create your ATS-optimized resume, gap analysis, job tailoring & LinkedIn profile optimizer with Sophi.',
+  description: 'Sophi is the leading free ATS resume builder and AI CV maker. Create recruiter-approved resumes, audit ATS scores, optimize LinkedIn profiles, and download ATS-friendly templates.',
   keywords: [
-    'Sophi', 'Sophi AI', 'Sophi CV', 'Sophi ATS', 'Sophi Resume', 'Sophi Pakistan',
-    'JoinSophi', 'Sophi CV builder', 'AI CV builder Pakistan', 'ATS resume builder',
-    'CV maker online Pakistan', 'professional CV writer', 'ATS optimized resume'
+    'free ats resume builder',
+    'ats resume builder',
+    'ats cv maker',
+    'ats resume maker',
+    'ats score checker free',
+    'ats friendly cv templates',
+    'ats resume template',
+    'linkedin optimization',
+    'AI CV builder Pakistan',
+    'ATS resume builder',
+    'Sophi AI'
   ],
   authors: [{ name: 'Sophi', url: 'https://joinsophi.com' }],
   creator: 'Sophi',

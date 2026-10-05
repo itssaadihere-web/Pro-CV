@@ -121,8 +121,8 @@ function TailorCvContent() {
       try {
         const { data: { session } } = await supabase.auth.getSession()
         if (!session) {
-          toast.error('Please sign in to access Job CV Tailoring.')
-          router.push('/login')
+          // Allow unauthenticated visitors / search engine crawlers to view the landing page
+          setLoading(false)
           return
         }
 

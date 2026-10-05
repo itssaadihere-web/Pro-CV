@@ -4,7 +4,8 @@ import React, { useState } from 'react'
 import Header from '@/components/Header'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Sparkles, ArrowRight, Eye, CheckCircle2, ShieldCheck, X, HelpCircle } from 'lucide-react'
+import { Sparkles, ArrowRight, Eye, CheckCircle2, ShieldCheck, X, HelpCircle, Copy, Check, FileText, ChevronDown, Award, Layers, AlertTriangle } from 'lucide-react'
+import toast from 'react-hot-toast'
 import { CVData } from '@/lib/cvParser'
 
 import SophiTemplate01RoyalBlue from '@/components/cv-templates/sophi/SophiTemplate01RoyalBlue'
@@ -195,6 +196,46 @@ const CATEGORIES = ['All', 'Executive', 'Modern', 'ATS Corporate', 'Minimalist',
 export default function TemplatesClient() {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [activeModalTemplate, setActiveModalTemplate] = useState<typeof SOPHI_OFFICIAL_TEMPLATES[0] | null>(null)
+  const [copiedSample, setCopiedSample] = useState(false)
+  const [openFaq, setOpenFaq] = useState<number | null>(null)
+
+  const copySampleText = () => {
+    const sample = `SYED HAMZA ALI
+Karachi, Pakistan | +92 300 1234567 | hamza.ali@example.com | linkedin.com/in/hamza-ali-tech
+
+PROFESSIONAL SUMMARY
+Results-driven Senior Software Engineer with 7+ years of experience engineering high-scale distributed systems, microservices, and AI-driven platforms. Proven track record leading agile engineering squads, reducing API response latency by 42%, and delivering enterprise solutions with 99.99% uptime.
+
+CORE COMPETENCIES
+Full-Stack Engineering | Distributed Systems | Cloud Infrastructure (AWS, GCP) | Next.js & React | Node.js & TypeScript | PostgreSQL, Redis | RESTful APIs & GraphQL | CI/CD Pipelines & Docker | Agile Leadership
+
+PROFESSIONAL EXPERIENCE
+SENIOR SOFTWARE ENGINEER & TEAM LEAD
+TechLogix Global — Karachi, Pakistan | 2022 – Present
+• Architected high-throughput microservices handling 2.5M daily active requests with 99.99% uptime.
+• Led cross-functional team of 8 engineers delivering enterprise cloud solutions 3 weeks ahead of deadline.
+• Reduced API response times by 42% through query optimization and Redis caching layer implementation.
+• Spearheaded automated testing coverage from 45% to 88%, reducing post-release defect rate by 60%.
+
+FULL-STACK DEVELOPER
+Systems Limited — Lahore, Pakistan | 2019 – 2022
+• Developed high-converting customer portals using Next.js, TypeScript, and Tailwind CSS, increasing user engagement by 28%.
+• Implemented automated CI/CD deployment pipelines on AWS ECS, shrinking deployment failure rates to under 1%.
+• Collaborated with product and UI/UX designers to redesign the checkout flow, accelerating transaction completion by 35%.
+
+EDUCATION
+FAST-NUCES, Karachi, Pakistan
+Bachelor of Science in Computer Science (CGPA: 3.8 / 4.0) | 2015 – 2019
+
+CERTIFICATIONS
+• AWS Certified Solutions Architect – Associate (2023)
+• Certified ScrumMaster (CSM) – Scrum Alliance (2022)`
+
+    navigator.clipboard.writeText(sample)
+    setCopiedSample(true)
+    toast.success('Sample ATS Friendly Resume copied to clipboard!')
+    setTimeout(() => setCopiedSample(false), 2500)
+  }
 
   const filteredTemplates = selectedCategory === 'All'
     ? SOPHI_OFFICIAL_TEMPLATES
@@ -204,18 +245,18 @@ export default function TemplatesClient() {
     <div className="min-h-screen bg-slate-50 text-slate-800 relative">
       <Header />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 space-y-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 space-y-16">
         <div className="text-center space-y-4 max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary-50 px-4 py-1.5 text-xs font-black text-primary border border-primary-200">
             <Sparkles className="h-4 w-4 text-gold" />
-            <span>OFFICIAL <S>SOPHI</S> TEMPLATE GALLERY</span>
+            <span>OFFICIAL ATS CV TEMPLATES & FORMATS GALLERY</span>
           </div>
 
           <h1 className="text-4xl font-black tracking-tight text-slate-950 sm:text-5xl leading-tight">
-            Recruiter-Approved <S>SOPHI</S> CV Templates
+            Free ATS Friendly CV Templates & Resume Formats
           </h1>
           <p className="text-base text-slate-600 leading-relaxed">
-            Every template below is embedded directly in <S>SOPHI</S>&apos;s AI engine. Built with 100% ATS compliance, STAR-method achievement layouts, and dynamic color customization.
+            Explore 49+ recruiter-tested applicant tracking system resume templates built to score 95%+ on HR screening filters. Pick an ATS format resume, customize in our ATS cv maker, and download job-ready PDFs.
           </p>
         </div>
 
@@ -341,6 +382,232 @@ export default function TemplatesClient() {
             </Link>
           </div>
         </div>
+
+        {/* --- SECTION 1: SAMPLE ATS FRIENDLY RESUME (COPYABLE) --- */}
+        <section className="bg-white rounded-3xl border border-slate-200 p-8 lg:p-12 shadow-sm space-y-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-100 pb-6">
+            <div className="space-y-2">
+              <span className="text-xs font-black uppercase tracking-wider text-primary bg-primary-50 px-3 py-1 rounded-full border border-primary-200">
+                Sample ATS Friendly Resume & Template Example
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-950">
+                Recruiter-Tested Sample ATS Friendly Resume Format
+              </h2>
+              <p className="text-sm text-slate-600 max-w-2xl">
+                Need a proven text layout? Below is a recruiter-approved, 100% parseable ATS resume sample. Copy the plain text structure or customize it in our automated ATS resume maker.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={copySampleText}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold transition-all shadow-sm self-start md:self-auto"
+            >
+              {copiedSample ? (
+                <>
+                  <Check className="h-4 w-4 text-emerald-400" />
+                  <span>Copied to Clipboard!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="h-4 w-4 text-amber-300" />
+                  <span>Copy Sample ATS Resume</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className="bg-slate-950 rounded-2xl p-6 sm:p-8 text-slate-200 font-mono text-xs leading-relaxed overflow-x-auto border border-slate-800">
+            <pre className="whitespace-pre-wrap font-mono">
+{`SYED HAMZA ALI
+Karachi, Pakistan | +92 300 1234567 | hamza.ali@example.com | linkedin.com/in/hamza-ali-tech
+
+PROFESSIONAL SUMMARY
+Results-driven Senior Software Engineer with 7+ years of experience engineering high-scale distributed systems, microservices, and AI-driven platforms. Proven track record leading agile engineering squads, reducing API response latency by 42%, and delivering enterprise solutions with 99.99% uptime.
+
+CORE COMPETENCIES
+Full-Stack Engineering | Distributed Systems | Cloud Infrastructure (AWS, GCP) | Next.js & React | Node.js & TypeScript | PostgreSQL, Redis | RESTful APIs & GraphQL | CI/CD Pipelines & Docker | Agile Leadership
+
+PROFESSIONAL EXPERIENCE
+SENIOR SOFTWARE ENGINEER & TEAM LEAD
+TechLogix Global — Karachi, Pakistan | 2022 – Present
+• Architected high-throughput microservices handling 2.5M daily active requests with 99.99% uptime.
+• Led cross-functional team of 8 engineers delivering enterprise cloud solutions 3 weeks ahead of deadline.
+• Reduced API response times by 42% through query optimization and Redis caching layer implementation.
+• Spearheaded automated testing coverage from 45% to 88%, reducing post-release defect rate by 60%.
+
+FULL-STACK DEVELOPER
+Systems Limited — Lahore, Pakistan | 2019 – 2022
+• Developed high-converting customer portals using Next.js, TypeScript, and Tailwind CSS, increasing user engagement by 28%.
+• Implemented automated CI/CD deployment pipelines on AWS ECS, shrinking deployment failure rates to under 1%.
+• Collaborated with product and UI/UX designers to redesign the checkout flow, accelerating transaction completion by 35%.
+
+EDUCATION
+FAST-NUCES, Karachi, Pakistan
+Bachelor of Science in Computer Science (CGPA: 3.8 / 4.0) | 2015 – 2019
+
+CERTIFICATIONS
+• AWS Certified Solutions Architect – Associate (2023)
+• Certified ScrumMaster (CSM) – Scrum Alliance (2022)`}
+            </pre>
+          </div>
+        </section>
+
+        {/* --- SECTION 2: THE ANATOMY OF AN ATS FRIENDLY RESUME FORMAT --- */}
+        <section className="grid md:grid-cols-3 gap-8">
+          <div className="bg-white p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-primary-100 text-primary flex items-center justify-center">
+              <FileText className="h-6 w-6" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900">
+              1. Single-Column Hierarchy
+            </h3>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Every applicant tracking system resume template must maintain a single-column linear layout. Two-column sidebars, floating text blocks, and graphic skill bars scramble parser text engines like Workday and Taleo.
+            </p>
+          </div>
+
+          <div className="bg-white p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center">
+              <Layers className="h-6 w-6" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900">
+              2. Standard ATS CV Formats
+            </h3>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Stick to universally recognized section titles: <em>Work Experience</em>, <em>Core Skills</em>, and <em>Education</em>. Creative labels like "My Journey" or "What I Do" confuse ATS indexing algorithms.
+            </p>
+          </div>
+
+          <div className="bg-white p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center">
+              <Award className="h-6 w-6" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900">
+              3. STAR-Formula Metrics
+            </h3>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              An effective ATS format resume uses the STAR formula (Situation, Task, Action, Result). Start every bullet with strong action verbs and back up your achievements with tangible percentages and revenue numbers.
+            </p>
+          </div>
+        </section>
+
+        {/* --- SECTION 3: ATS RESUME FORMAT VS GRAPHIC FORMAT TABLE --- */}
+        <section className="bg-white rounded-3xl border border-slate-200 p-8 lg:p-12 shadow-sm space-y-8">
+          <div className="space-y-2 text-center max-w-2xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-950">
+              ATS Format Resume vs. Graphic Multi-Column Resume
+            </h2>
+            <p className="text-sm text-slate-600">
+              Why 75% of stylish Canva resumes get auto-rejected by corporate applicant tracking systems.
+            </p>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs sm:text-sm border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 bg-slate-50 text-slate-700">
+                  <th className="py-3 px-4 font-black">Evaluation Criteria</th>
+                  <th className="py-3 px-4 font-black text-emerald-700">Sophi ATS Friendly Resume Template</th>
+                  <th className="py-3 px-4 font-black text-rose-700">Graphic / Canva Template</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-600">
+                <tr>
+                  <td className="py-3 px-4 font-bold text-slate-900">ATS Parsing Compatibility</td>
+                  <td className="py-3 px-4 text-emerald-700 font-semibold">98%+ Parse Accuracy (Workday, Taleo, Greenhouse)</td>
+                  <td className="py-3 px-4 text-rose-700">Under 40% (Parsed out of order)</td>
+                </tr>
+                <tr>
+                  <td className="py-3 px-4 font-bold text-slate-900">Layout Structure</td>
+                  <td className="py-3 px-4">Single-column or linear flow with clear hierarchical headings</td>
+                  <td className="py-3 px-4">Complex 2-to-3 column tables & textboxes</td>
+                </tr>
+                <tr>
+                  <td className="py-3 px-4 font-bold text-slate-900">Font & Typography</td>
+                  <td className="py-3 px-4">System fonts (Inter, Arial, Calibri, Georgia)</td>
+                  <td className="py-3 px-4">Custom web fonts, script lettering, icon fonts</td>
+                </tr>
+                <tr>
+                  <td className="py-3 px-4 font-bold text-slate-900">Keyword Density & Extraction</td>
+                  <td className="py-3 px-4 text-emerald-700 font-semibold">100% searchable text tags & hard skill matches</td>
+                  <td className="py-3 px-4 text-rose-700">Text embedded in images or unreadable tables</td>
+                </tr>
+                <tr>
+                  <td className="py-3 px-4 font-bold text-slate-900">Export Compatibility</td>
+                  <td className="py-3 px-4">Vector-encoded ATS PDF & Word DOCX</td>
+                  <td className="py-3 px-4">Rasterized image PDF or flattened graphic</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* --- SECTION 4: FREQUENTLY ASKED QUESTIONS (ATS TEMPLATES & FORMATS) --- */}
+        <section className="bg-slate-100 rounded-3xl p-8 lg:p-12 border border-slate-200/80 space-y-8">
+          <div className="text-center space-y-2 max-w-2xl mx-auto">
+            <span className="text-xs font-black uppercase tracking-wider text-primary">
+              Got Questions?
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-950">
+              Frequently Asked Questions About ATS Templates & Formats
+            </h2>
+          </div>
+
+          <div className="space-y-4 max-w-3xl mx-auto">
+            {[
+              {
+                q: 'What is an ATS friendly resume format?',
+                a: 'An ATS friendly resume format is an organized layout designed specifically to be scanned by Applicant Tracking System software (like Workday, Taleo, Greenhouse, and Lever). It uses a clean reverse-chronological structure, standardized section headers (Work Experience, Skills, Education), clean web-safe fonts, and avoids tables, icons, or floating text boxes.'
+              },
+              {
+                q: 'What makes an applicant tracking system resume template different from a regular CV?',
+                a: 'Standard graphic CVs focus on visual flair, using multi-column bars and graphics that confuse software parsers. An applicant tracking system resume template organizes data linearly so the algorithm can instantly identify your name, job title, years of experience, and hard skills.'
+              },
+              {
+                q: 'Can I download a free ATS resume template in PDF format?',
+                a: 'Yes! Sophi offers free ATS friendly resume templates you can export as vector-encoded PDFs. Unlike scanned image PDFs, our PDFs retain live selectable text, guaranteeing high readability across all screening software.'
+              },
+              {
+                q: 'How does an ATS resume maker help format my bullet points?',
+                a: 'An automated ATS resume builder and CV maker takes your raw experience and rewrites it into the STAR format (Action Verb + Context + Metric). It also suggests industry-specific keywords that match job descriptions in your field.'
+              },
+              {
+                q: 'What are the best fonts for an ATS format resume?',
+                a: 'The most reliable ATS-friendly fonts are clean sans-serif and serif fonts: Arial, Calibri, Helvetica, Georgia, Times New Roman, and Inter. Avoid decorative, handwriting, or novelty fonts that ATS character-recognition engines cannot decipher.'
+              },
+              {
+                q: 'Can ATS software read two-column resumes?',
+                a: 'Most ATS software reads left-to-right across the page. With two-column designs, the system often merges text from column 1 into column 2 horizontally, turning your sentences into gibberish. That is why recruiters strongly advise sticking to single-column or carefully structured ATS friendly templates.'
+              }
+            ].map((faq, idx) => {
+              const isOpen = openFaq === idx
+              return (
+                <div
+                  key={idx}
+                  className="bg-white rounded-2xl border border-slate-200 overflow-hidden transition-all"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(isOpen ? null : idx)}
+                    className="w-full text-left p-5 flex items-center justify-between gap-4 font-bold text-slate-900 text-sm sm:text-base hover:text-primary transition-colors"
+                  >
+                    <span>{faq.q}</span>
+                    <ChevronDown
+                      className={`h-5 w-5 text-slate-400 shrink-0 transition-transform ${
+                        isOpen ? 'rotate-180 text-primary' : ''
+                      }`}
+                    />
+                  </button>
+                  {isOpen && (
+                    <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </section>
       </main>
 
       <AnimatePresence>

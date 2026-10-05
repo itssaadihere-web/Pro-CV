@@ -20,9 +20,10 @@ export const metadata: Metadata = {
   title: 'Top AI CV Builder App 2026 — ATS-Optimized Resume Maker | Sophi',
   description: 'Sophi is the leading AI CV Builder App. Create, audit, and tailor 100% ATS-compliant resumes with STAR metrics, instant job description matching, and 49 recruiter-approved templates.',
   keywords: [
-    'AI CV Builder App', 'AI Resume Builder App', 'Best AI CV Maker',
-    'Free AI Resume Builder', 'ATS Resume Builder Online', 'AI CV Maker App',
-    'ATS CV Checker', 'AI Resume Generator', 'Sophi AI CV Builder'
+    'AI CV Builder App', 'AI Resume Builder App', 'ats cv maker',
+    'ats resume maker', 'free ats resume builder', 'ats resume builder',
+    'Best AI CV Maker', 'Free AI Resume Builder', 'ATS Resume Builder Online',
+    'AI CV Maker App', 'ATS CV Checker', 'AI Resume Generator', 'Sophi AI CV Builder'
   ],
   alternates: {
     canonical: 'https://joinsophi.com/ai-cv-builder-app'

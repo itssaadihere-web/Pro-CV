@@ -156,9 +156,9 @@ function LoginContent() {
 
         {/* Title */}
         <div className="text-center">
-          <h2 className="text-2xl font-black tracking-tight text-primary">
+          <h1 className="text-2xl font-black tracking-tight text-primary">
             {isSignUp ? 'Create your Sophi Account' : 'Sign in to Sophi'}
-          </h2>
+          </h1>
           <p className="mt-2 text-xs font-medium text-slate-500">
             {isSignUp
               ? 'Start optimizing your CV with advanced AI for free.'

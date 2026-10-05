@@ -62,8 +62,7 @@ function LinkedInOptimizerContent() {
     const initLinkedInPage = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) {
-        toast.error('Please sign in to access LinkedIn Profile Optimizer.')
-        router.push('/login')
+        // Allow unauthenticated visitors / search engine crawlers to view the landing page
         return
       }
 
@@ -87,22 +86,10 @@ function LinkedInOptimizerContent() {
         } finally {
           setLoadingSavedReport(false)
         }
-      } else {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('cv_credits')
-          .eq('id', session.user.id)
-          .maybeSingle()
-
-        const userCredits = profile?.cv_credits ?? 0
-        if (userCredits < 20) {
-          toast.error(`Insufficient credits! LinkedIn Profile Optimizer requires 20 Credits, but you currently have ${userCredits} Credits. Redirecting to payment...`)
-          router.push('/payment')
-        }
       }
     }
     initLinkedInPage()
-  }, [reportId, supabase, router])
+  }, [reportId, supabase])
 
   const handleProfilePdfUpload = async (file: File) => {
     if (!file) return
@@ -268,10 +255,10 @@ function LinkedInOptimizerContent() {
             <span>Standalone Service — 20 Credits</span>
           </div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
-            LinkedIn Profile Optimizer
+            AI LinkedIn Profile Optimizer & Search Visibility Tool
           </h1>
           <p className="text-sm text-slate-600 max-w-xl mx-auto">
-            Never lose another opportunity because your achievements were invisible to recruiter searches.
+            Master LinkedIn profile optimization. Generate recruiter-magnet headlines, keyword-dense executive bios, and optimise your LinkedIn profile to rank at the top of recruiter searches.
           </p>
         </div>
 

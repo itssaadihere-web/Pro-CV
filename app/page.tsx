@@ -195,18 +195,16 @@ export default function LandingPage() {
                 <span>NEXT-GEN AI CV PLATFORM v2.5</span>
               </div>
 
-              <div className="space-y-4">
                 <h1 className="text-4xl font-black tracking-tight text-slate-950 sm:text-5xl lg:text-6xl leading-[1.1]">
-                  Build & Transform <br />
-                  CVs with <S /> AI. <br />
+                  Free ATS Resume Builder <br />
+                  & AI CV Maker. <br />
                   <span className="bg-gradient-to-r from-primary via-primary-800 to-gold bg-clip-text text-transparent">
-                    ATS-Optimized CVs.
+                    100% ATS-Optimized.
                   </span>
                 </h1>
                 <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl font-medium">
-                  Audit your ATS score, analyze career gaps, tailor your CV for job roles, build a new resume from scratch, or revamp your document — powered by <S />.
+                  The smart ATS cv maker and resume builder. Check your ATS score free, eliminate keyword gaps, tailor for target jobs, and export recruiter-approved resumes powered by <S /> AI.
                 </p>
-              </div>
 
               {/* 4 Primary Action Pills */}
               <div className="grid grid-cols-2 gap-2.5 max-w-md">

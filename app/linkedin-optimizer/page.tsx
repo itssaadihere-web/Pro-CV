@@ -4,18 +4,24 @@ import LinkedInOptimizerClient from '@/components/LinkedInOptimizerClient';
 import { createBreadcrumbSchema } from '@/lib/schema';
 
 export const metadata: Metadata = {
-  title: 'AI LinkedIn Profile Optimizer — Recruiter Search Generator | Sophi',
-  description: 'Generate high-ranking LinkedIn headlines, executive summaries & keyword skill tags automatically. Increase recruiter profile views on LinkedIn.',
+  title: 'AI LinkedIn Profile Optimizer — Optimise LinkedIn Profile for Recruiters | Sophi',
+  description: 'Master LinkedIn optimization with Sophi AI. Generate recruiter-magnet headlines, optimise LinkedIn profile summaries, and rank higher in recruiter searches.',
   keywords: [
-    'LinkedIn profile optimizer', 'LinkedIn headline generator Pakistan',
-    'LinkedIn bio optimizer AI', 'recruiter search optimization LinkedIn', 'Sophi LinkedIn tool'
+    'linkedin optimization',
+    'optimise linkedin profile',
+    'linked in profile optimization',
+    'linkedin profile optimizer',
+    'LinkedIn headline generator',
+    'recruiter search optimization LinkedIn',
+    'LinkedIn bio optimizer AI',
+    'Sophi LinkedIn tool'
   ],
   alternates: {
     canonical: 'https://joinsophi.com/linkedin-optimizer'
   },
   openGraph: {
-    title: 'AI LinkedIn Profile Optimizer & Headline Generator | Sophi',
-    description: 'Optimize your LinkedIn profile headline, summary hook & skills for corporate recruiters.',
+    title: 'AI LinkedIn Profile Optimizer — Optimise LinkedIn Profile | Sophi',
+    description: 'Optimize your LinkedIn profile headline, summary hook & skills for corporate recruiters with AI-driven keyword matching.',
     url: 'https://joinsophi.com/linkedin-optimizer',
     siteName: 'Sophi',
     type: 'website',
@@ -24,7 +30,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'AI LinkedIn Profile Optimizer | Sophi',
-    description: 'Optimize your LinkedIn headline & summary for corporate recruiters.',
+    description: 'Master LinkedIn optimization and attract top corporate recruiters.',
     images: ['https://joinsophi.com/og/home.png']
   }
 };
