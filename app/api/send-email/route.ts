@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase } from '@/lib/supabase-server'
 import { sendCVEmail } from '@/lib/email'
 import { generateAndUploadPdf } from '@/lib/pdfService'
+import { getCvDownloadFilename } from '@/lib/cvParser'
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
     // 1. Fetch job and user profile
     const { data: job, error: jobError } = await supabase
       .from('cv_jobs')
-      .select('generated_cv, user_id, email_sent, template_used')
+      .select('generated_cv, user_id, email_sent, template_used, target_industry')
       .eq('id', jobId)
       .single()
 
@@ -47,10 +48,13 @@ export async function POST(req: NextRequest) {
 
     const { pdfBuffer } = await generateAndUploadPdf(jobId, templateId, color, appUrl)
 
+    const cvFileName = getCvDownloadFilename(job.generated_cv, profile.full_name, job.target_industry)
+
     // 3. Send email with exact high-performance PDF attachment
     const emailSent = await sendCVEmail({
       userEmail: profile.email,
       userName: profile.full_name || '',
+      cvFileName,
       jobId,
       pdfBuffer: Buffer.from(pdfBuffer),
     })

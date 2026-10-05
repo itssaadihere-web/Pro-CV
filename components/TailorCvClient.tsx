@@ -28,6 +28,7 @@ import {
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
+import { getCvDownloadFilename } from '@/lib/cvParser'
 import { getClientSupabase } from '@/lib/supabase'
 
 interface PortalCv {
@@ -271,9 +272,18 @@ function TailorCvContent() {
 
       const blob = await res.blob()
       const blobUrl = URL.createObjectURL(blob)
+      const headerFilename = res.headers.get('X-Download-Filename')
+      const selectedCv = portalCvs.find((c: PortalCv) => c.id === selectedCvId)
+      const fallbackFilename = getCvDownloadFilename(
+        selectedCv?.generated_cv,
+        null,
+        tailorResult?.targetJobTitle
+      )
+      const downloadFilename = headerFilename || fallbackFilename
+
       const a = document.createElement('a')
       a.href = blobUrl
-      a.download = `Tailored-CV-${(tailorResult?.targetJobTitle || 'Professional').replace(/[^a-zA-Z0-9]/g, '_')}.pdf`
+      a.download = downloadFilename
       document.body.appendChild(a)
       a.click()
       a.remove()

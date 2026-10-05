@@ -43,7 +43,7 @@ export default async function CVRenderPage({
   return (
     <html>
       <head>
-        <title>{cvData.fullName || 'CV'} - ProCV</title>
+        <title>{cvData.fullName && cvData.jobTitle ? `${cvData.fullName} - ${cvData.jobTitle}` : cvData.fullName || 'CV'}</title>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Georgia:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
         <style>{`
           * { margin: 0; padding: 0; box-sizing: border-box; }

@@ -65,18 +65,38 @@ export function parseKimiCV(kimiOutput: string): CVData {
     const cleaned = kimiOutput.trim().replace(/^```json/i, '').replace(/^```/, '').replace(/```$/, '').trim()
     jsonObj = JSON.parse(cleaned)
   } catch (e) {
-    // Not raw JSON, proceed with text regex parsing
+    // Not raw JSON, try matching embedded JSON blocks
   }
 
-  if (jsonObj && jsonObj.personal) {
+  if (!jsonObj) {
+    const jsonBlock = kimiOutput.match(/```(?:json)?\s*([\s\S]*?)\s*```/i)?.[1]
+    if (jsonBlock) {
+      try {
+        jsonObj = JSON.parse(jsonBlock.trim())
+      } catch (e) {}
+    }
+  }
+
+  if (!jsonObj) {
+    const firstBrace = kimiOutput.indexOf('{')
+    const lastBrace = kimiOutput.lastIndexOf('}')
+    if (firstBrace !== -1 && lastBrace > firstBrace) {
+      try {
+        jsonObj = JSON.parse(kimiOutput.slice(firstBrace, lastBrace + 1))
+      } catch (e) {}
+    }
+  }
+
+  if (jsonObj && (jsonObj.personal || jsonObj.full_name || jsonObj.fullName || jsonObj.experience)) {
+    const p = jsonObj.personal || jsonObj
     return {
-      fullName: jsonObj.personal.full_name || '',
-      jobTitle: jsonObj.personal.job_title || '',
-      email: jsonObj.personal.email || '',
-      phone: jsonObj.personal.phone || '',
-      location: jsonObj.personal.location || '',
-      linkedin: jsonObj.personal.linkedin || '',
-      website: jsonObj.personal.website || '',
+      fullName: p.full_name || p.fullName || jsonObj.full_name || jsonObj.fullName || jsonObj.name || '',
+      jobTitle: p.job_title || p.jobTitle || jsonObj.job_title || jsonObj.jobTitle || jsonObj.title || '',
+      email: p.email || jsonObj.email || '',
+      phone: p.phone || jsonObj.phone || '',
+      location: p.location || jsonObj.location || '',
+      linkedin: p.linkedin || jsonObj.linkedin || '',
+      website: p.website || jsonObj.website || '',
       summary: jsonObj.summary || '',
       coreCompetencies: jsonObj.core_competencies || [],
       experience: (jsonObj.experience || []).map((exp: any) => ({
@@ -117,9 +137,14 @@ export function parseKimiCV(kimiOutput: string): CVData {
 
   const lines = cvSection.split('\n').filter(l => l.trim())
 
+  let lineIdx = 0
+  while (lineIdx < lines.length && /^(?:---|\*\*\*|===|curriculum vitae|resume|cv$)/i.test(lines[lineIdx].trim().replace(/^[*#_\s]+|[*#_\s]+$/g, ''))) {
+    lineIdx++
+  }
+
   // Name & Job Title
-  const fullName = lines[0]?.replace(/^[█\s#─═┌└┐┘│*]+|[█\s#─═┌└┐┘│*]+$/g, '').trim() ?? ''
-  const jobTitle = lines[1]?.replace(/^[#\s\-*]+|[#\s\-*]+$/g, '').trim() ?? ''
+  const fullName = lines[lineIdx]?.replace(/^[█\s#─═┌└┐┘│*]+|[█\s#─═┌└┐┘│*]+$/g, '').trim() ?? ''
+  const jobTitle = lines[lineIdx + 1]?.replace(/^[#\s\-*]+|[#\s\-*]+$/g, '').trim() ?? ''
 
   // Contact line
   const contactLine = lines.find(l => l.includes('@')) ?? ''
@@ -375,4 +400,84 @@ export function parseKimiCV(kimiOutput: string): CVData {
     education, certifications, publications, conferencePresentations,
     researchSupervision, executiveTrainings, technicalSkills, languages
   }
+}
+
+/**
+ * Formats a clean, professional file name for downloaded CV PDFs in the format:
+ * "Full Name - CV Title.pdf"
+ * Example: "Syed Saad Bin Musharraf - Performance Marketer.pdf"
+ */
+export function formatCvFileName(
+  fullName?: string | null,
+  jobTitle?: string | null,
+  fallbackName: string = 'CV',
+  fallbackTitle: string = 'Resume'
+): string {
+  const cleanCasing = (str: string) => {
+    const trimmed = str.replace(/[*#_~`]/g, '').trim()
+    if (!trimmed) return ''
+    // If string is ALL CAPS (e.g. SYED SAAD BIN MUSHARRAF), convert cleanly to Title Case
+    if (trimmed === trimmed.toUpperCase() && /[A-Z]/.test(trimmed)) {
+      return trimmed
+        .toLowerCase()
+        .split(/\s+/)
+        .map(word => {
+          const upper = word.toUpperCase()
+          if (['AI', 'UI', 'UX', 'IT', 'HR', 'SEO', 'SEM', 'ATS', 'CPA', 'MBA', 'PHD', 'MD', 'CEO', 'CTO', 'CFO', 'COO', 'CMO', 'VP'].includes(upper)) {
+            return upper === 'PHD' ? 'PhD' : upper
+          }
+          return word.charAt(0).toUpperCase() + word.slice(1)
+        })
+        .join(' ')
+    }
+    return trimmed
+  }
+
+  // Remove illegal characters for filesystems across Windows, macOS, Linux
+  const sanitize = (str: string) => {
+    return str
+      .replace(/[\r\n\t]+/g, ' ')
+      .replace(/[\\/:*?"<>|]+/g, ' - ')
+      .replace(/\s+/g, ' ')
+      .trim()
+  }
+
+  const name = sanitize(cleanCasing(fullName || ''))
+  const title = sanitize(cleanCasing(jobTitle || ''))
+
+  if (name && title) {
+    return `${name} - ${title}.pdf`
+  }
+  if (name) {
+    return `${name} - ${fallbackTitle}.pdf`
+  }
+  if (title) {
+    return `${fallbackName} - ${title}.pdf`
+  }
+  return `${fallbackName} - ${fallbackTitle}.pdf`
+}
+
+/**
+ * Extracts candidate full name and job title from CV content (or fallbacks)
+ * and returns the formatted download filename: "Full Name - CV Title.pdf"
+ */
+export function getCvDownloadFilename(
+  cvInput?: string | null,
+  fallbackName?: string | null,
+  fallbackTitle?: string | null
+): string {
+  let extractedName = fallbackName || ''
+  let extractedTitle = fallbackTitle || ''
+
+  if (cvInput) {
+    try {
+      const parsed = parseKimiCV(cvInput)
+      if (parsed.fullName) extractedName = parsed.fullName
+      if (parsed.jobTitle) extractedTitle = parsed.jobTitle
+    } catch (e) {
+      console.warn('Could not parse CV for download filename, falling back to metadata', e)
+    }
+  }
+
+  return formatCvFileName(extractedName, extractedTitle, fallbackName || 'CV', fallbackTitle || 'Resume')
 }

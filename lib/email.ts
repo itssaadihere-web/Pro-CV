@@ -5,6 +5,7 @@ interface SendEmailParams {
   userName: string
   jobId: string
   pdfBuffer: Buffer
+  cvFileName?: string
 }
 
 export async function sendCVEmail({
@@ -12,6 +13,7 @@ export async function sendCVEmail({
   userName,
   jobId,
   pdfBuffer,
+  cvFileName,
 }: SendEmailParams): Promise<boolean> {
   const host = process.env.TITAN_SMTP_HOST || 'smtp.titan.email'
   const port = parseInt(process.env.TITAN_SMTP_PORT || '465')
@@ -70,7 +72,7 @@ export async function sendCVEmail({
     html: htmlContent,
     attachments: [
       {
-        filename: `Sophi_ATS_Optimized_CV_${userName.replace(/\s+/g, '_')}.pdf`,
+        filename: cvFileName || (userName ? `${userName.replace(/[\\/:*?"<>|]+/g, ' ').trim()} - CV.pdf` : 'Sophi_ATS_Optimized_CV.pdf'),
         content: pdfBuffer,
         contentType: 'application/pdf',
       },

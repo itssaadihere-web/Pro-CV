@@ -24,6 +24,7 @@ import ATSScoreCard from '@/components/ATSScoreCard'
 import CVPreview from '@/components/CVPreview'
 import JobRecommendationsWidget from '@/components/JobRecommendationsWidget'
 import { getTemplateColorPalettes } from '@/lib/templatePalettes'
+import { getCvDownloadFilename } from '@/lib/cvParser'
 
 type TabType = 'ats' | 'cv' | 'cover' | 'gap'
 
@@ -37,6 +38,7 @@ export default function ResultPage() {
   const [jobData, setJobData] = useState<any>(null)
   const [activeTab, setActiveTab] = useState<TabType>('cv')
   const [originalText, setOriginalText] = useState('')
+  const [profileName, setProfileName] = useState<string>('')
   const [sendingEmail, setSendingEmail] = useState(false)
   const [copiedText, setCopiedText] = useState<Record<string, boolean>>({})
 
@@ -77,12 +79,16 @@ export default function ResultPage() {
           return
         }
 
-        // Fetch user payment status
+        // Fetch user payment status and profile name
         const { data: profile } = await supabase
           .from('profiles')
-          .select('has_paid, cv_credits')
+          .select('has_paid, cv_credits, full_name')
           .eq('id', session.user.id)
           .single()
+
+        if (profile?.full_name) {
+          setProfileName(profile.full_name)
+        }
 
         if (session.user.email === 'syedsaad.mob@gmail.com' || (profile && (profile.has_paid || profile.cv_credits > 0))) {
           setHasPaid(true)
@@ -158,9 +164,17 @@ export default function ResultPage() {
         }))
       }
 
+      const headerFilename = res.headers.get('X-Download-Filename')
+      const fallbackFilename = getCvDownloadFilename(
+        displayCVText || jobData?.generated_cv,
+        profileName,
+        jobData?.target_industry
+      )
+      const downloadFilename = headerFilename || fallbackFilename
+
       const a = document.createElement('a')
       a.href = blobUrl
-      a.download = `ProCV-${targetTemplate}-${selectedColor || 'default'}-${jobId.substring(0, 8)}.pdf`
+      a.download = downloadFilename
       document.body.appendChild(a)
       a.click()
       a.remove()

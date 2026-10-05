@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase } from '@/lib/supabase-server'
 import { generateAndUploadPdf, getBrowserInstance } from '@/lib/pdfService'
+import { getCvDownloadFilename } from '@/lib/cvParser'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,11 +16,21 @@ export async function POST(req: NextRequest) {
     const supabase = getServiceSupabase()
     const { data: job } = await supabase
       .from('cv_jobs')
-      .select('user_id, pdf_output_path, completed_at, created_at')
+      .select('user_id, pdf_output_path, completed_at, created_at, generated_cv, target_industry')
       .eq('id', jobId)
       .single()
 
+    let profileName = ''
     if (job?.user_id) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', job.user_id)
+        .single()
+      if (profile?.full_name) {
+        profileName = profile.full_name
+      }
+
       const jobTime = new Date(job.completed_at || job.created_at || Date.now()).getTime()
       const isInitialExport = !job.pdf_output_path || (Date.now() - jobTime < 15 * 60 * 1000)
 
@@ -42,11 +53,14 @@ export async function POST(req: NextRequest) {
 
     const { publicUrl, pdfBuffer } = await generateAndUploadPdf(jobId, templateId, color, appUrl)
 
+    const downloadFileName = getCvDownloadFilename(job?.generated_cv, profileName, job?.target_industry)
+
     // Stream PDF binary array directly for instant, 1-step download with zero CDN caching delay
     return new NextResponse(new Uint8Array(pdfBuffer), {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="ProCV-${templateId}-${color || 'custom'}.pdf"`,
+        'Content-Disposition': `attachment; filename="${downloadFileName.replace(/"/g, '')}"; filename*="UTF-8''${encodeURIComponent(downloadFileName)}"`,
+        'X-Download-Filename': downloadFileName,
         'X-Pdf-Url': publicUrl || '',
         'Cache-Control': 'no-cache, no-store, must-revalidate',
       },
@@ -76,12 +90,24 @@ export async function GET(req: NextRequest) {
     // Fetch the job details
     const { data: job, error: dbError } = await supabase
       .from('cv_jobs')
-      .select('pdf_output_path, template_used, user_id')
+      .select('pdf_output_path, template_used, user_id, generated_cv, target_industry')
       .eq('id', jobId)
       .single()
 
     if (dbError || !job) {
       return NextResponse.json({ error: 'Job not found' }, { status: 404 })
+    }
+
+    let profileName = ''
+    if (job.user_id) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', job.user_id)
+        .single()
+      if (profile?.full_name) {
+        profileName = profile.full_name
+      }
     }
 
     // Resolve template ID
@@ -101,11 +127,14 @@ export async function GET(req: NextRequest) {
 
     const { pdfBuffer } = await generateAndUploadPdf(jobId, templateId, color, appUrl)
 
+    const downloadFileName = getCvDownloadFilename(job.generated_cv, profileName, job.target_industry)
+
     // Return the PDF buffer directly for download
     return new NextResponse(new Uint8Array(pdfBuffer), {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="ProCV-${templateId}-${color || 'custom'}.pdf"`,
+        'Content-Disposition': `attachment; filename="${downloadFileName.replace(/"/g, '')}"; filename*="UTF-8''${encodeURIComponent(downloadFileName)}"`,
+        'X-Download-Filename': downloadFileName,
         'Cache-Control': 'no-cache, no-store, must-revalidate',
       },
     })
