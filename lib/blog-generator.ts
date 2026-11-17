@@ -34,6 +34,7 @@ export async function generateBlogPostWithGemini(
   content: string;
   description: string;
   primary_keyword: string;
+  category?: string;
   url_slug?: string;
   featured_image_keyword?: string;
 } | null> {
@@ -128,6 +129,7 @@ OUTPUT JSON SCHEMA:
   "url_slug": "lowercase-hyphenated-slug-under-60-chars",
   "description": "Meta description — 150–155 chars with primary keyword and clear benefit",
   "primary_keyword": "${specificTargetKeyword || 'Primary targeted keyword phrase'}",
+  "category": "One of: 'ATS & Resumes', 'Career & Interviews', 'LinkedIn & Branding', 'Industry Guides', 'Career Advice'",
   "secondary_keywords": ["3-5 related secondary keyword phrases"],
   "featured_image_keyword": "career,office",
   "inline_image_keyword": "resume,interview",

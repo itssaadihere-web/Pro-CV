@@ -84,19 +84,31 @@ export async function GET(request: Request) {
 
     const featured_image = `https://picsum.photos/seed/${encodeURIComponent(slug)}/1200/600`;
 
-    const { data, error } = await supabase.from('blog_posts').insert([
+    const basePayload = {
+      slug,
+      title: blogData.title,
+      meta_description: blogData.description || (blogData as any).meta_description || '',
+      content: blogData.content,
+      primary_keyword: blogData.primary_keyword || selectedKeyword || '',
+      featured_image,
+      word_count: blogData.content ? blogData.content.split(/\s+/).length : 0,
+      published: true,
+      published_at: new Date().toISOString()
+    };
+
+    let { data, error } = await supabase.from('blog_posts').insert([
       {
-        slug,
-        title: blogData.title,
-        meta_description: blogData.description || (blogData as any).meta_description || '',
-        content: blogData.content,
-        primary_keyword: blogData.primary_keyword || selectedKeyword || '',
-        featured_image,
-        word_count: blogData.content ? blogData.content.split(/\s+/).length : 0,
-        published: true,
-        published_at: new Date().toISOString()
+        ...basePayload,
+        category: blogData.category || 'Career Advice',
       }
     ]).select();
+
+    // If category column does not exist yet in DB, fall back to inserting without it
+    if (error && error.message?.includes('category')) {
+      const fallback = await supabase.from('blog_posts').insert([basePayload]).select();
+      data = fallback.data;
+      error = fallback.error;
+    }
 
     if (error) {
       console.error('Error inserting blog post:', error);

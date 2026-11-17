@@ -6,8 +6,9 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import Script from 'next/script';
 import { blogPostSchema } from '@/lib/schema';
-import { ArrowLeft, ChevronRight, Sparkles, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Sparkles, ArrowRight, Tag } from 'lucide-react';
 import ShareButtons from '@/components/ShareButtons';
+import { inferCategory } from '@/components/BlogIndexClient';
 
 export const revalidate = 3600;
 
@@ -152,9 +153,18 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
               )}
               
               <div className="p-8 md:p-12">
-                <div className="text-xs font-bold text-primary uppercase tracking-wider mb-4 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  {new Date(post.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                <div className="flex flex-wrap items-center gap-3 mb-4">
+                  <Link
+                    href={`/blog?category=${encodeURIComponent(inferCategory(post))}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 hover:bg-primary hover:text-white transition-colors"
+                  >
+                    <Tag className="w-3 h-3" />
+                    {inferCategory(post)}
+                  </Link>
+                  <div className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                    {new Date(post.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                  </div>
                 </div>
                 
                 <h1 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 mb-6 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-primary-900 to-slate-800">
